@@ -1,0 +1,56 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.section{
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  align-items: center;
+}
+
+.header{
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.body{
+  text-align: center;
+  font-size: 24px;
+}
+
+.container{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  gap: 20px
+}
+
+.button{
+  width: 350px;
+  height: 150px;
+  border-radius: 8px;
+}
+
+.icon{
+  font-size: 64px;
+  color: black;
+  width: 64px;
+  height: 64px;
+  display: inline-block;
+}
+
+.icon-container{
+  margin-bottom: 24px;
+}
+
+.copyright{
+  font-size: 16px;
+}
