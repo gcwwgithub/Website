@@ -154,6 +154,7 @@
     border-radius: 16px;    /* Adjust the value for the desired amount of rounding */
     background-color: rgb(21, 101, 167);
     color: white;
+    cursor: pointer;
   }
 
   .card-button{
@@ -170,6 +171,14 @@
     font-size: 20px;
     font-weight: bold;
   }
+
+  .generic-button:hover {
+    background-color: rgb(16, 72, 117);
+}
+
+.non-generic-button:hover {
+  background-color: rgb(16, 72, 117);
+}
 
   .button-link{
     display: flex;
@@ -188,6 +197,7 @@
     height: 45px;
     font-size: 20px;
     font-weight: bold;
+    cursor: pointer;
   }
 
 

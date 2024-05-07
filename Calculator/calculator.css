@@ -1,0 +1,53 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.parent-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.calculator{
+  background-color: rgb(27, 27, 27);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.brand-name{
+  font-size: 24px;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.screen{
+  height: 60px;
+  border: thin solid black;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 32px;
+  color: rgb(0, 0, 0);
+  background-color: rgb(72, 128, 109);
+  padding: 2px;
+  border-radius: 8px;
+}
+
+.button{
+  height: 60px;
+  width: 60px;
+  border-radius: 16px;
+  margin: 2px;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.clear, .back{
+  background-color: rgb(202, 106, 50);
+  color: black;
+}
