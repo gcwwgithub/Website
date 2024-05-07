@@ -19,9 +19,11 @@
 }
 
 .brand-name{
-  font-size: 24px;
+  font-size: 14px;
   color: white;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  font-weight: bold;
+  text-align: center;
 }
 
 .screen{
