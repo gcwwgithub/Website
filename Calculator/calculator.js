@@ -7,7 +7,7 @@ const OPERATORS = Object.freeze({
     MODULUS: '%'
   });
 
-  const multiplyOperator = 'X';  // Escaping multiplication operator
+  const multiplyOperator = 'x';  // Escaping multiplication operator
   const divideOperator = '÷';    // Escaping division operator
   const maxCalculatorLength = 13;
 
@@ -109,7 +109,7 @@ operatorButtons.forEach(button =>
 
 document.addEventListener('keydown', function(event) {
     const validNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    const validOperators = ['+', '-', '*', '/', "%"];
+    const validOperators = ['+', '-', '*', '/', "%", multiplyOperator, divideOperator];
     const brackets = ['(', ')'];
     if (validNumbers.includes(event.key)) 
     {
@@ -181,7 +181,8 @@ function shouldPopOperatorFromStack(currentOperator, stackOperator)
 
 function isOperator(lastCharacter)
 {
-    return lastCharacter === "+" || lastCharacter === "-" || lastCharacter === multiplyOperator || lastCharacter === divideOperator || lastCharacter === "%";
+    return lastCharacter === "+" || lastCharacter === "-" || lastCharacter === multiplyOperator 
+    || lastCharacter === divideOperator || lastCharacter === "%" || lastCharacter === "*" || lastCharacter === "/"; 
 }
 
 function countDecimalDigits(number) {
@@ -216,13 +217,15 @@ function inputBrackets()
     let rightBracket = ")";
 
     if(expression.length > maxCalculatorLength)
-        {
-            return;
-        }
-
-        if (expression === "0" || expression === "ERROR" || expression.toString() === "Infinity" || expression.toString() == "-Infinity") {
-        expression = leftBracket;
+    {
+        return;
     }
+
+    if (expression === "0" || expression === "ERROR" || expression.toString() === "Infinity" || expression.toString() == "-Infinity") 
+    {
+        expression = leftBracket;
+        leftBracketCount++;
+        }
 
     else if(expression)
     {
@@ -233,16 +236,23 @@ function inputBrackets()
             leftBracketCount++;
         }
 
-        else if(leftBracketCount > 0)
+        else if(isOperator(expression[expression.length - 1]))
         {
             console.log("Test2");
+            expression += leftBracket;
+            leftBracketCount++;
+        }
+
+        else if(leftBracketCount > 0)
+        {
+            console.log("Test3");
             expression += rightBracket;
             leftBracketCount--;
         }
 
         else
         {
-            console.log("Test3");
+            console.log("Test4");
             expression += leftBracket;
             leftBracketCount++;
         }
@@ -250,7 +260,7 @@ function inputBrackets()
 
     else
     {
-        console.log("Test4");
+        console.log("Test5");
         expression = leftBracket;
         leftBracketCount++;
     }

@@ -5,6 +5,10 @@
     font-family: 'Courier New', Courier, monospace;
 }
 
+body {
+  background-color: lightgray;
+}
+
 .parent-container{
   display: flex;
   justify-content: center;

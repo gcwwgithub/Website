@@ -130,11 +130,11 @@
   }
 
   .oddcard{
-    background-color: rgb(237, 245, 255);
+    background-color: white
   }
 
   .evencard{
-    background-color: rgb(238, 238, 238);
+    background-color: lightsteelblue
   }
 
   .card-header{
