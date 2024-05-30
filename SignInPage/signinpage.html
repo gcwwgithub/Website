@@ -5,56 +5,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up Form</title>
   <link rel="stylesheet" href="./signinpage.css">
- 
 </head>
 <body>
-  <div class = "main">
-    <img src="./Images/background.jpg" alt="A description of the image" class = "background-image">
-    <div class = "right-section">
-      <div class = "top-section">
-        <div class = "warning">This is not a real online service! This is an odin project project hehe and We are testing the warning
-
+  <div class="main">
+    <div class="section left-section">
+      <img src="./Images/background.jpg" alt="A description of the image" class="background-image">
+    </div>
+    <div class="section right-section">
+      <div class="top-section">
+        <div class="warning">
+          This is not a real online service! This is an odin project project hehe and We are testing the warning
         </div>
       </div>
-      <div class = "middle-section">
-        <form action = "results.html", method = "get">
-            <div class = "middle">
-              <div>
-                <label for="first-name">FIRST NAME</label>
-                <input type="text" name="first-name" id="first-name" required>
-              </div>
-              <div>
-                <label for="last-name">LAST NAME</label>
-                <input type="text" name="last-name" id="last-name" required>
-              </div>
-              <div>
-                <label for="number">PHONE NUMBER</label>
-                <input type="tel" name="number" id="number" required>
-              </div>
-              <div>
-                <label for="password">PASSWORD</label>
-                <input type="password" name="password" id="password" required>
-              </div>
-              <div>
-                <label for="confirm-password">CONFIRM PASSWORD</label>
-                <input type="password" name="confirm-password" id="confirm-password" required>
-              </div>
-              <div>
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email" required>
-              </div>
+      <form action="results.html" method="get" class="bot-section" id="form">
+        <div class="section form-top">
+          <div class="header">Let's do this!</div>
+          <div class="button-container">
+            <div class="form-group">
+              <label for="first-name">FIRST NAME</label>
+              <input type="text" name="first-name" id="first-name" required>
             </div>
-            <div class = top->
-              <div class = top-m>
-                <div class = bot-text>Already have an account?</div>
-                <a href="destination_url">Clickable Text</a>
-              </div>
-              <button type="submit">Submit</button>
+            <div class="form-group">
+              <label for="last-name">LAST NAME</label>
+              <input type="text" name="last-name" id="last-name" required>
             </div>
-        </form>
-      </div>
+          </div>
+          <div class="button-container">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" name="email" id="email" required>
+            </div>
+            <div class="form-group">
+              <label for="number">PHONE NUMBER</label>
+              <input type="tel" name="number" id="number" required>
+            </div>
+          </div>
+          <div class="button-container">
+            <div class="form-group">
+              <label for="password">PASSWORD</label>
+              <input type="password" name="password" id="password" required>
+            </div>
+            <div class="form-group">
+              <label for="confirm-password">CONFIRM PASSWORD</label>
+              <input type="password" name="confirm-password" id="confirm-password" required>
+            </div>
+          </div>
+        </div>
+        <div class="section form-bot">
+          <button type="submit">Submit</button>
+          <div class="top-m">
+            <div class="bot-text">Already have an account?</div>
+            <a href="destination_url">Clickable Text</a>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
-  <script src = "signinpage.js"></script>
+  <script src="signinpage.js"></script>
 </body>
 </html>
