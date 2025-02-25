@@ -2,7 +2,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .navbar{
@@ -34,249 +34,188 @@
 .section{
   display: flex;
   flex-direction: column;
-   padding: 64px 0px;
+  padding: 64px 0px;
+  justify-content: center;
+  align-items: center;
 }
 
-.h1-text{
-    display: flex;
-    justify-content: center;
-    margin-bottom: 36px;
-    font-size: 36px;
-    font-weight: 800px;
-    color: rgb(0, 0, 0)
+.even-section{
+  background-color: azure;
 }
 
-.header-text{
-    display: flex;
-    justify-content: center;
-    margin-bottom: 16px;
-    font-size: 36px;
-    font-weight: 800px;
-}
-
-.about-me-header{
+.top-container{
   display: flex;
-    justify-content: center;
-    font-size: 30px;
-    margin: 12px 0px;
-    font-weight: bold;
-    max-width: 400px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
 }
 
-.about-me-body{
-  text-align: center;
+.top-right-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
 }
 
+.name-text{
+  font-size: 72px;
+  font-weight: bold;
+  color: black;
+}
 
 .body-text{
-
+  font-size: 24px;
+  font-weight: bold;
+  color: black;
   text-align: center;
-    margin-bottom: 36px;
-    font-size: 24px;
-    }
-
-.h2-text{
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
 }
 
-.large-icon{
-  font-size: 80px; /* Adjust the icon size as needed */
-  width: 80px; /* Set the width of the icon */
-  height: 80px; /* Set the height of the icon */
-  display: inline-block;
+.self-portrait{
+  max-width: 25%;
+  height: auto;
+  border-radius: 25%;
 }
-  
-  .image-icon{
-    width: 64px; /* Set the width of the icon */
-    height: 64px; /* Set the height of the icon */
-    display: inline-block;
-    color: #000;
-  }
 
+.section-header{
+  font-weight: bold;
+  font-size: 48px;
+  text-align: center;
+  margin-bottom: 2px;
+}
 
-  .text-icon{
-    display: flex;
-    font-size: 32px;
-    font-weight: bold;
-    align-items: center;
-  }
+.section-description{
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 36px;
+}
+
 
   .project-container{
-    max-width: 1100px;
-  }
-
-
-  .card-container{
     display : flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: flex-start;
-    align-self: center;
-    margin-bottom: 24px;
+    gap: 50px;
+    max-width: 1600px;
+
+  } 
+
+  .project{
+    display : flex;
+    max-width: 700px;
+    width: 100%;
+    flex-direction: column;
+    background-color: rgb(230, 230, 230)
+  }
+
+  .project:hover {
+    transform: scale(1.1); /* Scales the card to 110% */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Optional: add depth */
+    cursor: pointer;
+  }
+
+  .project-title{
+    font-weight: bold;
+    font-size: 36px;
+    color: black;
+    padding-top: 10px;
+    padding-right: 20px;
+    padding-bottom: 2px;
+    padding-left: 20px;
+  }
+
+  .project-role{
+    font-size: 24px;
+    color: blue;
+    padding-top: 10px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+  }
+
+  .project-icon-container{
+    display: flex;
+    gap: 2px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+  }
+
+  .project-icon{
+    width: 25px;
+    height: 25px;
+  }
+
+  .project-icon-text{
+    font-size: 24px;
+    color: black;
+    padding-right: 8px;
+  }
+
+  .project-engine-tag{
+    background-color: rgb(15, 87, 159);
+    color: white;
+    padding: 2px 7px;
+    margin-right: 5px;
+    font-size: 22px;
+  }
+
+  .project-language-tag{
+    background-color: rgb(159, 15, 15);
+    color: white;
+    padding: 2px 7px;
+    font-size: 22px;
+  }
+
+  .project-description{
+    font-size: 24px;
+    color: black;
+    padding-top: 10px;
+    padding-right: 20px;
+    padding-bottom: 30px;
+    padding-left: 20px;
   }
 
   .project-image{
-    max-width: 300px;
-    max-height: 300px;
+    max-width: 100%;
+    height: auto;
   }
 
-  .card{
-    display: flex;
-    flex-direction: column;
-    padding: 12px 12px;
-    max-width: 320px;
-  }
-
-  .oddcard{
-    background-color: white
-  }
-
-  .evencard{
-    background-color: lightsteelblue
-  }
-
-  .card-header{
-    text-align: center;
-    font-weight: bold;
-    font-size: 24px;
-    height: 2.4em; /* Fixed height for two lines of text, assuming 1.2em line height */
-    overflow: hidden; /* Hide overflow text */
-
-  }
-
-  .generic-button{
-    margin-top: 12px;
-    margin-left: auto;
-    margin-right: auto;
-    border: none;          /* Remove default border */
-    border-radius: 16px;    /* Adjust the value for the desired amount of rounding */
-    background-color: rgb(21, 101, 167);
-    color: white;
-    cursor: pointer;
-  }
-
-  .card-button{
-    width: 100px;
-    height: 30px;
-    margin-top: 12px;
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  .see-more-button{
-    width: 240px;
-    height: 45px;
-    font-size: 20px;
-    font-weight: bold;
-  }
-
-  .generic-button:hover {
-    background-color: rgb(16, 72, 117);
-}
-
-.non-generic-button:hover {
-  background-color: rgb(16, 72, 117);
-}
-
-  .button-link{
-    display: flex;
-    justify-content: center;
-    text-decoration: none
-  }
-
-
-
-  .non-generic-button{
-    border: none;          /* Remove default border */
-    border-radius: 16px;    /* Adjust the value for the desired amount of rounding */
-    background-color: rgb(21, 101, 167);
-    color: white;
-    width: 240px;
-    height: 45px;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-
-
-  .generic-card{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 450px;
-    padding: 12px;
-  }
-
-  .about-me-card{
-    width: 350px;
-    background-color:rgb(228, 228, 228);
-    margin-right:20px;
-  }
-
-  .button-container{
-    display: flex;
-    justify-content: center;
-    gap: 120px;
-  }
-
-  .card-text{
-    text-align: center;
-    margin-top: 12px;
-    max-width: 425px;
-  }
-
-
-  .education-image{
-    width: 256px; /* Set the width of the icon */
-    height: 80px; /* Set the height of the icon */
-  }
-
-  .work-image{
-    width: 152px; /* Set the width of the icon */
-    height: 80px; /* Set the height of the icon */
-  }
-
-  .icon {
-    font-size: 64px; /* Adjust the icon size as needed */
-    width: 64px; /* Set the width of the icon */
-    height: 64px; /* Set the height of the icon */
-    display: inline-block;
+  .contact-container {
+    display: flex; /* Flexbox for horizontal layout */
+    justify-content: center; /* Center the icons */
+    gap: 20px; /* Space between icons */
+    flex-wrap: wrap;
+    margin-bottom: 64px;
   }
   
-    .icon-container {
-      display: flex; /* Make the container a flexbox for horizontal arrangement */
-      justify-content: center; /* Distribute icons evenly within the container */
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 64px;
-    }
-    
-    .icon-link {
-      text-decoration: none; /* Remove underline from links */
-      color: inherit; /* Inherit text color from parent */
-    }
-    .copyright{
-      text-align: center;
-    }
-
-  .pw-about-me, .pw-work, .pw-education, .pw-accomplishments{
-     background-color: rgb(255, 255, 255);
+  .fa-brands, .fa-solid {
+    font-size: 100px; /* Correct way to scale icons */
+    color: black;
+    display: inline-block; /* Allows width/height-like behavior */
+    transition: color 0.3s ease, transform 0.3s ease; /* Optional hover effect */
+  }
+  
+  .fa-brands:hover, .fa-solid:hover {
+    color: #0077b5; /* Change color on hover */
+    transform: scale(1.1); /* Slightly enlarge on hover */
+  }
+  
+  .icon-link {
+    text-decoration: none; /* Removes underline from anchor */
   }
 
-  .pw-skills, .pw-projects, .pw-awards{
-    background-color: rgb(243, 243, 243);
- }
-
-  .section-end{
-    display: flex;
-    flex-direction: column;
-    padding-top: 32px;
-    background-color: rgb(243, 243, 243);
+  .copyright{
+    font-size: 24px;
+    text-align: center;
+    color: black;
   }
+
+
+  
+
+
   
 
   
