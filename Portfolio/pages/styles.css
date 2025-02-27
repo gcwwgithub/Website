@@ -48,7 +48,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
+  max-width: 1000px;
 }
 
 .top-right-container{
@@ -97,16 +97,18 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 50px;
-    max-width: 1600px;
+    max-width: 1400px;
+    margin-bottom: 50px;
 
   } 
 
   .project{
     display : flex;
-    max-width: 700px;
+    max-width: 600px;
     width: 100%;
     flex-direction: column;
-    background-color: rgb(230, 230, 230)
+    background-color: rgb(230, 230, 230);
+    transition: color 0.3s ease, transform 0.3s ease; /* Optional hover effect */
   }
 
   .project:hover {
@@ -159,6 +161,7 @@
     padding: 2px 7px;
     margin-right: 5px;
     font-size: 22px;
+    border-radius: 20px;
   }
 
   .project-language-tag{
@@ -166,6 +169,7 @@
     color: white;
     padding: 2px 7px;
     font-size: 22px;
+    border-radius: 20px;
   }
 
   .project-description{
@@ -182,6 +186,57 @@
     height: auto;
   }
 
+  .see-other-projects-button{
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    background-color: black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease; /* Optional hover effect */
+
+  }
+
+  .see-other-projects-button:hover{
+    color: black;
+    background-color: grey;
+    transform: scale(1.1); /* Slightly enlarge on hover */
+  }
+
+  .skills-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: row;
+    gap: 20px;
+    max-width: 1000px;
+    margin-bottom: 50px;
+    align-items: center;
+  }
+
+
+  .skills-text{
+    font-weight: bold;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 2px;
+    margin-top: 12px;
+  }
+
+  .skills-icon{
+    width: 100px;
+    height: auto;
+  }
+
+  .text-icon{
+    font-weight: bold;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 2px;
+  }
+
   .contact-container {
     display: flex; /* Flexbox for horizontal layout */
     justify-content: center; /* Center the icons */
@@ -191,7 +246,7 @@
   }
   
   .fa-brands, .fa-solid {
-    font-size: 100px; /* Correct way to scale icons */
+    font-size: 75px; /* Correct way to scale icons */
     color: black;
     display: inline-block; /* Allows width/height-like behavior */
     transition: color 0.3s ease, transform 0.3s ease; /* Optional hover effect */
