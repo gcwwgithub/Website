@@ -4,6 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./shared.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
     <title>Gabriel Chiok</title>
@@ -12,11 +13,11 @@
   <body>
     <div class = "navbar">
        <ul class = "left-links">
-        <li><a href="#">GABRIEL CHIOK</a></li>
+        <li><a href="./landing_page.html">GABRIEL CHIOK</a></li>
        </ul> 
        <ul class = "right-links">
         <li><a href="./projects.html">PROJECTS</a></li>
-        <li><a href="./resume.html">RESUME</a></li>
+        <li><a href="../images/ChiokWeiWenGabriel_Resume.pdf">RESUME</a></li>
        </ul> 
     </div>
 
@@ -38,47 +39,112 @@
       <div class = "section-header">PROJECTS</div>
       <div class = "section-description">Click on the tiles to learn more about each project </div>
       <div class = "project-container">
-        <a href="./projects.html" target="_blank" style="text-decoration: none;">
+        <a href="./projects/skew.html" style="text-decoration: none;">
           <div class = "project">
-            <img src="../images/test.jpg" alt="Project Image" class = "project-image">
+            <!-- <video autoplay loop muted playsinline>
+              <source src="../images/Skew.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video> -->
+            <img src="../images/Skew.png" alt="Project Image" class = "project-image">
             <div class = "project-title"> Skew (2024)</div>
             <div class = "project-role"> Producer & Gameplay Programmer</div>
             <div class = project-icon-container>
               <img src="../images/team.png"class="project-icon"></img>     
               <div class = project-icon-text> 16</div>
               <img src="../images/clock.png"  class="project-icon"></img>
-              <div class = project-icon-text> 7 months</div>
+              <div class = project-icon-text> 8 months</div>
               <div class = "project-engine-tag"> Custom</div>
               <div class = "project-language-tag"> C#</div> 
               <div class = "project-language-tag"> C++</div>            
             </div>
-            <div class = "project-description"> Skew is a first person hack and slash game where you play as Beatrice who is a 
-              chef turned prisoner of the colony’s tyrant. To survive another day, 
-              you must kill aliens in different sectors to gather their meat and satisfy the tyrant and hopefully defeat him one day... </div>
+            <div class = "project-description"> Skew is a 3D first person hack and slash game made in a C++ custom engine. I worked
+              on the cutscenes manager, event manager, dialogue manager and level manager. </div>
           </div>
         </a>
-        <a href="./projects.html" target="_blank" style="text-decoration: none;">
+        <a href="./projects/haru.html" style="text-decoration: none;">
           <div class = "project">
-            <img src="../images/test.jpg" alt="Project Image" class = "project-image">
-            <div class = "project-title"> Haru - A Tale of Rememberance (2023)</div>
+            <video autoplay loop muted playsinline>
+              <source src="../images/Haru.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <div class = "project-title project-title-long">Haru - A Tale of Rememberance (2023)</div>
             <div class = "project-role"> Gameplay Programmer</div>
             <div class = project-icon-container>
               <img src="../images/team.png"class="project-icon"></img>     
-              <div class = project-icon-text> 16</div>
+              <div class = project-icon-text> 8</div>
               <img src="../images/clock.png"  class="project-icon"></img>
-              <div class = project-icon-text> 7 months</div>
+              <div class = project-icon-text> 8 months</div>
               <div class = "project-engine-tag"> Custom</div>
               <div class = "project-language-tag"> C#</div> 
               <div class = "project-language-tag"> C++</div>            
             </div>
-            <div class = "project-description">Haru, a Tale of Remembrance is an exciting puzzle-platformer game that takes you on a journey in 
-              a beautifully crafted world filled with unique and imaginative locations. As you progress through the game,
-               you will encounter various obstacles and puzzles that you must solve using Haru's camera that has magical special power. 
-               You will also help spirits move on to their afterlife and recover your lost memories with the help of your trusty companion, Glob Glob. </div>
+            <div class = "project-description">Haru, a Tale of Remembrance is a 2D puzzle-platformer game made in a C++ custom engine. I worked
+              on the cutscenes, dialogue manager, level flow and events. </div>
+          </div>
+        </a>
+        <a href="./projects/bofa.html" style="text-decoration: none;">
+          <div class = "project">
+            <video autoplay loop muted playsinline>
+              <source src="../images/BOFA.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <div class = "project-title">Blast Off Far Away (2022)</div>
+            <div class = "project-role"> Gameplay Programmer</div>
+            <div class = project-icon-container>
+              <img src="../images/team.png"class="project-icon"></img>     
+              <div class = project-icon-text> 4</div>
+              <img src="../images/clock.png"  class="project-icon"></img>
+              <div class = project-icon-text> 3 months</div>
+              <div class = "project-engine-tag"> Custom</div>
+              <div class = "project-language-tag"> C++</div>            
+            </div>
+            <div class = "project-description">Blast off Far Away is a top-down arena shooter made with a school framework. I worked on the enemy AI and the procedural
+              spawning of level, enemies and environment items. </div>
+          </div>
+        </a>
+        <a href="./projects/ghost_gone_wrong.html"  style="text-decoration: none;">
+          <div class = "project">
+            <video autoplay loop muted playsinline>
+              <source src="../images/GhostGoneWrong.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <div class = "project-title">Ghost Gone Wrong (2021)</div>
+            <div class = "project-role"> Animator System Programmer & Artist</div>
+            <div class = project-icon-container>
+              <img src="../images/team.png"class="project-icon"></img>     
+              <div class = project-icon-text> 5</div>
+              <img src="../images/clock.png"  class="project-icon"></img>
+              <div class = project-icon-text> 6 weeks</div>
+              <div class = "project-engine-tag"> Custom</div>
+              <div class = "project-language-tag"> C</div>            
+            </div>
+            <div class = "project-description">Ghost Gone Wrong is a top down tower defense game made with a school framework. I created the art assets for the game, and 
+              also created the animation system that the art assets would use. </div>
+          </div>
+        </a>
+        <a href="./projects/waterslidevr.html"  style="text-decoration: none;">
+          <div class = "project">
+            <video autoplay loop muted playsinline>
+              <source src="../images/WaterslideVR.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <div class = "project-title">Waterslide VR (2018)</div>
+            <div class = "project-role"> Project Lead & Gameplay Programmer</div>
+            <div class = project-icon-container>
+              <img src="../images/team.png"class="project-icon"></img>     
+              <div class = project-icon-text> 5</div>
+              <img src="../images/clock.png"  class="project-icon"></img>
+              <div class = project-icon-text> 3 months</div>
+              <div class = "project-engine-tag"> Unity</div>
+              <div class = "project-language-tag"> C#</div>            
+            </div>
+            <div class = "project-description">Waterslide VR is a simulation game made in collaboration with Wild Wild Wet.
+               I also helped to create the slide simulation and various slide games.
+            </div>
           </div>
         </a>
       </div>
-      <a href="./projects.html" target="_blank" style="text-decoration: none;">
+      <a href="./projects.html"  style="text-decoration: none;">
         <button class="see-other-projects-button">See Other Projects</button>
       </a>
       
@@ -86,50 +152,94 @@
   
 
     <div class = "section even-section">
-      <div class = "section-header">Skills</div>
-      <div class = "skills-text">Experienced</div>
+      <div class = "section-header">SKILLS</div>
       <div class = "skills-container">
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg"class="skills-icon"></img>     
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg"  class="skills-icon"></img>   
-        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/unity/unity-original.svg" class="skills-icon"></img>          
-      </div>
-      <div class = "skills-text">Decent Enough</div>
-      <div class = "skills-container">       
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/unity/unity-original.svg" class="skills-icon"></img>  
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg"class="skills-icon"></img>   
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/json/json-original.svg"class="skills-icon"></img>             
         <div class = "text-icon">RTTR</div>
+        <img src="../images/cocos.png" alt="Mono" class="skills-icon"></img>  
       </div>
-      <div class = "skills-text">Have Touched</div>
       <div class = "skills-container">
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" class="skills-icon"></img>   
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" class="skills-icon"></img>   
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" class="skills-icon"></img>   
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" class="skills-icon"></img>    
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" class="skills-icon"></img>
-        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kotlin/kotlin-original.svg" class="skills-icon"></img>         
-        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/androidstudio/androidstudio-original.svg" class="skills-icon"></img>
-        <img src="../images/cocos.png" alt="Mono" class="skills-icon"></img>        
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kotlin/kotlin-original.svg" class="skills-icon"></img>
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/androidstudio/androidstudio-original.svg" class="skills-icon"></img>                    
       </div>
     </div>
 
     <div class = "section">
-      <div class = body-text>Hello there! I'm Gabriel. 
-        <br> This website is still in development.
+      <div class = "section-header">Education</div>
+      <div class = "education-container">
+      <div class = "education-box">
+        <div class = "education-header"> Digipen Institute of Technology Singapore (2021 - 2025)</div>
+        <div class = "education-text"> Bachelor of Science in Computer Science in Interactive Media and Game Development</div>
       </div>
+      <div class = "education-box">
+        <div class = "education-header"> Temasek Polytechnic (2016 - 2019)</div>
+        <div class = "education-text"> Diploma with Merit in Game Design & Development</div>
+      </div>
+    </div>
+    </div>
+
+    <div class = "section even-section">
+      <div class = about-me-container>
+        <div class = about-me-text>
+          Hello there! I'm Gabriel, a Singapore based Gameplay Programmer. I have been making games since 2016 and have participated in many
+           different game projects, in both individual and team settings. I would describe myself as a hardworking and dedicated individual who is always looking to improve and 
+           learn new things. 
+           <br>
+           <br>Once I am finished my degree, I plan to continue my career in the game industry and am open to new opportunities.
+           If you want to know more about me, feel free to check out my resume or projects.
+        </div>
+        <div class = achievement-container>
+          <div class = "achievement"> 
+            <img src= "../images/trophy-solid.svg" class="achievement-icon"></img>
+            <div class = "achievement-text"> Provost List AY2022/2023</div>
+          </div>
+          <div class = "achievement"> 
+            <img src= "../images/trophy-solid.svg" class="achievement-icon"></img>
+            <div class = "achievement-text"> Diploma with Merit & Diploma Plus</div>
+          </div>
+          <div class = "achievement"> 
+            <img src= "../images/trophy-solid.svg" class="achievement-icon"></img>
+            <div class = "achievement-text"> Director List AY 2016/2017</div>
+          </div>
+          <div class = "achievement"> 
+            <img src= "../images/award-solid.svg" class="achievement-icon"></img>
+            <div class = "achievement-text"> Innolympics 2021 2nd Runner Up</div>
+          </div>
+          <div class = "achievement"> 
+            <img src= "../images/award-solid.svg" class="achievement-icon"></img>
+            <div class = "achievement-text"> Edusave Certificate of Academic Achievement 2017 - 2019</div>
+          </div>
+          <div class = "achievement"> 
+            <img src= "../images/award-solid.svg" class="achievement-icon"></img>
+            <div class = "achievement-text"> Temasek Polytechnic 2017 Game Jam Winner
+         </div>
+        </div>
+
+    </div>
+  </div>
     </div>
 
 
-  <div class = "section even-section">
+  <div class = "section last-section">
     <div class = "section-header">CONTACT</div>
     <div class = "contact-container">
-      <a href="https://github.com/gcwwgithub" class="icon-link">
-        <i class="icon-link fa-brands fa-github"></i> </a>
       <a href="https://www.linkedin.com/in/gabriel-chiok-418538152" class="icon-link">
         <i class="icon-link fa-brands fa-linkedin"></i> </a>
       <a href="mailto:gabrielchiok@hotmail.com" class="icon-link">
         <i class="icon-link fa-solid fa-envelope"></i> </a>
+        <a href="https://github.com/gcwwgithub" class="icon-link">
+          <i class="icon-link fa-brands fa-github"></i> </a>
     </div>
-    <div class = "copyright">Copyright © 2024 Gabriel Chiok</div>
+    <div class = "copyright">Copyright © 2025 Gabriel Chiok</div>
   </div>
 
     

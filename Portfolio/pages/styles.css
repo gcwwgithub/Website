@@ -1,47 +1,4 @@
-*{
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Montserrat', sans-serif;
-}
 
-.navbar{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    background-color: rgb(0, 0, 0);
-}
-
-.navbar .left-links{
-    font-size: 32px;
-}
-
-.navbar ul{
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 32px;
-}
-
-.navbar ul a{
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-}
-
-.section{
-  display: flex;
-  flex-direction: column;
-  padding: 64px 0px;
-  justify-content: center;
-  align-items: center;
-}
-
-.even-section{
-  background-color: azure;
-}
 
 .top-container{
   display: flex;
@@ -78,27 +35,15 @@
   border-radius: 25%;
 }
 
-.section-header{
-  font-weight: bold;
-  font-size: 48px;
-  text-align: center;
-  margin-bottom: 2px;
-}
-
-.section-description{
-  font-size: 24px;
-  text-align: center;
-  margin-bottom: 36px;
-}
-
 
   .project-container{
     display : flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 50px;
-    max-width: 1400px;
+    max-width: 1450px;
     margin-bottom: 50px;
+    align-items: stretch
 
   } 
 
@@ -109,6 +54,11 @@
     flex-direction: column;
     background-color: rgb(230, 230, 230);
     transition: color 0.3s ease, transform 0.3s ease; /* Optional hover effect */
+    min-height: 100%;
+  }
+
+  .project-reduced{
+    max-width: 450px;
   }
 
   .project:hover {
@@ -125,6 +75,10 @@
     padding-right: 20px;
     padding-bottom: 2px;
     padding-left: 20px;
+  }
+
+  .project-title-long{
+    font-size: 30px;
   }
 
   .project-role{
@@ -186,6 +140,12 @@
     height: auto;
   }
 
+
+  .video {
+    max-width: 100%;
+    height: auto;
+}
+
   .see-other-projects-button{
     font-size: 24px;
     font-weight: bold;
@@ -213,58 +173,97 @@
     gap: 20px;
     max-width: 1000px;
     margin-bottom: 50px;
+    margin-top: 25px;
     align-items: center;
   }
 
 
-  .skills-text{
-    font-weight: bold;
-    font-size: 24px;
-    text-align: center;
-    margin-bottom: 2px;
-    margin-top: 12px;
-  }
-
   .skills-icon{
     width: 100px;
     height: auto;
+    margin-right: 10px;
   }
 
   .text-icon{
     font-weight: bold;
-    font-size: 24px;
+    font-size: 48px;
     text-align: center;
     margin-bottom: 2px;
   }
 
-  .contact-container {
-    display: flex; /* Flexbox for horizontal layout */
-    justify-content: center; /* Center the icons */
-    gap: 20px; /* Space between icons */
+  .education-container{
+    display: flex;
     flex-wrap: wrap;
-    margin-bottom: 64px;
-  }
-  
-  .fa-brands, .fa-solid {
-    font-size: 75px; /* Correct way to scale icons */
-    color: black;
-    display: inline-block; /* Allows width/height-like behavior */
-    transition: color 0.3s ease, transform 0.3s ease; /* Optional hover effect */
-  }
-  
-  .fa-brands:hover, .fa-solid:hover {
-    color: #0077b5; /* Change color on hover */
-    transform: scale(1.1); /* Slightly enlarge on hover */
-  }
-  
-  .icon-link {
-    text-decoration: none; /* Removes underline from anchor */
+    flex-direction: row;
+    justify-content: center;
+    max-width: 1400px;
+    margin-top: 50px;
+    gap: 25px
   }
 
-  .copyright{
+  .education-box{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+    max-width: 600px;
+    margin-bottom: 50px;
+    background-color: lavender;
+  }
+
+  .education-header{
+    font-weight: bold;
+    font-size: 30px;
+    text-align: center;
+    margin: 25px
+  }
+
+  .education-text{
     font-size: 24px;
     text-align: center;
-    color: black;
+    margin-bottom: 25px;
+    margin-left: 25px;
+    margin-right: 25px;
+  }
+
+  .about-me-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1200px;
+  }
+
+  .about-me-text{
+    font-size: 24px;
+    text-align: left;
+    margin-bottom: 50px;
+  }
+
+  .achievement-container{
+    display: flex;
+    flex-wrap: wrap;
+    align-self: center;
+    margin-bottom: 50px;
+  }
+
+  .achievement{
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 20px;
+  }
+
+  .achievement-icon{
+    width: 25px;
+    height: auto;
+    margin-right: 5px;
+    margin-bottom: 15px;
+  }
+
+  .achievement-text{
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 15px;
+    margin-right: 20px;
   }
 
 

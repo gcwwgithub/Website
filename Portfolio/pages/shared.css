@@ -1,0 +1,121 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.navbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: rgb(0, 0, 0);
+}
+
+.navbar .left-links{
+    font-size: 32px;
+}
+
+.navbar .right-links{
+  font-size: 32px;
+}
+
+/* Remove default list styling */
+.navbar ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 32px;
+}
+
+/* Style the buttons as box-like elements */
+.navbar ul li {
+  padding: 12px 20px; /* Adjust padding for button shape */
+  border-radius: 8px; /* Rounded corners */
+  transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+/* Ensure the text inside the button is properly styled */
+.navbar ul li a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  display: block; /* Makes the link take the full space of the <li> */
+}
+
+/* Apply hover effect to the whole button */
+.navbar ul li:hover {
+  background-color: rgba(230, 230, 230, 0.2); /* Light transparent highlight */
+}
+
+
+.section{
+  display: flex;
+  flex-direction: column;
+  padding: 64px 0px;
+  justify-content: center;
+  align-items: center;
+}
+
+.even-section{
+  background-color: rgb(245, 245, 245);
+}
+
+.last-section{
+  background-color: rgb(135, 196, 224);
+}
+
+.section-header{
+  font-weight: bold;
+  font-size: 48px;
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+.section-description{
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+
+  .contact-container {
+    display: flex; /* Flexbox for horizontal layout */
+    justify-content: center; /* Center the icons */
+    gap: 20px; /* Space between icons */
+    flex-wrap: wrap;
+    margin-bottom: 64px;
+    margin-top: 64px;
+  }
+  
+  .fa-brands, .fa-solid {
+    font-size: 75px; /* Correct way to scale icons */
+    color: black;
+    display: inline-block; /* Allows width/height-like behavior */
+    transition: color 0.3s ease, transform 0.3s ease; /* Optional hover effect */
+  }
+  
+  .fa-brands:hover, .fa-solid:hover {
+    color: #0077b5; /* Change color on hover */
+    transform: scale(1.1); /* Slightly enlarge on hover */
+  }
+  
+  .icon-link {
+    text-decoration: none; /* Removes underline from anchor */
+  }
+
+  .copyright{
+    font-size: 24px;
+    text-align: center;
+    color: black;
+  }
+
+
+  
+
+
+  
+
+  
