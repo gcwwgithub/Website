@@ -20,12 +20,13 @@
   width: 75%;
   padding: 24px;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
+  max-width: 1050px;
 }
 
 
 .project-icon-row{
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   flex-direction: row;
   justify-content: left;
   gap: 15px;
@@ -57,18 +58,67 @@
 .project-description{
   font-size: 20px;
   text-align: center;
+  white-space: normal;
 
 }
+
+/* --- 📱 Mobile Optimization --- */
+@media screen and (max-width: 768px) {
+  .about-box {
+      width: 90%; /* Expand width to fit smaller screens */
+      padding: 16px; /* Reduce padding */
+  }
+
+  .project-title {
+      font-size: 24px; /* Reduce title size */
+      margin-bottom: 20px;
+  }
+
+  .project-icon {
+      width: 25px; /* Scale down icons */
+      height: 25px;
+  }
+
+  .project-description {
+      font-size: 18px; /* Scale down text */
+  }
+
+  .project-icon-row {
+      gap: 10px; /* Reduce spacing between icon and text */
+  }
+}
+
+/* --- 📱 Even Smaller Screens (Phones) --- */
+@media screen and (max-width: 480px) {
+  .about-box {
+      width: 95%; /* Take up more space */
+  }
+
+  .project-title {
+      font-size: 22px; /* Further reduce title size */
+  }
+
+  .project-icon {
+      width: 22px;
+      height: 22px;
+  }
+
+  .project-description {
+      font-size: 16px; /* Further reduce text */
+  }
+}
+
 
 
 .video-container {
   position: relative;
-  width: 100%;
+  width: 75%;
   aspect-ratio: 16/9; /* Maintains aspect ratio to prevent collapse */
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 50px;
 }
 
 

@@ -3,7 +3,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="./project_styles.css">
+    <link rel="stylesheet" href="../shared.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
     <title>Gabriel Chiok</title>
@@ -12,13 +13,86 @@
   <body>
     <div class = "navbar">
        <ul class = "left-links">
-        <li><a href="./landing_page.html">GABRIEL CHIOK</a></li>
+        <li><a href="../landing_page.html">GABRIEL CHIOK</a></li>
        </ul> 
        <ul class = "right-links">
-        <li><a href="./projects.html">PROJECTS</a></li>
-        <li><a href="../images/ChiokWeiWenGabriel_Resume.pdf" >RESUME</a></li>
+        <li><a href="../projects.html">PROJECTS</a></li>
+        <li><a href="../../images/ChiokWeiWenGabriel_Resume.pdf" >RESUME</a></li>
        </ul> 
     </div>
+
+    <div class = "section">
+      <div class = "project-container">
+        <div class="video-container" data-video="../../images/Haru.mp4">
+          <img src="../../images/Haru.jfif" class="project-thumbnail">
+          <video class="project-video" loop muted playsinline></video>
+      </div>
+        
+        <div class = "about-box">
+          <div class = "project-title">Haru - A Tale of Rememberance (2023)</div>
+          <div class = "project-icon-row">
+              <img src="../../images/user-solid.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Role:</b> Producer & Gameplay Programmer </div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/team.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Team Size:</b> 8 </div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/clock.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Project Length:</b> 7 months </div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/screwdriver-wrench-solid.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Engine:</b> Custom </div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/terminal-solid.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Language:</b> C#, C++</div>
+          </div>
+          <div class = "project-icon-row">
+              <img src="../../images/hammer-solid.svg"class="project-icon"></img>     
+              <div class = "project-description"><b>Created for:</b> Digipen Software Engineering Project 3/4</div>
+          </div>
+        </div>
+
+        <div class = "description-box">
+          <div class = "description-section">
+            <div class = "description-header">Game Description</div>
+            <div class = "description-text">  
+              Haru - a Tale of Rememebrance is an exciting <b>puzzle-platformer</b> game that takes you on a journey in a 
+              beautifully crafted world filled with unique and imaginative locations. As you progress through the game, 
+              you will encounter various obstacles and puzzles that you must solve using Haru's camera that has magical 
+              special power. You will also help spirits move on to their afterlife and recover your lost 
+              memories with the help of your trusty companion, Glob Glob.
+            </div>
+          </div>
+
+          <div class = "description-section">
+            <div class = "description-header">Project Role</div>
+            <div class = "description-text">     
+              As a <b>gameplay programmer</b>, I was in charge of creating the overall 
+              level systems and game flow. I created the event system and scene state and cutscene system
+              to help facilitate the game flow and story telling. I was also in charge of creating the
+              dialogue manager where I ensured that the dialogue is played at the correct
+              time. I helped serialised and deserialised the dialogue through CSVHelper and ensured
+              the files are loaded and read at the right time.
+            </div>
+          </div>
+         
+
+        </div>
+
+      </div>
+  
+    </div>
+
+  
+
 
     <div class="section last-section">
       <div class="contact-header">CONTACT</div>
@@ -35,8 +109,7 @@
       </div>
       <div class="copyright">Copyright © 2025 Gabriel Chiok</div>
     </div>
-
     
-  <script src = "landing_page.js"></script>
+  <script src = "../landing_page.js"></script>
   </body>
 </html>

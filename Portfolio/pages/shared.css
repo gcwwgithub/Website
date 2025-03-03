@@ -5,23 +5,17 @@
     font-family: 'Montserrat', sans-serif;
 }
 
-.navbar{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    background-color: rgb(0, 0, 0);
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: rgb(0, 0, 0);
+  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
-.navbar .left-links{
-    font-size: 32px;
-}
 
-.navbar .right-links{
-  font-size: 32px;
-}
-
-/* Remove default list styling */
+/* Ensure navbar links are properly styled */
 .navbar ul {
   display: flex;
   list-style: none;
@@ -30,24 +24,61 @@
   gap: 32px;
 }
 
-/* Style the buttons as box-like elements */
+/* Style for buttons */
 .navbar ul li {
-  padding: 12px 20px; /* Adjust padding for button shape */
-  border-radius: 8px; /* Rounded corners */
-  transition: background-color 0.3s ease; /* Smooth hover effect */
+  padding: 12px 20px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
 }
 
-/* Ensure the text inside the button is properly styled */
+/* Navbar text scaling */
 .navbar ul li a {
   text-decoration: none;
   color: white;
   font-weight: bold;
-  display: block; /* Makes the link take the full space of the <li> */
+  display: block;
+  font-size: 32px;
 }
 
-/* Apply hover effect to the whole button */
+/* Apply hover effect */
 .navbar ul li:hover {
-  background-color: rgba(230, 230, 230, 0.2); /* Light transparent highlight */
+  background-color: rgba(230, 230, 230, 0.2);
+}
+
+/* --- 📱 Mobile Optimization (Small Screens) --- */
+@media screen and (max-width: 768px) {
+  .navbar {
+      flex-direction: column; /* Stack items vertically */
+      text-align: center;
+  }
+
+  .navbar ul {
+      flex-direction: column; /* Stack links */
+      gap: 16px;
+  }
+
+  .navbar ul li {
+      padding: 10px 16px; /* Reduce button padding */
+  }
+
+  .navbar ul li a {
+      font-size: 18px; /* Reduce font size */
+  }
+}
+
+/* --- 📱 Even Smaller Screens (Phones) --- */
+@media screen and (max-width: 480px) {
+  .navbar ul li a {
+      font-size: 16px; /* Further reduce font size */
+  }
+
+  .navbar ul {
+      gap: 12px; /* Less space between items */
+  }
+
+  .navbar ul li {
+      padding: 8px 12px; /* Smaller button */
+  }
 }
 
 

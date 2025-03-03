@@ -3,7 +3,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="./project_styles.css">
+    <link rel="stylesheet" href="../shared.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
     <title>Gabriel Chiok</title>
@@ -12,13 +13,85 @@
   <body>
     <div class = "navbar">
        <ul class = "left-links">
-        <li><a href="./landing_page.html">GABRIEL CHIOK</a></li>
+        <li><a href="../landing_page.html">GABRIEL CHIOK</a></li>
        </ul> 
        <ul class = "right-links">
-        <li><a href="./projects.html">PROJECTS</a></li>
-        <li><a href="../images/ChiokWeiWenGabriel_Resume.pdf" >RESUME</a></li>
+        <li><a href="../projects.html">PROJECTS</a></li>
+        <li><a href="../../images/ChiokWeiWenGabriel_Resume.pdf" >RESUME</a></li>
        </ul> 
     </div>
+
+    <div class = "section">
+      <div class = "project-container">
+        <div class="video-container" data-video="../../images/BOFA.mp4">
+          <img src="../../images/BOFA.jfif" class="project-thumbnail">
+          <video class="project-video" loop muted playsinline></video>
+      </div>
+        
+        <div class = "about-box">
+          <div class = "project-title">Blast Off Far Away (2022)</div>
+          <div class = "project-icon-row">
+              <img src="../../images/user-solid.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Role:</b> Gameplay Programmer </div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/team.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Team Size:</b> 4 </div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/clock.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Project Length:</b> 3 months </div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/screwdriver-wrench-solid.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Engine:</b> Custom </div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/terminal-solid.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Language:</b> C++</div>
+          </div>
+          <div class = "project-icon-row">
+              <img src="../../images/hammer-solid.svg"class="project-icon"></img>     
+              <div class = "project-description"><b>Created for:</b> Digipen Software Engineering Project 2</div>
+          </div>
+        </div>
+
+        <div class = "description-box">
+          <div class = "description-section">
+            <div class = "description-header">Game Description</div>
+            <div class = "description-text">  
+              Blast Off Far Away is a <b>space-themed, top-down arena shooter</b>, with a focus on fast-paced arcade-esque gameplay, 
+              with the unique twist where movement is limited through the use of the player's gun. Players will have to manoeuvre 
+              around the map using these abilities and the various gravity fields around planets to avoid the ever increasing 
+              swarm of enemies. Along with limited oxygen and an ever-increasing difficulty, the 
+              player will have to master these movement controls to survive
+            </div>
+          </div>
+
+          <div class = "description-section">
+            <div class = "description-header">Project Role</div>
+            <div class = "description-text">     
+              As a <b>gameplay programmer</b>, I was in charge of the enemy AI and the procedural level spawning.
+              For the enemy AI, I implemented A* pathfinding algorithm for the enemies to navigate around the level
+              and the unique attack patterns for each enemy type. For the procedural level spawning, I created
+              the procedural spawning of the planets, enemies, background items and level objects such as the black
+              hole and portals.
+            </div>
+          </div>
+         
+
+        </div>
+
+      </div>
+  
+    </div>
+
+  
+
 
     <div class="section last-section">
       <div class="contact-header">CONTACT</div>
@@ -35,8 +108,7 @@
       </div>
       <div class="copyright">Copyright © 2025 Gabriel Chiok</div>
     </div>
-
     
-  <script src = "landing_page.js"></script>
+  <script src = "../landing_page.js"></script>
   </body>
 </html>

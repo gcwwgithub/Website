@@ -3,7 +3,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="./project_styles.css">
+    <link rel="stylesheet" href="../shared.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
     <title>Gabriel Chiok</title>
@@ -12,13 +13,83 @@
   <body>
     <div class = "navbar">
        <ul class = "left-links">
-        <li><a href="./landing_page.html">GABRIEL CHIOK</a></li>
+        <li><a href="../landing_page.html">GABRIEL CHIOK</a></li>
        </ul> 
        <ul class = "right-links">
-        <li><a href="./projects.html">PROJECTS</a></li>
-        <li><a href="../images/ChiokWeiWenGabriel_Resume.pdf" >RESUME</a></li>
+        <li><a href="../projects.html">PROJECTS</a></li>
+        <li><a href="../../images/ChiokWeiWenGabriel_Resume.pdf" >RESUME</a></li>
        </ul> 
     </div>
+
+    <div class = "section">
+      <div class = "project-container">
+        <div class="video-container" data-video="../../images/WaterslideVR.mp4">
+          <img src="../../images/WaterslideVR.PNG" class="project-thumbnail">
+          <video class="project-video" loop muted playsinline></video>
+      </div>
+        
+        <div class = "about-box">
+          <div class = "project-title">Waterslide VR (2018)</div>
+          <div class = "project-icon-row">
+              <img src="../../images/user-solid.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Role:</b>Project Lead & Gameplay Programmer </div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/team.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Team Size:</b> 5 </div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/clock.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Project Length:</b> 3 months</div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/screwdriver-wrench-solid.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Engine:</b> Unity </div>
+          </div>
+
+          <div class = "project-icon-row">
+              <img src="../../images/terminal-solid.svg"class="project-icon"></img>     
+            <div class = "project-description"><b>Language:</b> C#</div>
+          </div>
+          <div class = "project-icon-row">
+              <img src="../../images/hammer-solid.svg"class="project-icon"></img>     
+              <div class = "project-description"><b>Created for:</b> Temasek Polytechnic Major Project</div>
+          </div>
+        </div>
+
+        <div class = "description-box">
+          <div class = "description-section">
+            <div class = "description-header">Game Description</div>
+            <div class = "description-text">  
+              Waterslide VR is a <b>VR simulation game</b> made in collaboration with Wild Wild Wet featured at Temasek Polytechnic's InfoTech Day 2019 
+              and Downtown East 30th Anniversary. In this game, you get to experience a VR 
+              experience of riding a water slide modelled after the slides in Wild Wild Wet. 
+              Play mini games while travelling down the slide or play at the carnival games in the virtual 
+              water park and have a enjoyable time.
+            </div>
+          </div>
+
+          <div class = "description-section">
+            <div class = "description-header">Project Role</div>
+            <div class = "description-text">     
+             As the <b>Project Lead</b>, I was responsible for managing the team and ensuring that the project was completed on time. Additionally,
+             I served as the main <b>gameplay programmer</b> for the project, implementing the water slide simulation and the different slide games
+              that the player can play while sliding down the water slide.
+            </div>
+          </div>
+         
+
+        </div>
+
+      </div>
+  
+    </div>
+
+  
+
 
     <div class="section last-section">
       <div class="contact-header">CONTACT</div>
@@ -35,8 +106,7 @@
       </div>
       <div class="copyright">Copyright © 2025 Gabriel Chiok</div>
     </div>
-
     
-  <script src = "landing_page.js"></script>
+  <script src = "../landing_page.js"></script>
   </body>
 </html>
