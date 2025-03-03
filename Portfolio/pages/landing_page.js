@@ -1,16 +1,40 @@
-document.getElementById('downloadButton').addEventListener('click', function() {
-    console.log("test")
-    // URL of the file you want to download
-    const fileUrl = '../images/GabrielChiok_Resume.pdf'; // e.g., 'files/sample.pdf'
+document.addEventListener("DOMContentLoaded", function() {
     
-    // The name of the file after download
-    const fileName = 'GabrielChiok_Resume.pdf'; // e.g., 'sample.pdf'
-    
-    // Create a temporary link element
-    const link = document.getElementById('downloadLink');
-    link.href = fileUrl;
-    link.download = fileName;
+    function loadHTML(file, elementId) {
+        fetch(file)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById(elementId).innerHTML = data;
+            })
+            .catch(error => console.error(`Error loading ${file}:`, error));
+    }
 
-    // Trigger the download by programmatically clicking the link
-    link.click();
+    loadHTML("navbar.html", "navbar-container");
+    loadHTML("contact.html", "footer-container");
+    
+    
+    let videoContainers = document.querySelectorAll(".video-container");
+
+    videoContainers.forEach(container => {
+        let video = container.querySelector(".project-video");
+        let thumbnail = container.querySelector(".project-thumbnail");
+        video.style.opacity = "0"; // Hide video
+
+        container.addEventListener("mouseenter", function() {
+            if (!video.getAttribute("src")) { 
+                video.src = container.getAttribute("data-video"); // Load unique video
+            }
+            video.play();
+            thumbnail.style.opacity = "0"; // Show image again
+            video.style.opacity = "1"; // Hide video
+        });
+        
+
+        container.addEventListener("mouseleave", function() {
+            video.pause();
+            video.currentTime = 0; // Reset video
+            thumbnail.style.opacity = "1"; // Show image again
+            video.style.opacity = "0"; // Hide video
+        });
+    });
 });

@@ -64,7 +64,7 @@
 }
 
 .last-section{
-  background-color: rgb(135, 196, 224);
+  background-color: rgb(0, 0, 0);
 }
 
 .section-header{
@@ -86,13 +86,21 @@
     justify-content: center; /* Center the icons */
     gap: 20px; /* Space between icons */
     flex-wrap: wrap;
-    margin-bottom: 64px;
-    margin-top: 64px;
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .contact-header{
+    font-weight: bold;
+    font-size: 48px;
+    text-align: center;
+    margin-bottom: 2px;
+    color: white;
   }
   
   .fa-brands, .fa-solid {
     font-size: 75px; /* Correct way to scale icons */
-    color: black;
+    color: white;
     display: inline-block; /* Allows width/height-like behavior */
     transition: color 0.3s ease, transform 0.3s ease; /* Optional hover effect */
   }

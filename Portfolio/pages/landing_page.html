@@ -12,14 +12,15 @@
 
   <body>
     <div class = "navbar">
-       <ul class = "left-links">
-        <li><a href="./landing_page.html">GABRIEL CHIOK</a></li>
-       </ul> 
-       <ul class = "right-links">
-        <li><a href="./projects.html">PROJECTS</a></li>
-        <li><a href="../images/ChiokWeiWenGabriel_Resume.pdf">RESUME</a></li>
-       </ul> 
+      <ul class = "left-links">
+       <li><a href="./landing_page.html">GABRIEL CHIOK</a></li>
+      </ul> 
+      <ul class = "right-links">
+       <li><a href="./projects.html">PROJECTS</a></li>
+       <li><a href="../images/ChiokWeiWenGabriel_Resume.pdf">RESUME</a></li>
+      </ul> 
     </div>
+    
 
     <div class = "section even-section">
       <div class = "top-container">
@@ -33,7 +34,6 @@
     </div>
 
     </div>
-  </div>
 
     <div class = "section">
       <div class = "section-header">PROJECTS</div>
@@ -41,17 +41,13 @@
       <div class = "project-container">
         <a href="./projects/skew.html" style="text-decoration: none;">
           <div class = "project">
-            <!-- <video autoplay loop muted playsinline>
-              <source src="../images/Skew.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-            </video> -->
             <img src="../images/Skew.png" alt="Project Image" class = "project-image">
             <div class = "project-title"> Skew (2024)</div>
             <div class = "project-role"> Producer & Gameplay Programmer</div>
             <div class = project-icon-container>
-              <img src="../images/team.png"class="project-icon"></img>     
+              <img src="../images/team.svg"class="project-icon"></img>     
               <div class = project-icon-text> 16</div>
-              <img src="../images/clock.png"  class="project-icon"></img>
+              <img src="../images/clock.svg"  class="project-icon"></img>
               <div class = project-icon-text> 8 months</div>
               <div class = "project-engine-tag"> Custom</div>
               <div class = "project-language-tag"> C#</div> 
@@ -63,16 +59,17 @@
         </a>
         <a href="./projects/haru.html" style="text-decoration: none;">
           <div class = "project">
-            <video autoplay loop muted playsinline>
-              <source src="../images/Haru.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
+            <div class="video-container" data-video="../images/Haru.mp4">
+              <img src="../images/Haru.jfif" class="project-thumbnail">
+              <video class="project-video" loop muted playsinline></video>
+          </div>
+
             <div class = "project-title project-title-long">Haru - A Tale of Rememberance (2023)</div>
             <div class = "project-role"> Gameplay Programmer</div>
             <div class = project-icon-container>
-              <img src="../images/team.png"class="project-icon"></img>     
+              <img src="../images/team.svg"class="project-icon"></img>     
               <div class = project-icon-text> 8</div>
-              <img src="../images/clock.png"  class="project-icon"></img>
+              <img src="../images/clock.svg"  class="project-icon"></img>
               <div class = project-icon-text> 8 months</div>
               <div class = "project-engine-tag"> Custom</div>
               <div class = "project-language-tag"> C#</div> 
@@ -84,16 +81,16 @@
         </a>
         <a href="./projects/bofa.html" style="text-decoration: none;">
           <div class = "project">
-            <video autoplay loop muted playsinline>
-              <source src="../images/BOFA.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
+            <div class="video-container" data-video="../images/BOFA.mp4">
+              <img src="../images/BOFA.jfif" class="project-thumbnail">
+              <video class="project-video" loop muted playsinline></video>
+          </div>
             <div class = "project-title">Blast Off Far Away (2022)</div>
             <div class = "project-role"> Gameplay Programmer</div>
             <div class = project-icon-container>
-              <img src="../images/team.png"class="project-icon"></img>     
+              <img src="../images/team.svg"class="project-icon"></img>     
               <div class = project-icon-text> 4</div>
-              <img src="../images/clock.png"  class="project-icon"></img>
+              <img src="../images/clock.svg"  class="project-icon"></img>
               <div class = project-icon-text> 3 months</div>
               <div class = "project-engine-tag"> Custom</div>
               <div class = "project-language-tag"> C++</div>            
@@ -104,16 +101,16 @@
         </a>
         <a href="./projects/ghost_gone_wrong.html"  style="text-decoration: none;">
           <div class = "project">
-            <video autoplay loop muted playsinline>
-              <source src="../images/GhostGoneWrong.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
+            <div class="video-container" data-video="../images/GhostGoneWrong.mp4">
+              <img src="../images/GhostGoneWrong.jfif" class="project-thumbnail">
+              <video class="project-video" loop muted playsinline></video>
+          </div>
             <div class = "project-title">Ghost Gone Wrong (2021)</div>
             <div class = "project-role"> Animator System Programmer & Artist</div>
             <div class = project-icon-container>
-              <img src="../images/team.png"class="project-icon"></img>     
+              <img src="../images/team.svg"class="project-icon"></img>     
               <div class = project-icon-text> 5</div>
-              <img src="../images/clock.png"  class="project-icon"></img>
+              <img src="../images/clock.svg"  class="project-icon"></img>
               <div class = project-icon-text> 6 weeks</div>
               <div class = "project-engine-tag"> Custom</div>
               <div class = "project-language-tag"> C</div>            
@@ -122,27 +119,29 @@
               also created the animation system that the art assets would use. </div>
           </div>
         </a>
+
         <a href="./projects/waterslidevr.html"  style="text-decoration: none;">
           <div class = "project">
-            <video autoplay loop muted playsinline>
-              <source src="../images/WaterslideVR.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
+            <div class="video-container" data-video="../images/GhostGoneWrong.mp4">
+              <img src="../images/WaterslideVR.PNG" class="project-thumbnail">
+              <video class="project-video" loop muted playsinline></video>
+          </div>
             <div class = "project-title">Waterslide VR (2018)</div>
             <div class = "project-role"> Project Lead & Gameplay Programmer</div>
             <div class = project-icon-container>
-              <img src="../images/team.png"class="project-icon"></img>     
+              <img src="../images/team.svg"class="project-icon"></img>     
               <div class = project-icon-text> 5</div>
-              <img src="../images/clock.png"  class="project-icon"></img>
+              <img src="../images/clock.svg"  class="project-icon"></img>
               <div class = project-icon-text> 3 months</div>
               <div class = "project-engine-tag"> Unity</div>
-              <div class = "project-language-tag"> C#</div>            
+              <div class = "project-language-tag"> C#</div>           
             </div>
             <div class = "project-description">Waterslide VR is a simulation game made in collaboration with Wild Wild Wet.
-               I also helped to create the slide simulation and various slide games.
-            </div>
+              I also helped to create the slide simulation and various slide games. </div>
           </div>
         </a>
+
+      
       </div>
       <a href="./projects.html"  style="text-decoration: none;">
         <button class="see-other-projects-button">See Other Projects</button>
@@ -174,7 +173,7 @@
     </div>
 
     <div class = "section">
-      <div class = "section-header">Education</div>
+      <div class = "section-header">EDUCATION</div>
       <div class = "education-container">
       <div class = "education-box">
         <div class = "education-header"> Digipen Institute of Technology Singapore (2021 - 2025)</div>
@@ -190,12 +189,12 @@
     <div class = "section even-section">
       <div class = about-me-container>
         <div class = about-me-text>
-          Hello there! I'm Gabriel, a Singapore based Gameplay Programmer. I have been making games since 2016 and have participated in many
+          Hello there! I'm Gabriel, a Singapore based <b>Gameplay Programmer</b>. I have been making games since 2016 and have participated in many
            different game projects, in both individual and team settings. I would describe myself as a hardworking and dedicated individual who is always looking to improve and 
            learn new things. 
            <br>
-           <br>Once I am finished my degree, I plan to continue my career in the game industry and am open to new opportunities.
-           If you want to know more about me, feel free to check out my resume or projects.
+           <br>I am currently seeking a junior role as a gameplay programmer in the game industry. However, I am open to 
+           new opportunities. If you would like to know more about me, feel free to contact me through the links below.
         </div>
         <div class = achievement-container>
           <div class = "achievement"> 
@@ -229,19 +228,21 @@
     </div>
 
 
-  <div class = "section last-section">
-    <div class = "section-header">CONTACT</div>
-    <div class = "contact-container">
-      <a href="https://www.linkedin.com/in/gabriel-chiok-418538152" class="icon-link">
-        <i class="icon-link fa-brands fa-linkedin"></i> </a>
-      <a href="mailto:gabrielchiok@hotmail.com" class="icon-link">
-        <i class="icon-link fa-solid fa-envelope"></i> </a>
-        <a href="https://github.com/gcwwgithub" class="icon-link">
-          <i class="icon-link fa-brands fa-github"></i> </a>
+    <div class="section last-section">
+      <div class="contact-header">CONTACT</div>
+      <div class="contact-container">
+          <a href="https://www.linkedin.com/in/gabriel-chiok-418538152" class="icon-link">
+              <i class="icon-link fa-brands fa-linkedin"></i>
+          </a>
+          <a href="mailto:gabrielchiok@hotmail.com" class="icon-link">
+              <i class="icon-link fa-solid fa-envelope"></i>
+          </a>
+          <a href="https://github.com/gcwwgithub" class="icon-link">
+              <i class="icon-link fa-brands fa-github"></i>
+          </a>
+      </div>
+      <div class="copyright">Copyright © 2025 Gabriel Chiok</div>
     </div>
-    <div class = "copyright">Copyright © 2025 Gabriel Chiok</div>
-  </div>
-
     
   <script src = "landing_page.js"></script>
   </body>

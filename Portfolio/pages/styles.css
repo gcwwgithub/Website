@@ -54,7 +54,7 @@
     flex-direction: column;
     background-color: rgb(230, 230, 230);
     transition: color 0.3s ease, transform 0.3s ease; /* Optional hover effect */
-    min-height: 100%;
+    min-height: 100%; /*Ensures that all cards are the same height */
   }
 
   .project-reduced{
@@ -140,11 +140,32 @@
     height: auto;
   }
 
-
-  .video {
-    max-width: 100%;
-    height: auto;
+  .video-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9; /* Maintains aspect ratio to prevent collapse */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+
+/* Ensure image and video fully overlap */
+.project-thumbnail, .project-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Makes sure they fill the container */
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-container:hover .project-video {
+  opacity: 1; /* Show video on hover */
+}
+
 
   .see-other-projects-button{
     font-size: 24px;
@@ -207,7 +228,8 @@
     justify-content: left;
     max-width: 600px;
     margin-bottom: 50px;
-    background-color: lavender;
+    background-color: white;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
   }
 
   .education-header{

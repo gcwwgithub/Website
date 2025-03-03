@@ -7,43 +7,37 @@
   justify-content: center; /* Center content vertically */
   max-width: 1400px;
 }
+.project-video{
+  margin-bottom: 50px;
+}
 
 .about-box{
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   margin-bottom: 50px;
-  background-color: lavender;
+  background-color: white;
   width: 75%;
   padding: 24px;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
 }
 
-.description-box{
+
+.project-icon-row{
   display: flex;
   flex-wrap: wrap;
-  flex-direction: column;
-  margin-bottom: 50px;
-  background-color: lavender;
-  width: 75%;
-  padding: 24px;
+  flex-direction: row;
+  justify-content: left;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
-.description-section{
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  margin-bottom: 50px;
-  background-color: lavender;
-  width: 75%;
-  padding: 24px;
-}
-
-.project-video{
-  width: 75%;
-  height: auto;
-  justify-content: center;
-  margin-bottom: 50px;
+.project-icon{
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  margin-bottom: 2px;
 }
 
 .project-image{
@@ -52,4 +46,76 @@
   justify-content: center;
   margin-bottom: 50px;
 }
+
+.project-title{
+  font-weight: bold;
+  font-size: 30px;
+  text-align: left;
+  margin-bottom: 25px;
+}
+
+.project-description{
+  font-size: 20px;
+  text-align: center;
+
+}
+
+
+.video-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9; /* Maintains aspect ratio to prevent collapse */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* Ensure image and video fully overlap */
+.project-thumbnail, .project-video {
+width: 100%;
+height: 100%;
+object-fit: cover; /* Makes sure they fill the container */
+position: absolute;
+top: 0;
+left: 0;
+transition: opacity 0.3s ease;
+}
+
+.video-container:hover .project-video {
+opacity: 1; /* Show video on hover */
+}
+
+
+.description-box{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  margin-bottom: 50px;
+  background-color: white;
+  width: 75%;
+  padding: 24px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
+}
+
+.description-section{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  margin-bottom: 50px;
+}
+
+.description-header{
+  font-weight: bold;
+  font-size: 30px;
+  text-align: left;
+  margin-bottom: 25px;
+}
+
+.description-text{
+  font-size: 20px;
+  text-align: left;
+}
+
   
