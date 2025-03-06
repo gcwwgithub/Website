@@ -147,6 +147,7 @@ opacity: 1; /* Show video on hover */
   width: 75%;
   padding: 24px;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
+  max-width: 1050px;
 }
 
 .description-section{
