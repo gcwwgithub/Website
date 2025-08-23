@@ -1,0 +1,456 @@
+// Column names (exact from your CSV)
+const COLS = {
+  zh: "Chinese Words",
+  pinyin: "pinyin",
+  en: "English Words",
+  qtype: "Question Type",
+  category: "Category",
+  zhUsage: "Chinese Usage in a Sentence",
+  enUsage: "English Usage in a sentence",
+  color: "Color",
+  zhHint: "Chinese Usage in a Sentence Hint"
+};
+
+// State
+let rows = [];
+let current = null;   // { row, type }
+let right = 0, wrong = 0;
+let lastAction = null; // { key, deltaChange: +1|-1, rightInc:0|1, wrongInc:0|1, rowRef 
+
+// ---- Progress persistence (localStorage) ----
+const STORAGE_KEY = 'quizProgressV1';
+let progress = {}; // { [rowKey]: { delta:number, correct:number, wrong:number } }
+
+function getRowKey(row) {
+  // reasonably unique per card
+  return `${row[COLS.zh]||''}||${row[COLS.pinyin]||''}||${row[COLS.en]||''}`;
+}
+
+function loadProgress() {
+  try { progress = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { progress = {}; }
+}
+
+function saveProgress() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+}
+
+
+function getEffectiveColor(row) {
+  const base = parseInt(row[COLS.color]);
+  if (isNaN(base)) return null;
+  const delta = (progress[getRowKey(row)]?.delta) || 0;
+  return base + delta; // can go above 10 or below 1; getColorShade clamps
+}
+
+// UI refs
+const el = id => document.getElementById(id);
+const questionEl = el("question");
+const answerEl = el("answer");
+const pinyinEl = el("pinyin");
+const quizTypeTag = el("quizTypeTag");
+const categoryEl = el("category");
+const colorChip = el("colorChip");
+const colorText = el("colorText");
+const rowIndex = el("rowIndex");
+const extrasArea = el("extrasArea");
+const statsEl = el("stats");
+
+const flipBtn = el("flipBtn");
+const nextBtn = el("nextBtn");
+const rightBtn = el("rightBtn");
+const wrongBtn = el("wrongBtn");
+
+const showEnglishUsageBtn = el("showEnglishUsage");
+const showChineseUsageBtn = el("showChineseUsage");
+const showHintBtn = el("showHint");
+
+// Helpers
+const rand = n => Math.floor(Math.random() * n);
+
+function normalizeCategory(catRaw) {
+  const s = String(catRaw || "").toLowerCase();
+  if (s.includes("both")) return ["english","chinese"];
+  if (s.includes("english")) return ["english"];
+  if (s.includes("sentence")) return ["sentence"]; // chinese sentence
+  if (s.includes("chinese")) return ["chinese"];
+  // Fallback to both main types
+  return ["english","chinese"];
+}
+
+function chooseTypeForRow(row) {
+  const allowed = normalizeCategory(row[COLS.category]);
+  return allowed[rand(allowed.length)];
+}
+
+function pickNewCard() {
+  if (!rows.length) {
+    questionEl.textContent = "No rows loaded. Load a CSV first.";
+    return;
+  }
+  const row = rows[rand(rows.length)];
+  const type = chooseTypeForRow(row);
+  current = { row, type };
+  renderCard();
+}
+
+function refreshCurrentColorUI() {
+  if (!current) return;
+  const eff = getEffectiveColor(current.row);
+  if (eff != null) {
+    colorText.textContent = eff;
+    colorChip.style.background = getColorShade(eff);
+  } else {
+    colorText.textContent = "—";
+    colorChip.style.background = "transparent";
+  }
+}
+
+function renderCard() {
+  if (!current) return;
+  const { row, type } = current;
+
+  // Reset areas
+  answerEl.style.display = "none";
+  answerEl.textContent = "";
+  extrasArea.innerHTML = "";
+  showEnglishUsageBtn.style.display = "none";
+  showChineseUsageBtn.style.display = "none";
+  showHintBtn.style.display = "none";
+
+showEnglishUsageBtn.disabled = false; showEnglishUsageBtn.textContent = "Show English Usage";
+showChineseUsageBtn.disabled = false; showChineseUsageBtn.textContent = "Show Chinese Usage";
+showHintBtn.disabled = false; showHintBtn.textContent = "Show Hint (Chinese Usage Hint)";
+
+  // Core labels
+  quizTypeTag.textContent = type === "english" ? "English quiz"
+                          : type === "chinese" ? "Chinese quiz"
+                          : "Chinese sentence quiz";
+  categoryEl.textContent = row[COLS.category] || "—";
+const eff = getEffectiveColor(row);
+if (eff != null) {
+  colorText.textContent = eff;
+  colorChip.style.background = getColorShade(eff);
+} else {
+  colorText.textContent = "—";
+  colorChip.style.background = "transparent";
+}
+  rowIndex.textContent = rows.indexOf(row) >= 0 ? `Row ${rows.indexOf(row)+1}/${rows.length}` : "—";
+
+  // Question & pinyin
+  pinyinEl.textContent = "";
+  if (type === "english") {
+    // Show Chinese term as question (translate to English)
+    questionEl.textContent = row[COLS.zh] || "—";
+    if (row[COLS.pinyin]) pinyinEl.textContent = row[COLS.pinyin];
+    // Pre-usage: none (buttons only AFTER reveal)
+    // Hint button available for English quiz
+    showHintBtn.style.display = row[COLS.zhHint] ? "inline-block" : "none";
+
+} else if (type === "chinese") {
+  // Show English term as question (translate to Chinese)
+  questionEl.textContent = row[COLS.en] || "—";
+
+  // Show English usage immediately (once)
+  if (row[COLS.enUsage]) {
+    const block = document.createElement("div");
+    block.id = "english-usage";
+    block.className = "usage-block";
+    block.innerHTML = `<strong>English Usage:</strong>\n${row[COLS.enUsage]}`;
+    extrasArea.appendChild(block);
+
+    // Hide/disable the English Usage button since it's already shown
+    showEnglishUsageBtn.style.display = "none";
+    showEnglishUsageBtn.disabled = true;
+  }
+
+  } else {
+    // "sentence" — ask to use word in a sentence
+    questionEl.textContent = (row[COLS.zh] || "—") + "  —  use this word in your own Chinese sentence.";
+    if (row[COLS.pinyin]) pinyinEl.textContent = row[COLS.pinyin];
+  }
+
+  // Hidden answer
+  if (type === "english") {
+    answerEl.textContent = row[COLS.en] || "—";
+  } else if (type === "chinese") {
+    answerEl.textContent = row[COLS.zh] || "—";
+  } else {
+    const zh = row[COLS.zh] || "—";
+    const en = row[COLS.en] || "—";
+    const pin = row[COLS.pinyin] ? ` (${row[COLS.pinyin]})` : "";
+    answerEl.textContent = `Target word: ${zh}${pin}\nMeaning: ${en}`;
+  }
+}
+
+function reveal() {
+  if (!current) return;
+  answerEl.style.display = "block";
+
+  // After reveal: show BOTH usage buttons for English/Chinese quizzes.
+if (current.type === "english") {
+  if (current.row[COLS.enUsage]) showEnglishUsageBtn.style.display = "inline-block";
+  if (current.row[COLS.zhUsage]) showChineseUsageBtn.style.display = "inline-block";
+} else if (current.type === "chinese") {
+  // English usage already shown in renderCard(); only offer Chinese usage
+  if (current.row[COLS.zhUsage]) showChineseUsageBtn.style.display = "inline-block";
+}
+}
+
+function showEnglishUsage() {
+  if (!current) return;
+  if (document.getElementById("english-usage")) return; // already appended
+
+  const txt = current.row[COLS.enUsage];
+  if (!txt) return;
+
+  const block = document.createElement("div");
+  block.id = "english-usage";                // marker to prevent duplicates
+  block.className = "usage-block";
+  block.innerHTML = `<strong>English Usage:</strong>\n${txt}`;
+  extrasArea.appendChild(block);
+
+  showEnglishUsageBtn.disabled = true;
+  showEnglishUsageBtn.textContent = "English Usage Shown";
+}
+
+function updateStats() {
+  statsEl.textContent = `${right} right · ${wrong} wrong`;
+}
+
+function showChineseUsage() {
+  if (!current) return;
+  if (document.getElementById("chinese-usage")) return; // already appended
+
+  const txt = current.row[COLS.zhUsage];
+  if (!txt) return;
+
+  const block = document.createElement("div");
+  block.id = "chinese-usage";               // marker to prevent duplicates
+  block.className = "usage-block";
+  block.innerHTML = `<strong>Chinese Usage:</strong>\n${txt}`;
+  extrasArea.appendChild(block);
+
+  showChineseUsageBtn.disabled = true;
+  showChineseUsageBtn.textContent = "Chinese Usage Shown";
+}
+
+
+function showHint() {
+  if (!current) return;
+  if (document.getElementById("hint-block")) return; // already appended
+
+  const txt = current.row[COLS.zhHint];
+  if (!txt) return;
+
+  const block = document.createElement("div");
+  block.id = "hint-block";                  // marker to prevent duplicates
+  block.className = "hint-block";
+  block.innerHTML = `<strong>Hint:</strong>\n${txt}`;
+  extrasArea.appendChild(block);
+
+  showHintBtn.disabled = true;
+  showHintBtn.textContent = "Hint Shown";
+}
+
+
+// Wire buttons
+document.addEventListener("DOMContentLoaded", () => {
+  loadProgress();
+  el("downloadProgress").addEventListener("click", downloadProgressCsv);
+  el("flipBtn").addEventListener("click", reveal);
+  el("nextBtn").addEventListener("click", pickNewCard);
+
+el("rightBtn").addEventListener("click", () => {
+  if (!current) return;
+  const key = getRowKey(current.row);
+  const entry = progress[key] || { delta: 0, correct: 0, wrong: 0 };
+
+  // apply
+  entry.delta = (entry.delta || 0) - 1;
+  entry.correct = (entry.correct || 0) + 1;
+  progress[key] = entry; saveProgress();
+
+  // record for undo
+  lastAction = { key, deltaChange: -1, rightInc: 1, wrongInc: 0, rowRef: current.row };
+
+  // ui updates
+  right++; updateStats();
+  refreshCurrentColorUI();
+
+  // next
+  setTimeout(pickNewCard, 120);
+});
+
+el("wrongBtn").addEventListener("click", () => {
+  if (!current) return;
+  const key = getRowKey(current.row);
+  const entry = progress[key] || { delta: 0, correct: 0, wrong: 0 };
+
+  // apply
+  entry.delta = (entry.delta || 0) + 1;
+  entry.wrong = (entry.wrong || 0) + 1;
+  progress[key] = entry; saveProgress();
+
+  // record for undo
+  lastAction = { key, deltaChange: +1, rightInc: 0, wrongInc: 1, rowRef: current.row };
+
+  // ui updates
+  wrong++; updateStats();
+  refreshCurrentColorUI();
+
+  // next
+  setTimeout(pickNewCard, 120);
+});
+
+el("undoBtn").addEventListener("click", () => {
+  if (!lastAction) return;
+
+  // revert progress
+  const entry = progress[lastAction.key] || { delta: 0, correct: 0, wrong: 0 };
+  entry.delta = (entry.delta || 0) - lastAction.deltaChange;           // reverse delta
+  entry.correct = (entry.correct || 0) - (lastAction.rightInc || 0);   // reverse counts
+  entry.wrong   = (entry.wrong   || 0) - (lastAction.wrongInc || 0);
+  progress[lastAction.key] = entry; saveProgress();
+
+  // revert global stats
+  right -= (lastAction.rightInc || 0);
+  wrong -= (lastAction.wrongInc || 0);
+  if (right < 0) right = 0;
+  if (wrong < 0) wrong = 0;
+  updateStats();
+
+  // If the current card is the same as the undone one, refresh its color UI
+  if (current && getRowKey(current.row) === lastAction.key) {
+    refreshCurrentColorUI();
+  }
+
+  // Clear last action (single‑level undo)
+  lastAction = null;
+});
+
+  el("showEnglishUsage").addEventListener("click", showEnglishUsage);
+  el("showChineseUsage").addEventListener("click", showChineseUsage);
+  el("showHint").addEventListener("click", showHint);
+
+  // 1) Local file picker
+  el("csvFile").addEventListener("change", (e) => {
+    const file = e.target.files?.[0];
+    if (file) parseCSVFile(file);
+  });
+
+  // 2) Default fetch from same repo path
+  el("loadDefault").addEventListener("click", async () => {
+    try {
+      const resp = await fetch("sheet.csv", { cache: "no-store" });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const text = await resp.text();
+      Papa.parse(text, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (res) => {
+          rows = res.data.filter(r => r && (r[COLS.zh] || r[COLS.en]));
+          right = wrong = 0; updateStats();
+          pickNewCard();
+        },
+        error: (err) => alert("CSV parse error: " + err.message)
+      });
+    } catch (e) {
+      alert("Could not load CSV from repo path. Error: " + e.message);
+    }
+  });
+});
+
+// CSV parsing for local file
+function parseCSVFile(file) {
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: (res) => {
+            rows = res.data.filter(r => {
+        if (!r) return false;
+        // Trim whitespace and remove rows where any required field is empty
+        return r[COLS.zh]?.trim() &&
+                r[COLS.en]?.trim() &&
+                r[COLS.category]?.trim();
+        });
+      right = wrong = 0; updateStats();
+      pickNewCard();
+    },
+    error: (err) => {
+      alert("CSV parse error: " + err.message);
+    }
+  });
+}
+
+function getColorShade(val) {
+  // Clamp value between 1 and 10
+  const v = Math.max(1, Math.min(val, 10));
+  // Map 1 → 0 (bright), 10 → 1 (dark)
+  const t = (v - 1) / 9;
+  // Interpolate from bright yellow-green to dark red/grey
+  const r = Math.round(255 * t + 100 * (1 - t));  // red grows
+  const g = Math.round(255 * (1 - t));            // green decreases
+  const b = Math.round(80 + 50 * t);              // blue stays low
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function csvEscape(s) {
+  const v = String(s ?? '');
+  return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+}
+
+function buildProgressCsv() {
+  // Exact original column order
+  const header = [
+    COLS.zh,
+    COLS.pinyin,
+    COLS.en,
+    COLS.qtype,
+    COLS.category,
+    COLS.zhUsage,
+    COLS.enUsage,
+    COLS.color,
+    COLS.zhHint
+  ];
+
+  const lines = [header.map(csvEscape).join(",")];
+
+  for (const row of rows) {
+    const key = getRowKey(row);
+    const baseColor = parseInt(row[COLS.color]);
+    const delta = (progress[key]?.delta) || 0;
+    const eff = isNaN(baseColor) ? "" : (baseColor + delta);
+
+    // Write original values, except Color which uses effective value
+    const record = [
+      row[COLS.zh] || "",
+      row[COLS.pinyin] || "",
+      row[COLS.en] || "",
+      row[COLS.qtype] || "",
+      row[COLS.category] || "",
+      row[COLS.zhUsage] || "",
+      row[COLS.enUsage] || "",
+      eff === "" ? "" : String(eff),
+      row[COLS.zhHint] || ""
+    ];
+
+    lines.push(record.map(csvEscape).join(","));
+  }
+
+  return lines.join("\r\n"); // Windows-friendly newlines
+}
+
+function downloadProgressCsv() {
+  const csv = buildProgressCsv();
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const ts = new Date().toISOString().replace(/[:.]/g, "-");
+  a.href = url;
+  a.download = `quiz-progress-${ts}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(url);
+  a.remove();
+}

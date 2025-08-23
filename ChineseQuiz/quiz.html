@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Chinese Flashcard Quiz</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="quiz.css" />
+  <!-- PapaParse for CSV parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
+  <script src="quiz.js" defer></script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bar">
+      <button class="btn" id="loadDefault">Load CSV in repo (Chinese - Sheet1.csv)</button>
+      <input type="file" id="csvFile" accept=".csv" />
+      <button class="btn" id="nextBtn" title="Skip to a new card">Next</button>
+      <span class="pill" id="stats">0 right · 0 wrong</span>
+      <button class="btn" id="downloadProgress">Download Progress (CSV)</button>
+      <button class="btn" id="undoBtn" title="Undo last mark">Undo</button>
+    </div>
+
+<div class="info-bar">
+  <div class="info-item">
+    <span class="label">Type</span>
+    <span id="quizTypeTag" class="value">—</span>
+  </div>
+  <div class="info-item">
+    <span class="label">Category</span>
+    <span id="category" class="value">—</span>
+  </div>
+  <div class="info-item">
+    <span class="label">Color</span>
+    <span class="color-chip" id="colorChip"></span>
+    <span id="colorText" class="value">—</span>
+  </div>
+  <div class="info-item">
+    <span class="label">Row</span>
+    <span id="rowIndex" class="value">—</span>
+  </div>
+</div>
+
+      <h2>Question</h2>
+      <div class="question" id="question">Load a CSV to start</div>
+      <div class="pinyin" id="pinyin"></div>
+
+      <div class="row" style="margin-top:14px">
+        <button class="btn primary" id="flipBtn">Flip / Reveal Answer</button>
+        <button class="btn ok" id="rightBtn" title="Mark as correct">Right</button>
+        <button class="btn bad" id="wrongBtn" title="Mark as incorrect">Wrong</button>
+      </div>
+
+      <div class="answer" id="answer"></div>
+
+      <div class="row spacey" style="margin-top:12px">
+        <button class="btn" id="showEnglishUsage" style="display:none">Show English Usage</button>
+        <button class="btn" id="showChineseUsage" style="display:none">Show Chinese Usage</button>
+        <button class="btn" id="showHint" style="display:none">Show Hint (Chinese Usage Hint)</button>
+      </div>
+
+      <div style="margin-top:10px" id="extrasArea"></div>
+    </div>
+  </div>
+    <footer class="footer">
+    Made with ChatGPT&nbsp;5
+  </footer>
+</body>
+</html>
