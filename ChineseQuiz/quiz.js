@@ -117,6 +117,8 @@ function renderCard() {
   showEnglishUsageBtn.style.display = "none";
   showChineseUsageBtn.style.display = "none";
   showHintBtn.style.display = "none";
+  rightBtn.style.display = "none";
+wrongBtn.style.display = "none";
 
 showEnglishUsageBtn.disabled = false; showEnglishUsageBtn.textContent = "Show English Usage";
 showChineseUsageBtn.disabled = false; showChineseUsageBtn.textContent = "Show Chinese Usage";
@@ -139,13 +141,13 @@ if (eff != null) {
 
   // Question & pinyin
   pinyinEl.textContent = "";
-  if (type === "english") {
-    // Show Chinese term as question (translate to English)
-    questionEl.textContent = row[COLS.zh] || "—";
-    if (row[COLS.pinyin]) pinyinEl.textContent = row[COLS.pinyin];
-    // Pre-usage: none (buttons only AFTER reveal)
-    // Hint button available for English quiz
-    showHintBtn.style.display = row[COLS.zhHint] ? "inline-block" : "none";
+if (type === "english") {
+  // Show Chinese term as question (translate to English)
+  questionEl.textContent = row[COLS.zh] || "—";
+  if (row[COLS.pinyin]) pinyinEl.textContent = row[COLS.pinyin];
+  // Pre-usage: none (buttons only AFTER reveal)
+// Hint button available for English quiz too
+showHintBtn.style.display = row[COLS.zhHint] ? "inline-block" : "none";
 
 } else if (type === "chinese") {
   // Show English term as question (translate to Chinese)
@@ -159,10 +161,13 @@ if (eff != null) {
     block.innerHTML = `<strong>English Usage:</strong>\n${row[COLS.enUsage]}`;
     extrasArea.appendChild(block);
 
-    // Hide/disable the English Usage button since it's already shown
     showEnglishUsageBtn.style.display = "none";
     showEnglishUsageBtn.disabled = true;
   }
+
+  // Hint button available for Chinese quiz
+  showHintBtn.style.display = row[COLS.zhHint] ? "inline-block" : "none";
+
 
   } else {
     // "sentence" — ask to use word in a sentence
@@ -186,6 +191,14 @@ if (eff != null) {
 function reveal() {
   if (!current) return;
   answerEl.style.display = "block";
+  rightBtn.style.display = "inline-block";
+wrongBtn.style.display = "inline-block";
+
+// Hide hint and remove any existing hint text once the answer is revealed
+showHintBtn.style.display = "none";
+const hint = document.getElementById("hint-block");
+if (hint) hint.remove();
+
 
   // After reveal: show BOTH usage buttons for English/Chinese quizzes.
 if (current.type === "english") {
