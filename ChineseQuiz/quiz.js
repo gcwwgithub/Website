@@ -16,6 +16,8 @@ let rows = [];
 let current = null;   // { row, type }
 let right = 0, wrong = 0;
 let lastAction = null; // { key, deltaChange: +1|-1, rightInc:0|1, wrongInc:0|1, rowRef 
+let allRows = [];     // full filtered dataset
+let rowLimit = null;  // numeric limit from the input
 
 // ---- Progress persistence (localStorage) ----
 const STORAGE_KEY = 'quizProgressV1';
@@ -65,6 +67,7 @@ const showEnglishUsageBtn = el("showEnglishUsage");
 const showChineseUsageBtn = el("showChineseUsage");
 const showHintBtn = el("showHint");
 
+
 // Helpers
 const rand = n => Math.floor(Math.random() * n);
 
@@ -81,6 +84,13 @@ function normalizeCategory(catRaw) {
 function chooseTypeForRow(row) {
   const allowed = normalizeCategory(row[COLS.category]);
   return allowed[rand(allowed.length)];
+}
+
+function applyRowLimit() {
+  const n = rowLimit && rowLimit > 0 ? Math.min(rowLimit, allRows.length) : allRows.length;
+  rows = allRows.slice(0, n);
+  right = 0; wrong = 0; updateStats();
+  pickNewCard();
 }
 
 function pickNewCard() {
@@ -119,6 +129,7 @@ function renderCard() {
   showHintBtn.style.display = "none";
   rightBtn.style.display = "none";
 wrongBtn.style.display = "none";
+
 
 showEnglishUsageBtn.disabled = false; showEnglishUsageBtn.textContent = "Show English Usage";
 showChineseUsageBtn.disabled = false; showChineseUsageBtn.textContent = "Show Chinese Usage";
@@ -295,6 +306,15 @@ el("rightBtn").addEventListener("click", () => {
   setTimeout(pickNewCard, 120);
 });
 
+const rowLimitInput = el("rowLimit");
+if (rowLimitInput) {
+  rowLimitInput.addEventListener("input", () => {
+    const v = parseInt(rowLimitInput.value, 10);
+    rowLimit = Number.isFinite(v) && v > 0 ? v : null;
+    if (allRows.length) applyRowLimit();
+  });
+}
+
 el("wrongBtn").addEventListener("click", () => {
   if (!current) return;
   const key = getRowKey(current.row);
@@ -362,9 +382,8 @@ el("undoBtn").addEventListener("click", () => {
         header: true,
         skipEmptyLines: true,
         complete: (res) => {
-          rows = res.data.filter(r => r && (r[COLS.zh] || r[COLS.en]));
-          right = wrong = 0; updateStats();
-          pickNewCard();
+          allRows = res.data.filter(r => r && (r[COLS.zh] || r[COLS.en]));
+          applyRowLimit();
         },
         error: (err) => alert("CSV parse error: " + err.message)
       });
@@ -380,15 +399,11 @@ function parseCSVFile(file) {
     header: true,
     skipEmptyLines: true,
     complete: (res) => {
-            rows = res.data.filter(r => {
-        if (!r) return false;
-        // Trim whitespace and remove rows where any required field is empty
-        return r[COLS.zh]?.trim() &&
-                r[COLS.en]?.trim() &&
-                r[COLS.category]?.trim();
-        });
-      right = wrong = 0; updateStats();
-      pickNewCard();
+       allRows = res.data.filter(r => {
+  if (!r) return false;
+  return r[COLS.zh]?.trim() && r[COLS.en]?.trim() && r[COLS.category]?.trim();
+});
+applyRowLimit();
     },
     error: (err) => {
       alert("CSV parse error: " + err.message);
