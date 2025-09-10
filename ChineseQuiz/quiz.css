@@ -64,3 +64,5 @@ h2{font-size:18px;margin:0 0 10px;color:var(--muted)}
   font-weight: 600;
   color: var(--text);
 }
+
+.btn.speak { background: #444; }

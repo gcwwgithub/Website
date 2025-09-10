@@ -68,7 +68,7 @@ const wrongBtn = el("wrongBtn");
 const showEnglishUsageBtn = el("showEnglishUsage");
 const showChineseUsageBtn = el("showChineseUsage");
 const showHintBtn = el("showHint");
-
+const speakBtn = el("speakBtn");
 
 // Helpers
 const rand = n => Math.floor(Math.random() * n);
@@ -146,7 +146,7 @@ pinyinEl.textContent = "";
 pinyinEl.style.display = "none";
 pinyinAnswerEl.textContent = "";
 pinyinAnswerEl.style.display = "none";
-
+speakBtn.style.display = "none";
 
 showEnglishUsageBtn.disabled = false; showEnglishUsageBtn.textContent = "Show English Usage";
 showChineseUsageBtn.disabled = false; showChineseUsageBtn.textContent = "Show Chinese Usage";
@@ -222,27 +222,36 @@ function reveal() {
   answerEl.style.display = "block";
   rightBtn.style.display = "inline-block";
   wrongBtn.style.display = "inline-block";
-
-  // If this is a Chinese quiz (question was English), show pinyin now
-if (current.type === "chinese" && current.row[COLS.pinyin]) {
-  // Make sure question-side pinyin stays hidden
-  pinyinEl.style.display = "none";
-  // Show pinyin right under the revealed Chinese answer
-  pinyinAnswerEl.textContent = current.row[COLS.pinyin];
-  pinyinAnswerEl.style.display = "block";
-}
-
+  
   // Hide hint and remove any existing hint text once the answer is revealed
   showHintBtn.style.display = "none";
   const hint = document.getElementById("hint-block");
   if (hint) hint.remove();
 
-  // After reveal: show usage buttons...
+ if (current.type === "chinese") {
+    if (pinyinEl) {
+      pinyinEl.textContent = "";
+      pinyinEl.style.display = "none";
+    }
+    if (typeof pinyinAnswerEl !== "undefined" && pinyinAnswerEl && current.row[COLS.pinyin]) {
+      pinyinAnswerEl.textContent = current.row[COLS.pinyin];
+      pinyinAnswerEl.style.display = "block";
+    }
+  }
+
+  // After reveal: show usage buttons as before
   if (current.type === "english") {
     if (current.row[COLS.enUsage]) showEnglishUsageBtn.style.display = "inline-block";
     if (current.row[COLS.zhUsage]) showChineseUsageBtn.style.display = "inline-block";
   } else if (current.type === "chinese") {
     if (current.row[COLS.zhUsage]) showChineseUsageBtn.style.display = "inline-block";
+  }
+
+  // Voice: show Speak button when there's Chinese to read
+  if (typeof speakBtn !== "undefined" && speakBtn) {
+    const hasChinese = !!(current.row && current.row[COLS.zh] && String(current.row[COLS.zh]).trim());
+    speakBtn.style.display = hasChinese ? "inline-block" : "none";
+    speakBtn.disabled = !hasChinese;
   }
 }
 
@@ -279,6 +288,16 @@ function showChineseUsage() {
   block.id = "chinese-usage";               // marker to prevent duplicates
   block.className = "usage-block";
   block.innerHTML = `<strong>Chinese Usage:</strong>\n${txt}`;
+
+  // 🔊 Add a play button for the sentence
+  const playBtn = document.createElement("button");
+  playBtn.className = "btn";
+  playBtn.style.marginTop = "8px";
+  playBtn.textContent = "🔊 Play sentence";
+  playBtn.addEventListener("click", () => speakChinese(txt));
+  block.appendChild(document.createElement("br"));
+  block.appendChild(playBtn);
+
   extrasArea.appendChild(block);
 
   showChineseUsageBtn.disabled = true;
@@ -407,6 +426,15 @@ el("undoBtn").addEventListener("click", () => {
     if (file) parseCSVFile(file);
   });
 
+  speakBtn.addEventListener("click", () => {
+  if (!current) return;
+  if (current.type === "english" || current.type === "sentence") {
+    speakChinese(current.row[COLS.zh]);
+  } else if (current.type === "chinese") {
+    speakChinese(current.row[COLS.zh]);
+  }
+});
+
   // 2) Default fetch from same repo path
   el("loadDefault").addEventListener("click", async () => {
     try {
@@ -426,6 +454,7 @@ el("undoBtn").addEventListener("click", () => {
       alert("Could not load CSV from repo path. Error: " + e.message);
     }
   });
+  
 });
 
 // CSV parsing for local file
@@ -530,4 +559,13 @@ function parseRowRanges(str) {
     }
     return null;
   }).filter(Boolean);
+}
+
+function speakChinese(text) {
+  if (!text) return;
+  // stop anything already speaking
+  try { speechSynthesis.cancel(); } catch {}
+  const u = new SpeechSynthesisUtterance(String(text));
+  u.lang = "zh-CN"; // Mandarin
+  speechSynthesis.speak(u);
 }
