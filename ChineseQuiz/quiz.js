@@ -18,6 +18,7 @@ let right = 0, wrong = 0;
 let lastAction = null; // { key, deltaChange: +1|-1, rightInc:0|1, wrongInc:0|1, rowRef 
 let allRows = [];     // full filtered dataset
 let rowLimit = null;  // numeric limit from the input
+let rowRanges = null; // array of [start,end] ranges (1-based indexing)
 
 // ---- Progress persistence (localStorage) ----
 const STORAGE_KEY = 'quizProgressV1';
@@ -57,6 +58,7 @@ const colorText = el("colorText");
 const rowIndex = el("rowIndex");
 const extrasArea = el("extrasArea");
 const statsEl = el("stats");
+const pinyinAnswerEl = document.getElementById("pinyinAnswer");
 
 const flipBtn = el("flipBtn");
 const nextBtn = el("nextBtn");
@@ -87,8 +89,19 @@ function chooseTypeForRow(row) {
 }
 
 function applyRowLimit() {
-  const n = rowLimit && rowLimit > 0 ? Math.min(rowLimit, allRows.length) : allRows.length;
-  rows = allRows.slice(0, n);
+  if (rowRanges && rowRanges.length) {
+    rows = [];
+    for (const [start, end] of rowRanges) {
+      // CSV rows are zero-based, but user input is 1-based
+      const s = Math.max(0, start - 1);
+      const e = Math.min(allRows.length - 1, end - 1);
+      rows.push(...allRows.slice(s, e + 1));
+    }
+  } else {
+    const n = rowLimit && rowLimit > 0 ? Math.min(rowLimit, allRows.length) : allRows.length;
+    rows = allRows.slice(0, n);
+  }
+
   right = 0; wrong = 0; updateStats();
   pickNewCard();
 }
@@ -129,6 +142,10 @@ function renderCard() {
   showHintBtn.style.display = "none";
   rightBtn.style.display = "none";
 wrongBtn.style.display = "none";
+pinyinEl.textContent = "";
+pinyinEl.style.display = "none";
+pinyinAnswerEl.textContent = "";
+pinyinAnswerEl.style.display = "none";
 
 
 showEnglishUsageBtn.disabled = false; showEnglishUsageBtn.textContent = "Show English Usage";
@@ -153,11 +170,12 @@ if (eff != null) {
   // Question & pinyin
   pinyinEl.textContent = "";
 if (type === "english") {
-  // Show Chinese term as question (translate to English)
   questionEl.textContent = row[COLS.zh] || "—";
-  if (row[COLS.pinyin]) pinyinEl.textContent = row[COLS.pinyin];
-  // Pre-usage: none (buttons only AFTER reveal)
-// Hint button available for English quiz too
+  if (row[COLS.pinyin]) {
+    pinyinEl.textContent = row[COLS.pinyin];
+    pinyinEl.style.display = "block";
+  }
+
 showHintBtn.style.display = row[COLS.zhHint] ? "inline-block" : "none";
 
 } else if (type === "chinese") {
@@ -203,23 +221,31 @@ function reveal() {
   if (!current) return;
   answerEl.style.display = "block";
   rightBtn.style.display = "inline-block";
-wrongBtn.style.display = "inline-block";
+  wrongBtn.style.display = "inline-block";
 
-// Hide hint and remove any existing hint text once the answer is revealed
-showHintBtn.style.display = "none";
-const hint = document.getElementById("hint-block");
-if (hint) hint.remove();
-
-
-  // After reveal: show BOTH usage buttons for English/Chinese quizzes.
-if (current.type === "english") {
-  if (current.row[COLS.enUsage]) showEnglishUsageBtn.style.display = "inline-block";
-  if (current.row[COLS.zhUsage]) showChineseUsageBtn.style.display = "inline-block";
-} else if (current.type === "chinese") {
-  // English usage already shown in renderCard(); only offer Chinese usage
-  if (current.row[COLS.zhUsage]) showChineseUsageBtn.style.display = "inline-block";
+  // If this is a Chinese quiz (question was English), show pinyin now
+if (current.type === "chinese" && current.row[COLS.pinyin]) {
+  // Make sure question-side pinyin stays hidden
+  pinyinEl.style.display = "none";
+  // Show pinyin right under the revealed Chinese answer
+  pinyinAnswerEl.textContent = current.row[COLS.pinyin];
+  pinyinAnswerEl.style.display = "block";
 }
+
+  // Hide hint and remove any existing hint text once the answer is revealed
+  showHintBtn.style.display = "none";
+  const hint = document.getElementById("hint-block");
+  if (hint) hint.remove();
+
+  // After reveal: show usage buttons...
+  if (current.type === "english") {
+    if (current.row[COLS.enUsage]) showEnglishUsageBtn.style.display = "inline-block";
+    if (current.row[COLS.zhUsage]) showChineseUsageBtn.style.display = "inline-block";
+  } else if (current.type === "chinese") {
+    if (current.row[COLS.zhUsage]) showChineseUsageBtn.style.display = "inline-block";
+  }
 }
+
 
 function showEnglishUsage() {
   if (!current) return;
@@ -294,6 +320,7 @@ el("rightBtn").addEventListener("click", () => {
   entry.delta = (entry.delta || 0) - 1;
   entry.correct = (entry.correct || 0) + 1;
   progress[key] = entry; saveProgress();
+  
 
   // record for undo
   lastAction = { key, deltaChange: -1, rightInc: 1, wrongInc: 0, rowRef: current.row };
@@ -314,6 +341,14 @@ if (rowLimitInput) {
     if (allRows.length) applyRowLimit();
   });
 }
+
+  const rowRangeInput = el("rowRange");
+  if (rowRangeInput) {
+    rowRangeInput.addEventListener("input", () => {
+      rowRanges = parseRowRanges(rowRangeInput.value);
+      if (allRows.length) applyRowLimit();
+    });
+  }
 
 el("wrongBtn").addEventListener("click", () => {
   if (!current) return;
@@ -481,4 +516,18 @@ function downloadProgressCsv() {
   a.click();
   URL.revokeObjectURL(url);
   a.remove();
+}
+
+function parseRowRanges(str) {
+  if (!str) return null;
+  return str.split(",").map(r => {
+    const [start, end] = r.split("-").map(v => parseInt(v.trim(), 10));
+    if (!isNaN(start) && !isNaN(end) && start <= end) {
+      return [start, end];
+    }
+    if (!isNaN(start) && isNaN(end)) { 
+      return [start, start]; // single row
+    }
+    return null;
+  }).filter(Boolean);
 }

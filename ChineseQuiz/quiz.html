@@ -19,6 +19,10 @@
       <button class="btn" id="downloadProgress">Download Progress (CSV)</button>
       <button class="btn" id="undoBtn" title="Undo last mark">Undo</button>
       <label class="pill">
+          Row range:
+          <input id="rowRange" type="text" placeholder="e.g. 10-20,30-40"
+                style="width:150px;margin-left:6px">
+        </label>
   Limit rows:
   <input id="rowLimit" type="number" min="1" step="1" style="width:80px;margin-left:6px">
 </label>
@@ -55,6 +59,7 @@
       </div>
 
       <div class="answer" id="answer"></div>
+      <div class="pinyin" id="pinyinAnswer" style="display:none"></div>
 
       <div class="row spacey" style="margin-top:12px">
         <button class="btn" id="showEnglishUsage" style="display:none">Show English Usage</button>
