@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="quiz.css" />
   <!-- PapaParse for CSV parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/pinyin-pro/dist/index.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
   <script src="quiz.js" defer></script>
 </head>
@@ -18,6 +19,15 @@
       <span class="pill" id="stats">0 right · 0 wrong</span>
       <button class="btn" id="downloadProgress">Download Progress (CSV)</button>
       <button class="btn" id="undoBtn" title="Undo last mark">Undo</button>
+      <label class="pill">
+        Mode:
+        <select id="questionMode" style="margin-left:6px">
+          <option value="random" selected>Random</option>
+          <option value="english">English (CN → EN)</option>
+          <option value="chinese">Chinese (EN → CN)</option>
+          <option value="sentence">Chinese sentence</option>
+        </select>
+      </label>
       <label class="pill">
           Row range:
           <input id="rowRange" type="text" placeholder="e.g. 10-20,30-40"

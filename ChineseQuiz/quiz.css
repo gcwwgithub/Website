@@ -66,3 +66,5 @@ h2{font-size:18px;margin:0 0 10px;color:var(--muted)}
 }
 
 .btn.speak { background: #444; }
+
+.hint-pinyin { margin-top: 6px; font-size: 15px; color: #b9a6ff; }

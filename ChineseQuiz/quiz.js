@@ -20,6 +20,7 @@ let allRows = [];     // full filtered dataset
 let rowLimit = null;  // numeric limit from the input
 let rowRanges = null; // array of [start,end] ranges (1-based indexing)
 
+
 // ---- Progress persistence (localStorage) ----
 const STORAGE_KEY = 'quizProgressV1';
 let progress = {}; // { [rowKey]: { delta:number, correct:number, wrong:number } }
@@ -70,6 +71,9 @@ const showChineseUsageBtn = el("showChineseUsage");
 const showHintBtn = el("showHint");
 const speakBtn = el("speakBtn");
 
+let questionMode = "random"; // "random" | "english" | "chinese" | "sentence"
+const questionModeEl = el("questionMode");
+
 // Helpers
 const rand = n => Math.floor(Math.random() * n);
 
@@ -83,8 +87,33 @@ function normalizeCategory(catRaw) {
   return ["english","chinese"];
 }
 
+function toPinyinFull(text) {
+  if (!text || !window.pinyinPro)
+    {
+      console.error("pinyinPro library not loaded");
+      return "";
+    } 
+
+  // Segment words, keep non-Chinese as-is, tone marks on vowels.
+  const arr = window.pinyinPro.pinyin(text, {
+    toneType: "mark",   // ā á ǎ à
+    type: "array",      // return array so we can join with spaces
+    nonZh: "consecutive",
+    segment: true       // better word segmentation
+  });
+  return arr.join(" ").replace(/\s+/g, " ").trim();
+}
+
+
 function chooseTypeForRow(row) {
-  const allowed = normalizeCategory(row[COLS.category]);
+  const allowed = normalizeCategory(row[COLS.category]); // ["english","chinese"] or ["sentence"] etc.
+  if (questionMode === "random") {
+    return allowed[rand(allowed.length)];
+  }
+  // If user forced a mode, only use it if it's allowed for this row
+  if (allowed.includes(questionMode)) return questionMode;
+
+  // Fallback: if forced mode not in allowed, pick a random allowed type
   return allowed[rand(allowed.length)];
 }
 
@@ -312,10 +341,35 @@ function showHint() {
   const txt = current.row[COLS.zhHint];
   if (!txt) return;
 
+  // Create the hint block (no pinyin yet)
   const block = document.createElement("div");
-  block.id = "hint-block";                  // marker to prevent duplicates
+  block.id = "hint-block";
   block.className = "hint-block";
   block.innerHTML = `<strong>Hint:</strong>\n${txt}`;
+
+  // Add a "Show Pinyin" button that appears with the hint
+  const pinBtn = document.createElement("button");
+  pinBtn.className = "btn";
+  pinBtn.style.marginTop = "8px";
+  pinBtn.textContent = "Show Pinyin for Hint";
+  pinBtn.addEventListener("click", () => {
+    // Compute pinyin only on demand
+    const pinyin = toPinyinFull(txt); // uses pinyin-pro already loaded
+    if (!pinyin) return;
+
+    // Append pinyin under the hint once
+    const pin = document.createElement("div");
+    pin.className = "hint-pinyin";
+    pin.textContent = pinyin;
+    block.appendChild(document.createElement("br"));
+    block.appendChild(pin);
+
+    pinBtn.disabled = true;
+    pinBtn.textContent = "Pinyin Shown";
+  });
+
+  block.appendChild(document.createElement("br"));
+  block.appendChild(pinBtn);
   extrasArea.appendChild(block);
 
   showHintBtn.disabled = true;
@@ -368,6 +422,14 @@ if (rowLimitInput) {
       if (allRows.length) applyRowLimit();
     });
   }
+
+  if (questionModeEl) {
+  questionModeEl.addEventListener("change", () => {
+    questionMode = questionModeEl.value || "random";
+    // Start a fresh card using the new mode
+    if (rows.length) pickNewCard();
+  });
+}
 
 el("wrongBtn").addEventListener("click", () => {
   if (!current) return;
