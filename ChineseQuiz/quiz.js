@@ -74,6 +74,9 @@ const speakBtn = el("speakBtn");
 let questionMode = "random"; // "random" | "english" | "chinese" | "sentence"
 const questionModeEl = el("questionMode");
 
+let orderMode = "random";  // "random" or "ordered"
+let currentIndex = 0;      // for ordered mode
+
 // Helpers
 const rand = n => Math.floor(Math.random() * n);
 
@@ -140,11 +143,23 @@ function pickNewCard() {
     questionEl.textContent = "No rows loaded. Load a CSV first.";
     return;
   }
-  const row = rows[rand(rows.length)];
+
+  let row;
+
+  if (orderMode === "ordered") {
+    // sequential through the filtered set
+    row = rows[currentIndex];
+    currentIndex = (currentIndex + 1) % rows.length; // loop around
+  } else {
+    // random
+    row = rows[rand(rows.length)];
+  }
+
   const type = chooseTypeForRow(row);
   current = { row, type };
   renderCard();
 }
+
 
 function refreshCurrentColorUI() {
   if (!current) return;
@@ -427,6 +442,15 @@ if (rowLimitInput) {
   questionModeEl.addEventListener("change", () => {
     questionMode = questionModeEl.value || "random";
     // Start a fresh card using the new mode
+    if (rows.length) pickNewCard();
+  });
+}
+
+const orderModeEl = el("orderMode");
+if (orderModeEl) {
+  orderModeEl.addEventListener("change", () => {
+    orderMode = orderModeEl.value || "random";
+    currentIndex = 0; // reset to first card if ordered
     if (rows.length) pickNewCard();
   });
 }
