@@ -1,0 +1,128 @@
+body {
+  font-family: system-ui, sans-serif;
+  background: #fafafa;
+  color: #222;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header, footer {
+  text-align: center;
+  padding: 1rem;
+}
+
+h1 {
+  margin-bottom: 0.5rem;
+}
+
+.meta {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+#category, #score { margin: 0.25rem; }
+
+.tips {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 0.25rem;
+}
+
+.uploader {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem 0 0.25rem 0;
+  flex-wrap: wrap;
+}
+
+.file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.file-label input[type="file"] {
+  display: none;
+}
+
+.file-button {
+  background: #3b82f6;
+  color: white;
+  border-radius: 6px;
+  padding: 0.5rem 0.9rem;
+}
+
+.file-name {
+  font-size: 0.9rem;
+  color: #444;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  padding: 2rem;
+  width: 80%;
+  max-width: 640px;
+  text-align: center;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.card.disabled {
+  opacity: 0.6;
+}
+
+.card-face.hidden {
+  display: none;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  background: #ddd;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+button:hover { background: #ccc; }
+
+button.correct { background: #a8e6a3; }
+button.wrong { background: #f5a3a3; }
+button.correct:hover { background: #8adf7b; }
+button.wrong:hover { background: #f07676; }
+
+button.ghost {
+  background: transparent;
+  border: 1px solid #bbb;
+}
+
+footer { font-size: 0.9rem; }
+
+.hidden { display: none; }
