@@ -1,128 +1,220 @@
-body {
-  font-family: system-ui, sans-serif;
-  background: #fafafa;
-  color: #222;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+/* =========================================
+   Learning Flashcards — quiz.css inspired
+   (Dark theme, rounded cards, accent buttons)
+   ========================================= */
+
+:root{
+  --bg:#0b0e11;
+  --card:#161a1f;
+  --muted:#9aa4b2;
+  --text:#f5f7fa;
+  --accent:#7aa2ff;
+  --ok:#37d67a;
+  --bad:#ff6b6b;
+  --border:#202632;
 }
 
-header, footer {
+/* Base */
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font:16px/1.5 system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+/* Layout containers */
+#app{ max-width:980px; margin:32px auto; padding:0 16px; width:100% }
+
+header, footer{
+  padding:12px 0;
+  text-align:center;
+}
+
+h1{ font-size:24px; margin:0 0 6px }
+.tips{
+  font-size:14px;
+  color:var(--muted);
+  margin-top:6px;
+}
+
+/* Meta info (Category / Score) */
+.meta{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  align-items:center;
+  margin-top:10px;
+}
+#category,#score{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:10px;
+  background:#202632;
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* Uploader bar */
+.uploader{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:10px;
+}
+.file-label{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+}
+.file-label input[type="file"]{ display:none }
+.file-button{
+  border:0;
+  border-radius:12px;
+  padding:10px 14px;
+  background:var(--accent);
+  color:var(--text);
+  cursor:pointer;
+}
+.file-button:hover{ filter:brightness(1.08) }
+.file-name{ color:var(--muted); font-size:14px }
+
+/* Card */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  width:100%;
+  max-width:760px;
+  margin:16px auto 12px;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.card.disabled{ opacity:.6 }
+
+.card-face.hidden{ display:none }
+
+.section-label{
+  display:inline-block;
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  background:#202632;
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:4px 8px;
+  margin:0 0 8px;
+}
+
+/* Question text smaller than before */
+#question{
+  font-size:22px;   /* was 28px */
+  font-weight:700;
+  letter-spacing:.2px;
+  margin:6px 0 0;
+}
+
+/* Answer text also tidy */
+#answer{
+  font-size:22px;   /* was 28px */
+  font-weight:700;
+  letter-spacing:.2px;
+  margin:6px 0 0;
+}
+
+
+pre{
+  background:#1e1e1e;
+  border:1px dashed #263041;
+  border-radius:12px;
+  padding:12px;
+  overflow:auto;
+  white-space:pre-wrap;
+  margin-top:8px;
+}
+
+code, pre{
+  font-family:'Cascadia Code','Consolas','Courier New',monospace;
+  font-size:15px;
+  line-height:1.45;
+}
+
+
+.hidden{ display:none !important }
+
+/* Controls */
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+  margin-top:8px;
+}
+
+button{
+  border:0;
+  border-radius:12px;
+  padding:10px 14px;
+  background:#202632;
+  color:var(--text);
+  cursor:pointer;
+  font-size:16px;
+  transition:filter .15s ease, transform .02s ease-in;
+}
+button:hover{ filter:brightness(1.08) }
+button:active{ transform:translateY(1px) }
+
+button.correct{ background:var(--ok); color:#0b0e11; font-weight:600 }
+button.wrong{ background:var(--bad); color:#0b0e11; font-weight:600 }
+button.ghost{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text);
+}
+
+/* Footer */
+footer{
+  font-size:14px;
+  color:var(--muted);
+  border-top:1px solid var(--border);
+  margin-top:24px;
+  padding-top:12px;
+}
+
+/* Prism theme hook (optional tweaks) */
+code[class*="language-"], pre[class*="language-"]{
+  text-shadow:none;
+  background:transparent;
+}
+
+.code-wrap{ margin-top:14px; }
+.code-wrap.hidden{ display:none !important; }
+
+/* Credit footer (centered with long divider) */
+#credits-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   text-align: center;
-  padding: 1rem;
+  padding: 12px 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  opacity: 0.8;
+  user-select: none;
 }
 
-h1 {
-  margin-bottom: 0.5rem;
+#credits-footer .accent {
+  color: var(--accent);
+  font-weight: 600;
 }
-
-.meta {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  font-size: 0.95rem;
-  margin-top: 0.5rem;
-}
-
-#category, #score { margin: 0.25rem; }
-
-.tips {
-  font-size: 0.9rem;
-  color: #555;
-  margin-top: 0.25rem;
-}
-
-.uploader {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-  align-items: center;
-  margin: 0.5rem 0 0.25rem 0;
-  flex-wrap: wrap;
-}
-
-.file-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-}
-
-.file-label input[type="file"] {
-  display: none;
-}
-
-.file-button {
-  background: #3b82f6;
-  color: white;
-  border-radius: 6px;
-  padding: 0.5rem 0.9rem;
-}
-
-.file-name {
-  font-size: 0.9rem;
-  color: #444;
-}
-
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  padding: 2rem;
-  width: 80%;
-  max-width: 640px;
-  text-align: center;
-  transition: transform 0.3s ease, opacity 0.2s ease;
-  margin-bottom: 1rem;
-}
-
-.card.disabled {
-  opacity: 0.6;
-}
-
-.card-face.hidden {
-  display: none;
-}
-
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: center;
-}
-
-button {
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 6px;
-  background: #ddd;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.2s;
-}
-
-button:hover { background: #ccc; }
-
-button.correct { background: #a8e6a3; }
-button.wrong { background: #f5a3a3; }
-button.correct:hover { background: #8adf7b; }
-button.wrong:hover { background: #f07676; }
-
-button.ghost {
-  background: transparent;
-  border: 1px solid #bbb;
-}
-
-footer { font-size: 0.9rem; }
-
-.hidden { display: none; }

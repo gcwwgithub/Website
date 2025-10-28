@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Learning Flashcards</title>
 
-  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="styles.css" />
 
   <!-- Prism.js for code highlighting -->
-  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet"/>
+ <link href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-vsc-dark-plus.min.css" rel="stylesheet">
 </head>
+
 <body>
   <div id="app">
     <header>
@@ -18,13 +20,12 @@
       <!-- Upload Row -->
       <div class="uploader">
         <label class="file-label">
-          <input id="file-input" type="file" accept=".csv,text/csv"/>
+          <input id="file-input" type="file" accept=".csv,text/csv" />
           <span class="file-button">Choose CSV</span>
           <span id="file-name" class="file-name">No file chosen</span>
         </label>
         <button id="load-sample-btn" class="ghost">Load sample (hosted)</button>
       </div>
-
       <div id="tips" class="tips">
         Tip: You can use this offline. Just choose your CSV above.
       </div>
@@ -38,21 +39,34 @@
     <main>
       <div id="card" class="card disabled">
         <div id="card-front" class="card-face">
+          <div class="section-label">Question</div>
           <p id="question"></p>
-        </div>
-        <div id="card-back" class="card-face hidden">
-          <p id="answer"></p>
-          <pre id="code-block" class="hidden"><code class="language-none" id="code-content"></code></pre>
-          <button id="copy-btn" class="hidden">Copy Code</button>
-        </div>
-      </div>
 
-      <div class="controls">
-        <button id="flip-btn" disabled>Flip</button>
-        <button id="correct-btn" class="correct" disabled>✓ Correct</button>
-        <button id="wrong-btn" class="wrong" disabled>✗ Wrong</button>
-        <button id="next-btn" disabled>Next →</button>
-      </div>
+          <div id="codeq-wrap" class="code-wrap hidden">
+            <div class="section-label">Code</div>
+            <pre id="codeq-block" class="hidden"><code class="language-none" id="codeq-content"></code></pre>
+            <button id="copyq-btn" class="hidden">Copy Code</button>
+          </div>
+        </div>
+
+        <div id="card-back" class="card-face hidden">
+          <div class="section-label">Answer</div>
+          <p id="answer"></p>
+
+          <div id="codea-wrap" class="code-wrap hidden">
+            <div class="section-label">Code</div>
+            <pre id="code-block" class="hidden"><code class="language-none" id="code-content"></code></pre>
+            <button id="copy-btn" class="hidden">Copy Code</button>
+          </div>
+        </div>
+
+
+        <div class="controls">
+          <button id="flip-btn" disabled>Flip</button>
+          <button id="correct-btn" class="correct" disabled>✓ Correct</button>
+          <button id="wrong-btn" class="wrong" disabled>✗ Wrong</button>
+          <button id="next-btn" disabled>Next →</button>
+        </div>
     </main>
 
     <footer>
@@ -63,10 +77,21 @@
 
   <!-- Vendors -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+
+<!-- Load the grammars explicitly -->
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-clike.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-cpp.min.js"></script>
+<!-- Optional: C# -->
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-csharp.min.js"></script>
+
 
   <!-- App -->
   <script src="app.js"></script>
 </body>
+<footer id="credits-footer">
+  Made with <span class="accent">ChatGPT 5</span>
+</footer>
+
 </html>

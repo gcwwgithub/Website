@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("next-btn").onclick = nextQuestion;
   document.getElementById("copy-btn").onclick = copyCode;
   document.getElementById("reset-btn").onclick = resetScores;
+  document.getElementById("copyq-btn").onclick = copyQuestionCode;
 
   // Keyboard shortcuts
   document.addEventListener("keydown", (e) => {
@@ -72,7 +73,7 @@ function parseCsvFile(file) {
 // ---- Optional: load a sample hosted CSV (works on GitHub Pages / localhost) ----
 async function loadSampleCsvIfHosted() {
   try {
-    const res = await fetch("./data/questions.csv", { cache: "no-store" });
+    const res = await fetch("./questions.csv", { cache: "no-store" });
     if (!res.ok) throw new Error("No hosted CSV found");
     const text = await res.text();
     const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
@@ -80,21 +81,24 @@ async function loadSampleCsvIfHosted() {
     document.getElementById("file-name").textContent = "Loaded: data/questions.csv";
     afterQuestionsLoaded();
   } catch (e) {
-    alert("Could not load ./data/questions.csv. Upload a CSV instead.");
+    alert("Could not load ./questions.csv. Upload a CSV instead.");
   }
 }
 
 // ---- Build internal model ----
 function buildQuestions(rows) {
   const questions = [];
+  console.log("Building questions from rows:", rows);
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
 
     // Column contract
     const category = (row["Category"] ?? "").toString().trim();
     const question = (row["Question"] ?? "").toString().trim();
+    const codeQuestion = (row["Code Question"] ?? "").toString();
     const answer = (row["Answer"] ?? "").toString().trim();
     const codeAnswer = (row["Code Answer"] ?? "").toString();
+
     const colorCsv = Number.parseInt((row["Color"] ?? "0").toString(), 10);
 
     if (!question) continue; // skip empty questions
@@ -107,6 +111,7 @@ function buildQuestions(rows) {
       id,
       category,
       question,
+      codeQuestion: codeQuestion?.trim() || "",
       answer,
       codeAnswer: codeAnswer?.trim() || "",
       color,
@@ -163,6 +168,7 @@ function renderCard() {
   document.getElementById("score").textContent = `Score: ${q.color}`;
   document.getElementById("progress").textContent = `Question ${state.currentIndex + 1} of ${state.questions.length}`;
 
+  
   // Faces
   const front = document.getElementById("card-front");
   const back = document.getElementById("card-back");
@@ -170,21 +176,81 @@ function renderCard() {
   back.classList.toggle("hidden", !state.isFlipped);
 
   document.getElementById("question").textContent = q.question;
-  document.getElementById("answer").textContent = q.answer || "(No text answer)";
+  // Normalize answer: treat "-" or blank as no answer
+const hasAnswer =
+  typeof q.answer === "string" &&
+  q.answer.trim().length > 0 &&
+  q.answer.trim() !== "-";
 
-  const codeBlock = document.getElementById("code-block");
-  const codeContent = document.getElementById("code-content");
-  const copyBtn = document.getElementById("copy-btn");
+document.getElementById("answer").textContent = hasAnswer
+  ? q.answer.trim()
+  : "(No text answer)";
 
-  if (q.codeAnswer) {
-    codeBlock.classList.remove("hidden");
-    copyBtn.classList.remove("hidden");
-    codeContent.textContent = q.codeAnswer;
-    Prism.highlightAll();
-  } else {
-    codeBlock.classList.add("hidden");
-    copyBtn.classList.add("hidden");
-  }
+
+const codeAWrap = document.getElementById("codea-wrap");
+const codeBlock = document.getElementById("code-block");
+const codeContent = document.getElementById("code-content");
+const copyBtn = document.getElementById("copy-btn");
+
+const hasCodeA = typeof q.codeAnswer === "string" && q.codeAnswer.trim().length > 0;
+
+if (hasCodeA) {
+  codeAWrap.classList.remove("hidden");
+  codeBlock.classList.remove("hidden");
+  copyBtn.classList.remove("hidden");
+
+  const langA = detectLanguage(q.codeAnswer.trim());
+  codeContent.textContent = q.codeAnswer.trim();
+
+  codeContent.className = "language-" + langA;
+  codeBlock.className = "language-" + langA;
+
+  Prism.highlightElement(codeContent);
+} else {
+  codeAWrap.classList.add("hidden");
+  codeBlock.classList.add("hidden");
+  copyBtn.classList.add("hidden");
+  codeContent.textContent = "";
+  codeContent.className = "";
+  codeBlock.className = "";
+}
+
+
+const codeQWrap = document.getElementById("codeq-wrap");
+const codeQBlock = document.getElementById("codeq-block");
+const codeQContent = document.getElementById("codeq-content");
+const copyQBtn = document.getElementById("copyq-btn");
+
+const hasCodeQ = typeof q.codeQuestion === "string" && q.codeQuestion.trim().length > 0;
+
+if (hasCodeQ) {
+  codeQWrap.classList.remove("hidden");
+  codeQBlock.classList.remove("hidden");
+  copyQBtn.classList.remove("hidden");
+
+  const langQ = detectLanguage(q.codeQuestion.trim());
+  codeQContent.textContent = q.codeQuestion.trim();
+
+  // Set language on both elements
+  codeQContent.className = "language-" + langQ;
+  codeQBlock.className = "language-" + langQ;
+
+  // Highlight just this code node
+  Prism.highlightElement(codeQContent);
+} else {
+  codeQWrap.classList.add("hidden");
+  codeQBlock.classList.add("hidden");
+  copyQBtn.classList.add("hidden");
+  codeQContent.textContent = "";
+  codeQContent.className = "";
+  codeQBlock.className = "";
+}
+
+
+if (hasCodeQ || hasCodeA) {
+  Prism.highlightAll();
+}
+
 }
 
 // ---- Scoring / persistence ----
@@ -236,3 +302,31 @@ async function copyCode() {
     console.error("Copy failed", e);
   }
 }
+
+async function copyQuestionCode() {
+  if (!state.loaded) return;
+  const q = state.questions[state.currentIndex];
+  if (!q.codeQuestion || q.codeQuestion.trim().length === 0) return;
+  try {
+    await navigator.clipboard.writeText(q.codeQuestion.trim());
+    const btn = document.getElementById("copyq-btn");
+    const prev = btn.textContent;
+    btn.textContent = "Copied!";
+    setTimeout(() => (btn.textContent = prev), 1200);
+  } catch (e) {
+    console.error("Copy (question) failed", e);
+  }
+}
+
+function detectLanguage(code){
+  const s = code;
+  if (/\b#include\b|\bstd::|::\s*\w+\s*\(|\btemplate\s*<|->\s*\w+\(/.test(s)) return "cpp";
+  if (/\busing\s+namespace\s+std\b/.test(s)) return "cpp";
+  if (/\bConsole\./.test(s) || /\busing\s+System/.test(s)) return "csharp";
+  if (/\bdef\s+\w+\s*\(/.test(s) || /\bprint\(.+\)/.test(s)) return "python";
+  if (/\bfunction\b|\bconst\b|\blet\b/.test(s) && /[{;)]\s*$/.test(s)) return "javascript";
+  if (/\bclass\b\s+\w+\s*{/.test(s) && /public:|private:/.test(s)) return "cpp";
+  // default
+  return "cpp";
+}
+

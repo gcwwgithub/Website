@@ -1,85 +1,326 @@
-Category,Question,Answer,Code Answer,Color,QuestionImage,AnswerImage
-C/CPP,There are 6 steps in the compiler toolchain. The first step is writing the code in the editor. What would be the second step upon starting compilation?,Preprocessing,-,5,-,-
-C/CPP,What does the preprocessor do during compilation,One job is to change all the #includes and #defines with the actual code. It will copy and paste the entire header file into the top of the source file,-,5,-,-
-C/CPP,What is a translation unit?,It is a single source file that has all the code from the includes of header file included in the file,-,5,-,-
-C/CPP,What is the file type of the source file after preprocessing?,Its a .i file,-,5,-,-
+Category,Question,Code Question,Answer,Code Answer,Color,QuestionImage,AnswerImage
+C/CPP,There are 6 steps in the compiler toolchain. The first step is writing the code in the editor. What would be the second step upon starting compilation?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Preprocessing," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does the preprocessor do during compilation,"int arri[10] = {1,2,3}; 
+sizeof(arri);",One job is to change all the #includes and #defines with the actual code. It will copy and paste the entire header file into the top of the source file," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is a translation unit?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",It is a single source file that has all the code from the includes of header file included in the file," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the file type of the source file after preprocessing?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Its a .i file," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"There are 6 steps in the compiler toolchain.
 1. Write the code in the editor
 2. Preprocesser
-What is the 3rd step?",Compiling,-,5,-,-
-C/CPP,What does the compiler do during compiling after preprocessing?,The compiler compiles the code and check that there are no errors and then converts the file from a .i file to a .s file,-,5,-,-
-C/CPP,What is the file type after the compiler has finished compiling? This is not the .o file,Its a .s file,-,5,-,-
-C/CPP,What type of code is in a .s file?,Assembly,-,5,-,-
+What is the 3rd step?","int arri[10] = {1,2,3}; 
+sizeof(arri);",Compiling," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does the compiler do during compiling after preprocessing?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",The compiler compiles the code and check that there are no errors and then converts the file from a .i file to a .s file," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the file type after the compiler has finished compiling? This is not the .o file,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Its a .s file," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What type of code is in a .s file?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Assembly," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"There are 6 steps in the compiler toolchain.
 1. Write the code in the editor
 2. Preprocesser
 3. Compiler
-What is the 4th step?",Assembling,-,5,-,-
+What is the 4th step?","int arri[10] = {1,2,3}; 
+sizeof(arri);",Assembling," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"There are 6 steps in the compiler toolchain.
 1. Write the code in the editor
 2. Preprocesser
 3. Compiler
 4. Assembler
-What is the 5th step?",Linking,-,5,-,-
+What is the 5th step?","int arri[10] = {1,2,3}; 
+sizeof(arri);",Linking," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"There are 6 steps in the compiler toolchain.
 1. Write the code in the editor
 2. Preprocesser
 3. Compiler
 4. Assembler
 5. Linker
-What is the 6th step?",Loader,-,5,-,-
-C/CPP,What does the assembler do?,The assembler converts assembly code to machine code,-,5,-,-
-C/CPP,Explain the full compiling process,"1. Write the code in the editor
+What is the 6th step?","int arri[10] = {1,2,3}; 
+sizeof(arri);",Loader," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does the assembler do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",The assembler converts assembly code to machine code," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Explain the full compiling process,"int arri[10] = {1,2,3}; 
+sizeof(arri);","1. Write the code in the editor
 2. Preprocesser
 3. Compiler
 4. Assembler
 5. Linker
-6. Loader",-,5,-,-
-C/CPP,What is the file type after the assembler has finished its job during the compilation?,Its a .o file.,-,5,-,-
-C/CPP,Can the operating system do anything with a .o file?,No. The .o file is an incomplete object file as it does not contain references to external subroutines and therefore cannot be executed directly by the operating system,-,5,-,-
-C/CPP,Why is the operating system unable to execute a .o file,The .o file is an incomplete object file as it does not contain references to external subroutines,-,5,-,-
-C/CPP,What does the linker do?,The linker links a bunch of object files and library files together,-,5,-,-
-C/CPP,Library files are split into 2 types. What are they?,Statictically Linked Library and Dynamically Linked Libarary,-,5,-,-
-C/CPP,What are libraries?,A library is a collection of precompiled object files which can be linked into programs,-,5,-,-
-C/CPP,Why are you unable to use the math library in C with just a #include?,"When you compile, you will need to specifically link the math library otherwise you are unable to link the math library",-,5,-,-
-C/CPP,How do you link the math library in a console command?,"-lm. 
-Here is an example: gcc sin.o - sin,out -lm",-,5,-,-
-C/CPP,What does the loader do?,Load the executable file into main memory so that the program can run,-,5,-,-
-C/CPP,The Unix operating system was written in?,C,-,5,-,-
-C/CPP,"In general, interpreted programs have execution times faster than compiled",FALSE,-,5,-,-
-C/CPP,"In a console command, what does gcc do?",It determines the compiler used. You can swap it to clang or in C++ swap to g++,-,5,-,-
-C/CPP,"In a console command, what does std=c11 do?",The version of C/C++ that the compiler will use,-,5,-,-
-C/CPP,"In a console command, what does pedantic-errors do?","Issues all warnings required by the C standard. It causes programs that use non standard features to be rejected. This will find outdated syntax and upon finding it, a warning will be issued.",-,5,-,-
-C/CPP,"In a console command, what does -Wstrict-prototypes do?",Warn if a function is declared or defined without specifying the argument types,-,5,-,-
-C/CPP,"In a console command, what does Wall do?",Causes the compiler to produce warning messages when it detects possible errors.,-,5,-,-
-C/CPP,"In a console command, what does Wextra do?",This enables some extra warning flags that are not enabled by -Wall,-,5,-,-
-C/CPP,"In a console command, what does Werror do?",Make all warnings into errors.,-,5,-,-
-C/CPP,"In a console command, what does Wconversion do?",Give warnings if there are implicit conversions taking place,-,5,-,-
-C/CPP,"In a console command, how do you tell the compiler to preprocess only",-E,-,5,-,-
-C/CPP,"In a console command, how do you tell the compiler to compile without assembling",-s,-,5,-,-
-C/CPP,"In a console command, how do you tell the compiler to compile and assemble",-c,-,5,-,-
+6. Loader"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the file type after the assembler has finished its job during the compilation?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Its a .o file.," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Can the operating system do anything with a .o file?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",No. The .o file is an incomplete object file as it does not contain references to external subroutines and therefore cannot be executed directly by the operating system," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Why is the operating system unable to execute a .o file,"int arri[10] = {1,2,3}; 
+sizeof(arri);",The .o file is an incomplete object file as it does not contain references to external subroutines," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does the linker do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",The linker links a bunch of object files and library files together," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Library files are split into 2 types. What are they?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Statictically Linked Library and Dynamically Linked Libarary," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are libraries?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",A library is a collection of precompiled object files which can be linked into programs," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Why are you unable to use the math library in C with just a #include?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","When you compile, you will need to specifically link the math library otherwise you are unable to link the math library"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you link the math library in a console command?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","-lm. 
+Here is an example: gcc sin.o - sin,out -lm"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does the loader do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Load the executable file into main memory so that the program can run," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,The Unix operating system was written in?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",C," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In general, interpreted programs have execution times faster than compiled","int arri[10] = {1,2,3}; 
+sizeof(arri);",FALSE," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a console command, what does gcc do?","int arri[10] = {1,2,3}; 
+sizeof(arri);",It determines the compiler used. You can swap it to clang or in C++ swap to g++," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a console command, what does std=c11 do?","int arri[10] = {1,2,3}; 
+sizeof(arri);",The version of C/C++ that the compiler will use," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a console command, what does pedantic-errors do?","int arri[10] = {1,2,3}; 
+sizeof(arri);","Issues all warnings required by the C standard. It causes programs that use non standard features to be rejected. This will find outdated syntax and upon finding it, a warning will be issued."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a console command, what does -Wstrict-prototypes do?","int arri[10] = {1,2,3}; 
+sizeof(arri);",Warn if a function is declared or defined without specifying the argument types," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a console command, what does Wall do?","int arri[10] = {1,2,3}; 
+sizeof(arri);",Causes the compiler to produce warning messages when it detects possible errors.," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a console command, what does Wextra do?","int arri[10] = {1,2,3}; 
+sizeof(arri);",This enables some extra warning flags that are not enabled by -Wall," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a console command, what does Werror do?","int arri[10] = {1,2,3}; 
+sizeof(arri);",Make all warnings into errors.," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a console command, what does Wconversion do?","int arri[10] = {1,2,3}; 
+sizeof(arri);",Give warnings if there are implicit conversions taking place," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a console command, how do you tell the compiler to preprocess only","int arri[10] = {1,2,3}; 
+sizeof(arri);",-E," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a console command, how do you tell the compiler to compile without assembling","int arri[10] = {1,2,3}; 
+sizeof(arri);",-s," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a console command, how do you tell the compiler to compile and assemble","int arri[10] = {1,2,3}; 
+sizeof(arri);",-c," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"Which option should be used with gcc for verbose compilation so that detailed information about the exact sequence of
-commands used to compile and link a program is displayed",-v,-,5,-,-
-C/CPP,What does the preprocessor do before it starts interpreting the include directives?,It will change all single and multi line comments to single spaces,-,5,-,-
-C/CPP,"What is the difference between an include directive using <> and """"","The delimiters <> tell the preprocessor to begin searching for file <stdio.h> or <iostream> in standard include paths that were established when the compiler was installed on a computer. It will stop the search in the current working directory of the source file. For """", it will look in the current working directory",-,5,-,-
-C/CPP,"In programming, what is a token?",A token is the smallest individual unit of a program,-,5,-,-
-C/CPP,What is the difference between an lvalue and a rvalue," lvalue (locater value) is an expression that refers to an identifiable memory location. Any non-lvalue expression is an rvalue. In general, rvalues are temporary and short lived, while lvalues live a longer life since they exist as variables",-,5,-,-
-C/CPP,What is a literal?,"Literal Constants or Literals are values inserted directly into code. The example of a literal is
-int a = 5 or std::string s = “AYO” where 5 and AYO are literals",-,5,-,-
-C/CPP,How do you find the maximum value of an integer in C++?,"
-std::numeric_limits<int>::max();",-,5,-,-
-C/CPP,What is the difference between compile time constants and runtime constants?,"Compile-time constants are those whose initialisation values are only known at compile time and runtime constants are those who initialization values are only known at runtime
-",-,5,-,-
-C/CPP,What is the value of age?,"Compiler error, constAge can only be known in compile time",-,5,CCPP1006,-
-C/CPP,What are the benefits of constexpr?,"A constant expression can be evaluated at compile time and therefore saves CPU cycles from evaluating the expression at run time.
+commands used to compile and link a program is displayed","int arri[10] = {1,2,3}; 
+sizeof(arri);",-v," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does the preprocessor do before it starts interpreting the include directives?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",It will change all single and multi line comments to single spaces," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the difference between an include directive using <> and """"","int arri[10] = {1,2,3}; 
+sizeof(arri);","The delimiters <> tell the preprocessor to begin searching for file <stdio.h> or <iostream> in standard include paths that were established when the compiler was installed on a computer. It will stop the search in the current working directory of the source file. For """", it will look in the current working directory"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In programming, what is a token?","int arri[10] = {1,2,3}; 
+sizeof(arri);",A token is the smallest individual unit of a program," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the difference between an lvalue and a rvalue,"int arri[10] = {1,2,3}; 
+sizeof(arri);"," lvalue (locater value) is an expression that refers to an identifiable memory location. Any non-lvalue expression is an rvalue. In general, rvalues are temporary and short lived, while lvalues live a longer life since they exist as variables"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is a literal?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Literal Constants or Literals are values inserted directly into code. The example of a literal is
+int a = 5 or std::string s = “AYO” where 5 and AYO are literals"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you find the maximum value of an integer in C++?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","
+std::numeric_limits<int>::max();"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the difference between compile time constants and runtime constants?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Compile-time constants are those whose initialisation values are only known at compile time and runtime constants are those who initialization values are only known at runtime
+"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the value of age?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Compiler error, constAge can only be known in compile time"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP1006,-
+C/CPP,What are the benefits of constexpr?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","A constant expression can be evaluated at compile time and therefore saves CPU cycles from evaluating the expression at run time.
 A constant expression provides the compiler deep insight into the code so that the compiler can potentially determine additional optimizations.
 A constant expression makes the code implicitly thread safe which is difficult in multi-threaded expressions.
-",-,5,-,-
-C/CPP,What are the benefits of adding constexpr to functions?,adding constexpr to greater would evaluate the expression at compile time,-,5,-,-
+"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the benefits of adding constexpr to functions?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",adding constexpr to greater would evaluate the expression at compile time," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"Will this code run?
-",The code will run but it will evaluate the result at runtime.,-,6,CCPP1009,-
-C/CPP,Why are constexpr implictly inline?,"Because constexpr functions may be evaluated at compile-time, the compiler must be able to see the full definition of the constexpr function at all points where the function is called. This means that a constexpr function called in multiple files needs to have its definition included into each such file -- which would normally be a violation of the one-definition rule. To avoid such problems, constexpr functions are implicitly inline, which makes them exempt from the one-definition rule. ",-,5,-,-
-C/CPP,How do you determine if a compiler is running in compile time or runtime in C++20,"#include <type_traits> // for std::is_constant_evaluated
+","int arri[10] = {1,2,3}; 
+sizeof(arri);",The code will run but it will evaluate the result at runtime.," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",6,CCPP1009,-
+C/CPP,Why are constexpr implictly inline?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Because constexpr functions may be evaluated at compile-time, the compiler must be able to see the full definition of the constexpr function at all points where the function is called. This means that a constexpr function called in multiple files needs to have its definition included into each such file -- which would normally be a violation of the one-definition rule. To avoid such problems, constexpr functions are implicitly inline, which makes them exempt from the one-definition rule. "," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you determine if a compiler is running in compile time or runtime in C++20,"int arri[10] = {1,2,3}; 
+sizeof(arri);","#include <type_traits> // for std::is_constant_evaluated
 constexpr int someFunction()
 {
     if (std::is_constant_evaluated()) // if compile-time evaluation
@@ -87,56 +328,201 @@ constexpr int someFunction()
     else
         // do something else
 }
-",-,5,-,-
+"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the result of the code?
-",There is a compiler error in the second cout because that is not a runtime evaluation and consteval requires it to be a compile time evaluation,-,5,CCPP1012,-
-C/CPP,What is consteval in C++20?,consteval tells the compiler that the function must evaluate at compile time otherwise it will give an error,-,5,-,-
-C/CPP,What is the value of sizeof(“a”),2,-,5,-,-
+","int arri[10] = {1,2,3}; 
+sizeof(arri);",There is a compiler error in the second cout because that is not a runtime evaluation and consteval requires it to be a compile time evaluation," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP1012,-
+C/CPP,What is consteval in C++20?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",consteval tells the compiler that the function must evaluate at compile time otherwise it will give an error," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the value of sizeof(“a”),"int arri[10] = {1,2,3}; 
+sizeof(arri);",2," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the value of
 int arri[10] = {1,2,3}; 
-sizeof(arri);",40,-,5,-,-
-C/CPP,"Assuming my computer does not have the capability to calculate 8 bit integers and can computer 32 bit integer the fastest among all integer sizes, what is the size of the integer if I use std::int_fast8_t, ",32,-,5,-,-
-C/CPP,"Assuming my computer does not have the capability to calculate 8 bit integers and can computer 32 bit integer the fastest among all integer sizes, what is the size of the integer if I use std::int_least8_t, ",16,-,5,-,-
-C/CPP,What does std::int_fast_t do?,"It provides the fastest signed integer type with a width of at least # bits (where # = 8, 16, 32, or 64)",-,5,-,-
-C/CPP,What does std::int_least_t do?,"It provides the smallest signed integer type with a width of at least # bits (where # = 8, 16, 32, or 64)",-,5,-,-
-C/CPP,What are the 2 ways that booleans are used in C?,_Bool and <stdbool.h> bool,-,5,-,-
-C/CPP,What is the output of this code?,Error! You cannot use a _Bool like that. It only accepts integers so something like _Bool var = 1;,-,5,CCPP1021,-
-C/CPP,What is an advantage that a conditional operator have over an if statement?,"Since conditional operators are expressions and not statements, they can be used in places where if else cannot be used such as constexpr int classSize { inBigClassroom ? 30 : 20 }; A if else will not work because the variable if declared in the if else block will go out of scope at the end",-,5,-,-
-C/CPP,What advantages does Uniform initialisation have over several advantages over traditional initialization methods?,"Uniform initialization has several advantages over traditional initialization methods:
+sizeof(arri);","int arri[10] = {1,2,3}; 
+sizeof(arri);",40," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"Assuming my computer does not have the capability to calculate 8 bit integers and can computer 32 bit integer the fastest among all integer sizes, what is the size of the integer if I use std::int_fast8_t, ","int arri[10] = {1,2,3}; 
+sizeof(arri);",32," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"Assuming my computer does not have the capability to calculate 8 bit integers and can computer 32 bit integer the fastest among all integer sizes, what is the size of the integer if I use std::int_least8_t, ","int arri[10] = {1,2,3}; 
+sizeof(arri);",16," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does std::int_fast_t do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","It provides the fastest signed integer type with a width of at least # bits (where # = 8, 16, 32, or 64)"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does std::int_least_t do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","It provides the smallest signed integer type with a width of at least # bits (where # = 8, 16, 32, or 64)"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the 2 ways that booleans are used in C?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",_Bool and <stdbool.h> bool," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the output of this code?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Error! You cannot use a _Bool like that. It only accepts integers so something like _Bool var = 1;," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP1021,-
+C/CPP,What is an advantage that a conditional operator have over an if statement?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Since conditional operators are expressions and not statements, they can be used in places where if else cannot be used such as constexpr int classSize { inBigClassroom ? 30 : 20 }; A if else will not work because the variable if declared in the if else block will go out of scope at the end"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What advantages does Uniform initialisation have over several advantages over traditional initialization methods?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Uniform initialization has several advantages over traditional initialization methods:
 
 Consistency: Uniform initialization provides a consistent syntax for initializing all types of objects, which simplifies code and reduces the likelihood of errors.
 
 Narrowing prevention: When using uniform initialization, the compiler prevents narrowing conversions that might result in a loss of information, such as converting a floating-point number to an integer or an integer to a smaller integer type. This helps avoid unintended bugs and issues related to type conversions.
 
-Aggregate initialization: Uniform initialization makes it easier to initialize aggregates (like arrays or structs) without the need for explicit constructors.",-,5,-,-
-C/CPP,What is the difference between initilisation and assignment?,"Initialization happens when a variable is created and sets its initial value, while assignment is the process of changing the value of an already initialized variable. It is important to initialize a variable before using it; otherwise, it may contain a garbage value, leading to undefined behavior.",-,5,-,-
-C/CPP,What is the difference between definition and declaration?,"The key difference between the two is that a declaration merely introduces an entity and its type to the compiler, while a definition provides the necessary implementation details or allocates memory for the entity.
+Aggregate initialization: Uniform initialization makes it easier to initialize aggregates (like arrays or structs) without the need for explicit constructors."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the difference between initilisation and assignment?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Initialization happens when a variable is created and sets its initial value, while assignment is the process of changing the value of an already initialized variable. It is important to initialize a variable before using it; otherwise, it may contain a garbage value, leading to undefined behavior."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the difference between definition and declaration?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","The key difference between the two is that a declaration merely introduces an entity and its type to the compiler, while a definition provides the necessary implementation details or allocates memory for the entity.
 
 
 
 
-",-,5,-,-
-C/CPP,What does const_cast do?,"In C++, const_cast is a type of casting operator that allows you to add or remove the const qualifier from a variable or object. It is used to perform a temporary and explicit change in the constness of an object, allowing you to modify the object, even if it was initially declared as const. Note that const_cast only changes the constness and doesn't change the object's underlying type.",-,5,-,-
-C/CPP,What does reintepret_cast do?,"reinterpret_cast is a powerful casting operator in C++ that allows you to convert one pointer or reference type to another, without performing any type checking or safety checks. It is generally used when you want to change the type of a pointer, but you're sure that the new type is suitable for the underlying data.",-,5,-,-
-C/CPP,What type of casting does C++ have?,"C style, dynamic, reintepret, static, const",-,5,-,-
+"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does const_cast do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","In C++, const_cast is a type of casting operator that allows you to add or remove the const qualifier from a variable or object. It is used to perform a temporary and explicit change in the constness of an object, allowing you to modify the object, even if it was initially declared as const. Note that const_cast only changes the constness and doesn't change the object's underlying type."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does reintepret_cast do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","reinterpret_cast is a powerful casting operator in C++ that allows you to convert one pointer or reference type to another, without performing any type checking or safety checks. It is generally used when you want to change the type of a pointer, but you're sure that the new type is suitable for the underlying data."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What type of casting does C++ have?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","C style, dynamic, reintepret, static, const"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"Are you allowed to do this with an enum in C++
-Pet pet { 2 };",Yes you can do that,-,5,-,-
+Pet pet { 2 };","int arri[10] = {1,2,3}; 
+sizeof(arri);",Yes you can do that," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"Are you allowed to do this?
-",No you cant input a value into an enum,-,5,CCPP1030,-
-C/CPP,What would be the best way to print out the string name of the enum variable?,Overload the ostream operator << so that you can just std::cout,-,5,-,-
-C/CPP,What is an anoymous enum?,"An anonymous enum is declared without a name or a typedef alias, and its enumerator values can be used directly in the code without referring to the enum itself. While they can make code somewhat more concise, anonymous enums may not be as clear or easily understandable as named enums, especially when used in larger codebases or complex scenarios.",-,5,-,-
+","int arri[10] = {1,2,3}; 
+sizeof(arri);",No you cant input a value into an enum," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP1030,-
+C/CPP,What would be the best way to print out the string name of the enum variable?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Overload the ostream operator << so that you can just std::cout," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is an anoymous enum?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","An anonymous enum is declared without a name or a typedef alias, and its enumerator values can be used directly in the code without referring to the enum itself. While they can make code somewhat more concise, anonymous enums may not be as clear or easily understandable as named enums, especially when used in larger codebases or complex scenarios."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"Is this allowed?
-enum {trout = 2, bass = 5, carp = 10, salmon = 15};","Yes, its an anoymous enum",-,5,-,-
-C/CPP,Which line is illegal?,Interestingly enough. Only the 3rd line is illegal,-,5,CCPP1034,-
-C/CPP,"Between an enumeration and a macro, which is better to use to declare a fixed array size?","Enumerations are better. Enumerations are type-safe, meaning they are evaluated by the compiler and checked for type correctness, which can help prevent errors.
-Enumerations have a well-defined scope, so there's no risk of unexpected name clashes, as can happen with macros.",-,5,-,-
-C/CPP,"Between constexpr and an enumeration, which is better to declare a fixed array size?","It depends. If you have a list of sizes, an enumeration may be better. For a single array size, constexpr provides greater flexibility and versatility, and is more expressive. It allows you to specify the type explicitly and use more complex compile-time expressions if needed. In most cases, using a constexpr variable is the better choice over an enumeration for declaring an array size.",-,5,-,-
-C/CPP,Why should you use an enumeration class over an enumeration,"enum classes provide better type safety, stronger scoping, and prevent unintended implicit conversions,",-,5,-,-
-C/CPP,Why should you use 'using' over typedef?,"using has a more consistent syntax with other C++ constructs.
+enum {trout = 2, bass = 5, carp = 10, salmon = 15};","int arri[10] = {1,2,3}; 
+sizeof(arri);","Yes, its an anoymous enum"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Which line is illegal?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Interestingly enough. Only the 3rd line is illegal," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP1034,-
+C/CPP,"Between an enumeration and a macro, which is better to use to declare a fixed array size?","int arri[10] = {1,2,3}; 
+sizeof(arri);","Enumerations are better. Enumerations are type-safe, meaning they are evaluated by the compiler and checked for type correctness, which can help prevent errors.
+Enumerations have a well-defined scope, so there's no risk of unexpected name clashes, as can happen with macros."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"Between constexpr and an enumeration, which is better to declare a fixed array size?","int arri[10] = {1,2,3}; 
+sizeof(arri);","It depends. If you have a list of sizes, an enumeration may be better. For a single array size, constexpr provides greater flexibility and versatility, and is more expressive. It allows you to specify the type explicitly and use more complex compile-time expressions if needed. In most cases, using a constexpr variable is the better choice over an enumeration for declaring an array size."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Why should you use an enumeration class over an enumeration,"int arri[10] = {1,2,3}; 
+sizeof(arri);","enum classes provide better type safety, stronger scoping, and prevent unintended implicit conversions,"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Why should you use 'using' over typedef?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","using has a more consistent syntax with other C++ constructs.
 using can be used to create type aliases for templates, which is not possible with typedef.
-using can create aliases for complex function types more easily.",-,5,-,-
-C/CPP,When should you use typedef over using?,When you are dealing with legacy code or code before C+11,-,5,-,-
-C/CPP,What does static do?,"Static global variables and functions:
+using can create aliases for complex function types more easily."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,When should you use typedef over using?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",When you are dealing with legacy code or code before C+11," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does static do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Static global variables and functions:
 When the static keyword is applied to a global variable or function, it changes its linkage from external to internal. This means that the variable or function will only be accessible within the translation unit (i.e., the source file) in which it is defined, and it won't be visible to other translation units.
 
 Static local variables:
@@ -146,78 +532,323 @@ Static class member variables:
 When the static keyword is applied to a member variable within a class, it makes the variable shared among all instances of that class. This means that there is only one copy of the static member variable, regardless of the number of objects created from the class. Static member variables must be defined and initialized outside the class definition, typically in a source file.
 
 Static member functions:
-When the static keyword is applied to a member function within a class, it makes the function callable without requiring an instance of the class. Static member functions can only access static member variables and other static member functions; they cannot access non-static members.",-,5,-,-
-C/CPP,What type of dynamic_cast does C++ have?,"dynamic_cast is a casting operator in C++ used for safely casting pointers and references within an inheritance hierarchy, particularly when working with polymorphism. It performs runtime type checking and is most commonly used to downcast a base class pointer or reference to a derived class pointer or reference",-,5,-,-
-C/CPP,How do you implement toupper,return(ch + 'A'-'a');,-,5,-,-
-C/CPP,How do you implement tolower,return(ch + 'a'-'A');,-,5,-,-
-C/CPP,How do you implement isupper,return (ch >= 'A' && ch <= 'Z');,-,5,-,-
-C/CPP,How do you implement islower,return (ch >= 'a' && ch <= 'z');,-,5,-,-
-C/CPP,How do you implement isspace,return (ch >= 'a' && ch <= 'z');,-,5,-,-
-C/CPP,How do you implement isdigit,return (ch >= '0' && ch <= '9');,-,5,-,-
-C/CPP,What is the value of bit left shifting 10000011,1000001,-,5,-,-
-C/CPP,What is the value of bit right shifting 10000011,"""00000110""",-,5,-,-
-C/CPP,What is a practical use for boolean AND in programming,You can AND a number with 1 and it will determine if the number is even or odd,-,5,-,-
-C/CPP,What is the value of ~x when int x = 35,-36,-,5,-,-
-C/CPP,What is the value of ~x when unsigned int x = 1;,4294967294,-,5,-,-
-C/CPP,What would this produce: int a = b << -1;,You will get undefined behaviour warning,-,5,-,-
-C/CPP,What would this produce: int a = b << 33;,You will get undefined behaviour warning,-,5,-,-
-C/CPP,How do you set a bit? For example how do set the 1st bit,"int a = 1;
-a |= 1UL << 1; //0000 0011",-,5,-,-
-C/CPP,How do you clear a bit? For example how do you clear the 1st bit?,"int a = 2;
-a &= ~( 1UL << 1); //0000 0000",-,5,-,-
-C/CPP,How do you toggle a bit? For example how do you toggle the 1st bit?,"int a = 1;
-a ^= 1UL << 1; //0000 0011",-,5,-,-
-C/CPP,"How do check the value of a bit? For example, how do you check the 1st bit?","int a = 3;
-int bitOn = ( a >> 1 ) & 1UL; //1",-,5,-,-
+When the static keyword is applied to a member function within a class, it makes the function callable without requiring an instance of the class. Static member functions can only access static member variables and other static member functions; they cannot access non-static members."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What type of dynamic_cast does C++ have?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","dynamic_cast is a casting operator in C++ used for safely casting pointers and references within an inheritance hierarchy, particularly when working with polymorphism. It performs runtime type checking and is most commonly used to downcast a base class pointer or reference to a derived class pointer or reference"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you implement toupper,"int arri[10] = {1,2,3}; 
+sizeof(arri);",return(ch + 'A'-'a');," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you implement tolower,"int arri[10] = {1,2,3}; 
+sizeof(arri);",return(ch + 'a'-'A');," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you implement isupper,"int arri[10] = {1,2,3}; 
+sizeof(arri);",return (ch >= 'A' && ch <= 'Z');," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you implement islower,"int arri[10] = {1,2,3}; 
+sizeof(arri);",return (ch >= 'a' && ch <= 'z');," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you implement isspace,"int arri[10] = {1,2,3}; 
+sizeof(arri);",return (ch >= 'a' && ch <= 'z');," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you implement isdigit,"int arri[10] = {1,2,3}; 
+sizeof(arri);",return (ch >= '0' && ch <= '9');," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the value of bit left shifting 10000011,"int arri[10] = {1,2,3}; 
+sizeof(arri);",1000001," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the value of bit right shifting 10000011,"int arri[10] = {1,2,3}; 
+sizeof(arri);","""00000110"""," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is a practical use for boolean AND in programming,"int arri[10] = {1,2,3}; 
+sizeof(arri);",You can AND a number with 1 and it will determine if the number is even or odd," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the value of ~x when int x = 35,"int arri[10] = {1,2,3}; 
+sizeof(arri);",-36," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the value of ~x when unsigned int x = 1;,"int arri[10] = {1,2,3}; 
+sizeof(arri);",4294967294," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What would this produce: int a = b << -1;,"int arri[10] = {1,2,3}; 
+sizeof(arri);",You will get undefined behaviour warning," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What would this produce: int a = b << 33;,"int arri[10] = {1,2,3}; 
+sizeof(arri);",You will get undefined behaviour warning," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you set a bit? For example how do set the 1st bit,"int arri[10] = {1,2,3}; 
+sizeof(arri);","int a = 1;
+a |= 1UL << 1; //0000 0011"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you clear a bit? For example how do you clear the 1st bit?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","int a = 2;
+a &= ~( 1UL << 1); //0000 0000"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you toggle a bit? For example how do you toggle the 1st bit?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","int a = 1;
+a ^= 1UL << 1; //0000 0011"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"How do check the value of a bit? For example, how do you check the 1st bit?","int arri[10] = {1,2,3}; 
+sizeof(arri);","int a = 3;
+int bitOn = ( a >> 1 ) & 1UL; //1"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the value of
 int x = 19;
-int leftShift =  (x << 1);",38,-,5,-,-
+int leftShift =  (x << 1);","int arri[10] = {1,2,3}; 
+sizeof(arri);",38," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the value of
-int rightShift = (x >> 1);",9,-,5,-,-
-C/CPP,What is the difference between a bitmask and a flag," A bit mask is a pattern of bits used for bitwise manipulation of bit sequences, while a flag represents a single binary state or option within a bit sequence..",-,5,-,-
-C/CPP,"In a printf, what conversion specifier do you need for integers?",%d and %i,-,5,-,-
-C/CPP,"What is the result of printf(""%hd"",i) if i = 65535?",-1,-,5,-,-
-C/CPP,"What is the result of printf(""%hd"",i) if i = -65535?",1,-,5,-,-
-C/CPP,"What is the result of printf(""%o"",i) if i = 9?",11,-,5,-,-
-C/CPP,"What is the result of printf(""%x"",i) if i = 10?",A,-,5,-,-
-C/CPP,"What is the result of printf(""%d"",'A')?",65,-,5,-,-
+int rightShift = (x >> 1);","int arri[10] = {1,2,3}; 
+sizeof(arri);",9," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the difference between a bitmask and a flag,"int arri[10] = {1,2,3}; 
+sizeof(arri);"," A bit mask is a pattern of bits used for bitwise manipulation of bit sequences, while a flag represents a single binary state or option within a bit sequence.."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In a printf, what conversion specifier do you need for integers?","int arri[10] = {1,2,3}; 
+sizeof(arri);",%d and %i," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%hd"",i) if i = 65535?","int arri[10] = {1,2,3}; 
+sizeof(arri);",-1," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%hd"",i) if i = -65535?","int arri[10] = {1,2,3}; 
+sizeof(arri);",1," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%o"",i) if i = 9?","int arri[10] = {1,2,3}; 
+sizeof(arri);",11," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%x"",i) if i = 10?","int arri[10] = {1,2,3}; 
+sizeof(arri);",A," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%d"",'A')?","int arri[10] = {1,2,3}; 
+sizeof(arri);",65," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the result of 
 float fval = 78.9f;
 int i = 12;
-printf(""%d %f"", fval, ival);",Meaningless values,-,5,-,-
+printf(""%d %f"", fval, ival);","int arri[10] = {1,2,3}; 
+sizeof(arri);",Meaningless values," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the result of 
 int ival = 10;
 int ival2 = 20;
-printf(""%d"", ival, ival);",It prints 10,-,5,-,-
-C/CPP,"What is the result of printf(""%+d"", -x*-2); if x is 31",It will print +62,-,5,-,-
-C/CPP,"What is the result of printf(""%10d"",1234);","It will print ""      1234""",-,5,-,-
-C/CPP,"What is the result of printf(""%-10d"",1234);","It will print ""1234      """,-,5,-,-
-C/CPP,"What is the result of printf(""%010d"",1234);","It will print ""0000001234""",-,5,-,-
-C/CPP,"What is the result of printf(""%.5d"",1024);","It will print ""01024""",-,5,-,-
-C/CPP,"What is the result of printf(""%6.5d"",1024);","It will print "" 00456""",-,5,-,-
-C/CPP,"What is the result of printf(""%-6.5d"",1024);","It will print ""00456 """,-,5,-,-
-C/CPP,"What is the result of printf(""%f"",1234.5678);","It will print ""1234.567800""",-,5,-,-
-C/CPP,"What is the result of printf(""%10f"", .23);","It will print "" 0.230000""",-,5,-,-
-C/CPP,"What is the result of printf(""%.3f"", 123.94583);",It will print 123.946,-,5,-,-
-C/CPP,"What is the result of printf(""%9.3f"", 123.456789)","It will print "" 123.457""",-,5,-,-
-C/CPP,"What is the result of printf(""%*.*f"", -7, 2, 98.736)","It will print ""98.74 """,-,5,-,-
+printf(""%d"", ival, ival);","int arri[10] = {1,2,3}; 
+sizeof(arri);",It prints 10," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%+d"", -x*-2); if x is 31","int arri[10] = {1,2,3}; 
+sizeof(arri);",It will print +62," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%10d"",1234);","int arri[10] = {1,2,3}; 
+sizeof(arri);","It will print ""      1234"""," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%-10d"",1234);","int arri[10] = {1,2,3}; 
+sizeof(arri);","It will print ""1234      """," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%010d"",1234);","int arri[10] = {1,2,3}; 
+sizeof(arri);","It will print ""0000001234"""," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%.5d"",1024);","int arri[10] = {1,2,3}; 
+sizeof(arri);","It will print ""01024"""," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%6.5d"",1024);","int arri[10] = {1,2,3}; 
+sizeof(arri);","It will print "" 00456"""," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%-6.5d"",1024);","int arri[10] = {1,2,3}; 
+sizeof(arri);","It will print ""00456 """," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%f"",1234.5678);","int arri[10] = {1,2,3}; 
+sizeof(arri);","It will print ""1234.567800"""," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%10f"", .23);","int arri[10] = {1,2,3}; 
+sizeof(arri);","It will print "" 0.230000"""," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%.3f"", 123.94583);","int arri[10] = {1,2,3}; 
+sizeof(arri);",It will print 123.946," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%9.3f"", 123.456789)","int arri[10] = {1,2,3}; 
+sizeof(arri);","It will print "" 123.457"""," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the result of printf(""%*.*f"", -7, 2, 98.736)","int arri[10] = {1,2,3}; 
+sizeof(arri);","It will print ""98.74 """," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the value of x when the input is 01-2*""?
-scanf(""%d"", &x)",The value of x is 1,-,5,-,-
+scanf(""%d"", &x)","int arri[10] = {1,2,3}; 
+sizeof(arri);",The value of x is 1," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the output produced if the input is ""-12.3""?
 scanf(""%d"", &x)
-printf(""%d"", x)",-12,-,5,-,-
+printf(""%d"", x)","int arri[10] = {1,2,3}; 
+sizeof(arri);",-12," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the output produced if the input is ""+12a34""?
 scanf(""%d"", &x)
-printf(""%d"", x)",12,-,5,-,-
+printf(""%d"", x)","int arri[10] = {1,2,3}; 
+sizeof(arri);",12," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the output produced if the input is ""425,558""?
 scanf(""%d,%d"", &x,&y)
-printf(""%d%d"", x,y)",425558,-,5,-,-
-C/CPP,What is a stream in C/C++?,"A stream is an abstraction that represents a sequence of bytes that can be used for input or output operations. It serves as an interface between a program and external devices or files, allowing for data exchange in a consistent and convenient manner. ",-,5,-,-
-C/CPP,What are the different stream types in C?,"stdin: A pointer to a FILE structure representing the standard input stream, which is typically associated with the keyboard.
+printf(""%d%d"", x,y)","int arri[10] = {1,2,3}; 
+sizeof(arri);",425558," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is a stream in C/C++?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","A stream is an abstraction that represents a sequence of bytes that can be used for input or output operations. It serves as an interface between a program and external devices or files, allowing for data exchange in a consistent and convenient manner. "," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the different stream types in C?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","stdin: A pointer to a FILE structure representing the standard input stream, which is typically associated with the keyboard.
 stdout: A pointer to a FILE structure representing the standard output stream, which is typically associated with the console or screen.
-stderr: A pointer to a FILE structure representing the standard error output stream, which is typically associated with the console or screen and used for error messages.",-,5,-,-
-C/CPP,What is FILE in C?,"In the C programming language, FILE is a structure (an opaque data type) defined in the <stdio.h> header, which is used to represent a file stream. It serves as a handle to perform various input and output operations on files or other I/O devices. You use it like this file = fopen(""example.txt"", ""r"");",-,5,-,-
-C/CPP,What are the different stream types in C++?,"Basic Stream Types:
+stderr: A pointer to a FILE structure representing the standard error output stream, which is typically associated with the console or screen and used for error messages."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is FILE in C?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","In the C programming language, FILE is a structure (an opaque data type) defined in the <stdio.h> header, which is used to represent a file stream. It serves as a handle to perform various input and output operations on files or other I/O devices. You use it like this file = fopen(""example.txt"", ""r"");"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the different stream types in C++?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Basic Stream Types:
 
 istream: A class representing input streams, which read data from an external source (e.g., console, file).
 ostream: A class representing output streams, which write data to an external destination (e.g., console, file).
@@ -232,61 +863,226 @@ File Stream Types:
 ifstream: A class derived from istream, used for reading data from a file.
 ofstream: A class derived from ostream, used for writing data to a file.
 fstream: A class derived from both istream and ostream, allowing for both reading and writing operations on a file.
-.",-,5,-,-
-C/CPP,How is the format specifier for a short?,%hd,-,5,-,-
+."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How is the format specifier for a short?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",%hd," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"Which line will cause a compile error?
 1. printf(""%d %d"", a)
 2. printf(""%d"", value, value2)
-3. printf(""%f %d"" , a, b)",None of them although there will be problems with the output. The reason for that is the compiler does not check if the format specifier actually matches the inputs,-,5,-,-
-C/CPP,"How do you print special characters using printf? For example I want to print 10%""","To print special characters, put two of them together. For example, putting two % produces a % character as output. 
-printf(""10%%\n"");",-,5,-,-
-C/CPP,"What is the output of printf(""%e\n"", 0.0123456789);","1.234568e-02. %e will only print 12 characters long so anything after the 12th character, it will round up",-,5,-,-
-C/CPP,"printf(""%d %d %d"",11 ,011 ,0x11)","11 9 17. For printf, %d can read out octals and hexadecimal but it will convert it into the decimal value of it. If the value was a char, it will print the ASCII version. ",-,5,-,-
-C/CPP,Why do you need to put a & in the format specifier for scanf?,"The reason you need to pass the memory address of the variable to scanf() is that it allows the function to modify the original variable's value directly. When you pass the address of a variable, scanf() can write the input data to the specified memory location, thus updating the value of the variable in your program.",-,5,-,-
+3. printf(""%f %d"" , a, b)","int arri[10] = {1,2,3}; 
+sizeof(arri);",None of them although there will be problems with the output. The reason for that is the compiler does not check if the format specifier actually matches the inputs," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"How do you print special characters using printf? For example I want to print 10%""","int arri[10] = {1,2,3}; 
+sizeof(arri);","To print special characters, put two of them together. For example, putting two % produces a % character as output. 
+printf(""10%%\n"");"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is the output of printf(""%e\n"", 0.0123456789);","int arri[10] = {1,2,3}; 
+sizeof(arri);","1.234568e-02. %e will only print 12 characters long so anything after the 12th character, it will round up"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"printf(""%d %d %d"",11 ,011 ,0x11)","int arri[10] = {1,2,3}; 
+sizeof(arri);","11 9 17. For printf, %d can read out octals and hexadecimal but it will convert it into the decimal value of it. If the value was a char, it will print the ASCII version. "," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Why do you need to put a & in the format specifier for scanf?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","The reason you need to pass the memory address of the variable to scanf() is that it allows the function to modify the original variable's value directly. When you pass the address of a variable, scanf() can write the input data to the specified memory location, thus updating the value of the variable in your program."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the output produced if the input is ""425,558""?
 scanf(""%d,%d"", x,y)
-printf(""%d%d"", x,y)","Error. There is no & in the format specifier so something like scanf(""%d,%d"", x,y)",-,5,-,-
-C/CPP,What is the root base class of the stream hierarchy in C++?,std::ios_base,-,4,-,-
-C/CPP,What is streambuf in C++?,"The stream depends on a streambuf object called a stream buffer. A stream buffer is an object in charge of performing the reading and writing operations of the stream object it is associated with: the stream delegates all such operations to its associated stream buffer object, which is an intermediary between the stream and its controlled input and output sequences. 
+printf(""%d%d"", x,y)","int arri[10] = {1,2,3}; 
+sizeof(arri);","Error. There is no & in the format specifier so something like scanf(""%d,%d"", x,y)"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the root base class of the stream hierarchy in C++?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",std::ios_base," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",4,-,-
+C/CPP,What is streambuf in C++?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","The stream depends on a streambuf object called a stream buffer. A stream buffer is an object in charge of performing the reading and writing operations of the stream object it is associated with: the stream delegates all such operations to its associated stream buffer object, which is an intermediary between the stream and its controlled input and output sequences. 
 
-The streambuf class manages a buffer and provides methods for reading and writing data. It is responsible for handling the actual I/O operations, while the higher-level stream classes, like istream and ostream, interact with streambuf to provide a more convenient, type-safe, and formatted interface for I/O operations.",-,5,-,-
-C/CPP,What is filebuf?,"filebuf is a derived class of streambuf in the C++ Standard Library, designed for handling file-based input and output operations. It is the underlying buffer used by file stream classes like ifstream, ofstream, and fstream. The filebuf class is defined in the <fstream> header.
+The streambuf class manages a buffer and provides methods for reading and writing data. It is responsible for handling the actual I/O operations, while the higher-level stream classes, like istream and ostream, interact with streambuf to provide a more convenient, type-safe, and formatted interface for I/O operations."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is filebuf?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","filebuf is a derived class of streambuf in the C++ Standard Library, designed for handling file-based input and output operations. It is the underlying buffer used by file stream classes like ifstream, ofstream, and fstream. The filebuf class is defined in the <fstream> header.
 
 filebuf provides a buffered interface for reading and writing data to and from files. It manages the actual low-level file I/O operations, while the higher-level file stream classes (ifstream, ofstream, and fstream) interact with filebuf to provide a convenient, type-safe, and formatted interface for file I/O operations.
 
-In most cases, you won't need to work directly with filebuf when using file I/O in C++. Instead, you will interact with the higher-level file stream classes, which automatically manage their associated filebuf objects. However, if you need to implement custom file I/O functionality or create your own file stream classes, you may need to work with filebuf directly.",-,5,-,-
-C/CPP,What is stringbuf?,"stringbuf is a derived class of streambuf in the C++ Standard Library, designed for handling input and output operations with in-memory strings. It is the underlying buffer used by string stream classes like istringstream, ostringstream, and stringstream. The stringbuf class is defined in the <sstream> header.
+In most cases, you won't need to work directly with filebuf when using file I/O in C++. Instead, you will interact with the higher-level file stream classes, which automatically manage their associated filebuf objects. However, if you need to implement custom file I/O functionality or create your own file stream classes, you may need to work with filebuf directly."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is stringbuf?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","stringbuf is a derived class of streambuf in the C++ Standard Library, designed for handling input and output operations with in-memory strings. It is the underlying buffer used by string stream classes like istringstream, ostringstream, and stringstream. The stringbuf class is defined in the <sstream> header.
 
-stringbuf provides a buffered interface for reading and writing data to and from strings. It manages the actual low-level I/O operations with strings, while the higher-level string stream classes (istringstream, ostringstream, and stringstream) interact with stringbuf to provide a convenient, type-safe, and formatted interface for string I/O operations.",-,5,-,-
-C/CPP,What do all C++ stream objects have?,An associated stream buffer,-,5,-,-
-C/CPP,C++ Stream objects need to keep some things internally. What do they keep?,"A locale object (used to enhance international portability), used for locale-dependent operations.
+stringbuf provides a buffered interface for reading and writing data to and from strings. It manages the actual low-level I/O operations with strings, while the higher-level string stream classes (istringstream, ostringstream, and stringstream) interact with stringbuf to provide a convenient, type-safe, and formatted interface for string I/O operations."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What do all C++ stream objects have?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",An associated stream buffer," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,C++ Stream objects need to keep some things internally. What do they keep?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","A locale object (used to enhance international portability), used for locale-dependent operations.
 A set of internal pointers to keep an input buffer: eback, gptr, egptr.
-A set of internal pointers to keep an output buffer: pbase, pptr, epptr.",-,5,-,-
-C/CPP,What does std::cout << 10 actually look like,(std::cout).operator<<(10);,-,5,-,-
-C/CPP,What is cout?,"cout is an object of the ostream class defined in the iostream header. A global variable of type std::ostream is instantiated at program startup where its purpose is to write characters to standard stream stdout. To use cout, it belongs to the standard library which means you need to declare it as std::cout, part of the std namespace.",-,5,-,-
-C/CPP,Why should you use \n over std::endl and when do you use endl?,"Use \n if you need to insert a newline character without explicitly flushing the output buffer. This can be more efficient when writing a large amount of output, as flushing the buffer may result in additional I/O operations and decreased performance.
+A set of internal pointers to keep an output buffer: pbase, pptr, epptr."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does std::cout << 10 actually look like,"int arri[10] = {1,2,3}; 
+sizeof(arri);",(std::cout).operator<<(10);," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is cout?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","cout is an object of the ostream class defined in the iostream header. A global variable of type std::ostream is instantiated at program startup where its purpose is to write characters to standard stream stdout. To use cout, it belongs to the standard library which means you need to declare it as std::cout, part of the std namespace."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Why should you use \n over std::endl and when do you use endl?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Use \n if you need to insert a newline character without explicitly flushing the output buffer. This can be more efficient when writing a large amount of output, as flushing the buffer may result in additional I/O operations and decreased performance.
 
-Use std::endl if you want to insert a newline character and ensure the output buffer is flushed immediately. This can be useful for displaying important messages or debugging information promptly, even if the program crashes or terminates unexpectedly.",-,5,-,-
-C/CPP,What are manipulators in C++?,"In C++, manipulators are special functions or objects that can be used with input and output streams to modify their behavior or format. They allow you to control various aspects of I/O operations, such as formatting, precision, field width, and buffer management",-,5,-,-
-C/CPP,What is the default format flag?,defaultfloat,-,5,-,-
-C/CPP,What is the manipulator for fixed notation,std::fixed,-,5,-,-
-C/CPP,What is the floatfield format flag?,"In C++, floatfield is a format flag that determines how floating-point numbers are displayed when they are written to an output stream. The floatfield format flag is part of the ios_base class, which is the base class for I/O stream classes like istream and ostream. Format flags can be manipulated using member functions like setf() (to set flags) and unsetf() (to unset flags) or using manipulators such as std::fixed and std::scientific.",-,5,-,-
-C/CPP,What does showpoint do?,Forces the floating number to show the decimal point and the trailing zeros,-,4,-,-
-C/CPP,What header file do I need to include for manipulators?,<iomanip>,-,5,-,-
-C/CPP,What is the output of std::cout << std::fixed << std::setprecision(2) << std::showpoint << 1.23;,1.23,-,5,-,-
+Use std::endl if you want to insert a newline character and ensure the output buffer is flushed immediately. This can be useful for displaying important messages or debugging information promptly, even if the program crashes or terminates unexpectedly."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are manipulators in C++?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","In C++, manipulators are special functions or objects that can be used with input and output streams to modify their behavior or format. They allow you to control various aspects of I/O operations, such as formatting, precision, field width, and buffer management"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the default format flag?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",defaultfloat," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the manipulator for fixed notation,"int arri[10] = {1,2,3}; 
+sizeof(arri);",std::fixed," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the floatfield format flag?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","In C++, floatfield is a format flag that determines how floating-point numbers are displayed when they are written to an output stream. The floatfield format flag is part of the ios_base class, which is the base class for I/O stream classes like istream and ostream. Format flags can be manipulated using member functions like setf() (to set flags) and unsetf() (to unset flags) or using manipulators such as std::fixed and std::scientific."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does showpoint do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Forces the floating number to show the decimal point and the trailing zeros," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",4,-,-
+C/CPP,What header file do I need to include for manipulators?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",<iomanip>," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the output of std::cout << std::fixed << std::setprecision(2) << std::showpoint << 1.23;,"int arri[10] = {1,2,3}; 
+sizeof(arri);",1.23," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What manipulator should I use to achieve this effect?
-""  123""",std::setw(5),-,5,-,-
-C/CPP,What manipulator should I use to neatly aligned columns of data?,std::setw,-,5,-,-
-C/CPP,What manipulator should I use to fill empty spaces with a character?,std::setfill,-,5,-,-
-C/CPP,"By default, is output left or right justified?",Right justified,-,5,-,-
-C/CPP,What is a format flag?,"In C++, format flags are used to control the formatting of input and output stream objects. They are part of the std::ios_base class, and you can manipulate them using member functions like setf, unsetf, and flags.",-,5,-,-
-C/CPP,How do you set multiple format flags at the same time.,Use setf and then use bitwise OR std::cout.setf(std::ios::showpos| std::ios::uppercase);,-,5,-,-
-C/CPP,What is a format group?,"A format group refers to a set of format flags that share a common theme or purpose. Format flags within a group are usually mutually exclusive, meaning that you can't use more than one flag from the group at the same time. If you try to set more than one flag in the group, the last one you set will typically take precedence",-,5,-,-
-C/CPP,"If I try run this code, std::cout.setf(std::ios::hex), what would happen","Nothing happens because it is part of the numeric base group and one of the flags there has already been set which means u need to turn off that flag first before turning on the current flag, in this case the std::ios::dec flag is by default turned on so therefore you will need to turn them off in order
+""  123""","int arri[10] = {1,2,3}; 
+sizeof(arri);",std::setw(5)," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What manipulator should I use to neatly aligned columns of data?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",std::setw," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What manipulator should I use to fill empty spaces with a character?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",std::setfill," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"By default, is output left or right justified?","int arri[10] = {1,2,3}; 
+sizeof(arri);",Right justified," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is a format flag?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","In C++, format flags are used to control the formatting of input and output stream objects. They are part of the std::ios_base class, and you can manipulate them using member functions like setf, unsetf, and flags."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you set multiple format flags at the same time.,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Use setf and then use bitwise OR std::cout.setf(std::ios::showpos| std::ios::uppercase);," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is a format group?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","A format group refers to a set of format flags that share a common theme or purpose. Format flags within a group are usually mutually exclusive, meaning that you can't use more than one flag from the group at the same time. If you try to set more than one flag in the group, the last one you set will typically take precedence"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"If I try run this code, std::cout.setf(std::ios::hex), what would happen","int arri[10] = {1,2,3}; 
+sizeof(arri);","Nothing happens because it is part of the numeric base group and one of the flags there has already been set which means u need to turn off that flag first before turning on the current flag, in this case the std::ios::dec flag is by default turned on so therefore you will need to turn them off in order
 std::cout.unsetf(std::ios::dec); // turn off decimal output
-std::cout.setf(std::ios::hex); // turn on hexadecimal output",-,5,-,-
-C/CPP,"If you want to turn off every format flag in the group except for the format flag you want to turn on, what can you do?","std::cout.setf(std::ios::hex, std::ios::basefield);",-,5,-,-
-C/CPP,Generally how does cin work?,"User input: When a user enters text through the keyboard, the operating system captures the keystrokes and stores them in a buffer.
+std::cout.setf(std::ios::hex); // turn on hexadecimal output"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"If you want to turn off every format flag in the group except for the format flag you want to turn on, what can you do?","int arri[10] = {1,2,3}; 
+sizeof(arri);","std::cout.setf(std::ios::hex, std::ios::basefield);"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Generally how does cin work?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","User input: When a user enters text through the keyboard, the operating system captures the keystrokes and stores them in a buffer.
 
 Input buffering: The operating system manages the input buffer and handles line buffering (storing the input until a newline character is encountered) or block buffering (storing the input until the buffer is full). This buffering mechanism allows the program to read input efficiently and in larger chunks rather than character by character.
 
@@ -294,35 +1090,80 @@ C stdin stream: The stdin stream is a FILE pointer defined in the C Standard Lib
 
 C++ std::cin object: The std::cin object is an instance of the std::istream class, which provides various member functions and operators for reading input. std::cin is synchronized with the C stdin stream to allow seamless interaction with the operating system's input buffering.
 
-Extraction operator (>>): The extraction operator (>>) is overloaded for different data types, enabling the reading of various data types (integers, floating-point numbers, characters, strings, etc.) from the input stream. When you use the extraction operator with std::cin, it reads data from the input buffer, converts it to the appropriate type, and stores it in the specified variable. The extraction operator also takes care of skipping leading whitespace characters and stops reading input when it encounters a delimiter, such as whitespace or a newline character, or when the input buffer is empty.",-,5,-,-
-C/CPP,What are the reasons cin fail to work?,"Mismatched data types: If the input data type does not match the expected variable data type, the input stream will go into an error state. For example, if you try to read a string into an integer variable, the input stream will fail.
+Extraction operator (>>): The extraction operator (>>) is overloaded for different data types, enabling the reading of various data types (integers, floating-point numbers, characters, strings, etc.) from the input stream. When you use the extraction operator with std::cin, it reads data from the input buffer, converts it to the appropriate type, and stores it in the specified variable. The extraction operator also takes care of skipping leading whitespace characters and stops reading input when it encounters a delimiter, such as whitespace or a newline character, or when the input buffer is empty."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the reasons cin fail to work?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Mismatched data types: If the input data type does not match the expected variable data type, the input stream will go into an error state. For example, if you try to read a string into an integer variable, the input stream will fail.
 
 Exceeded input limits: If the input value is larger or smaller than the expected range of the variable, the input stream will fail. For example, if you try to read an integer value larger than the maximum value an integer can hold, it will result in input failure.
 
 Corrupted input stream: If the input stream encounters a bad or corrupted character, it will fail to read further input.
 
-End-of-file (EOF) reached: When the input stream reaches the end of the file or input source, it will fail to read further data.",-,5,-,-
+End-of-file (EOF) reached: When the input stream reaches the end of the file or input source, it will fail to read further data."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What happens if you do this when input is ""supercalifragilisticexpialidocious""
 char s[10];
-std::cin >> s;",You get a buffer overflow and program dies,-,5,-,-
-C/CPP,How do you prevent buffer overflow issues when trying to cin,Use std::cin.width(9);,-,5,-,-
-C/CPP,What are the different states cin can be in?,"goodbit: This state indicates that the input stream is in good condition and no errors have occurred. All read operations can proceed normally. When cin is in this state, the good() member function returns true.
+std::cin >> s;","int arri[10] = {1,2,3}; 
+sizeof(arri);",You get a buffer overflow and program dies," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you prevent buffer overflow issues when trying to cin,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Use std::cin.width(9);," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the different states cin can be in?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","goodbit: This state indicates that the input stream is in good condition and no errors have occurred. All read operations can proceed normally. When cin is in this state, the good() member function returns true.
 
 eofbit: This state is set when the input stream reaches the end-of-file (EOF) or the end of the input source. Once this state is set, further read operations will fail. When cin is in this state, the eof() member function returns true.
 
 failbit: This state is set when a non-fatal input operation fails, such as when there's a data type mismatch or an input value is outside the valid range. This usually indicates that the input data could not be read correctly, but the stream is still functional, and further input operations may be attempted after clearing the error state. When cin is in this state, the fail() member function returns true.
 
-badbit: This state indicates that a fatal error has occurred, such as a corrupted input stream, I/O operation error, or memory allocation error. When this state is set, further read operations are not guaranteed to work correctly, and the stream should be considered unusable. When cin is in this state, the bad() member function returns true.",-,5,-,-
-C/CPP,What should you do if cin is in the fail state or bad state,"Use cin.clear() to ignore all future I/O operations  and cin.ignore(200, \n)  to ignore the remaining values in the buffer
+badbit: This state indicates that a fatal error has occurred, such as a corrupted input stream, I/O operation error, or memory allocation error. When this state is set, further read operations are not guaranteed to work correctly, and the stream should be considered unusable. When cin is in this state, the bad() member function returns true."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What should you do if cin is in the fail state or bad state,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Use cin.clear() to ignore all future I/O operations  and cin.ignore(200, \n)  to ignore the remaining values in the buffer
  if (std::cin.fail()) 
 {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-}",-,5,-,-
-C/CPP,How do you ensure that there are no whitespaces at the start of the string when you use cin,"std::getline(std::cin >> std::ws, name); std::ws is useful for clearing whitespace when reading mixed formatted and unformatted input or switching between reading different data types from an input stream.",-,5,-,-
-C/CPP,How do you check how many characters have been read by cin?,"std::cin.gcount. gcount() is most commonly used to determine how many characters were read by the last unformatted input operation, especially when working with functions like read() or getline() where the actual number of characters read may be less than the number of characters requested",-,5,-,-
-C/CPP,What does ftell do?,ftell() returns the current file position of the specified stream with respect to the starting of the file. This function is used to get the total size of a file after moving the file pointer at the end of the file. It returns the current position in long type and the file can have more than 32767 bytes of data,-,5,-,-
-C/CPP,How would you check if the input has reached the end of a file without using eof?,"int offset = 0;
+}"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you ensure that there are no whitespaces at the start of the string when you use cin,"int arri[10] = {1,2,3}; 
+sizeof(arri);","std::getline(std::cin >> std::ws, name); std::ws is useful for clearing whitespace when reading mixed formatted and unformatted input or switching between reading different data types from an input stream."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you check how many characters have been read by cin?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","std::cin.gcount. gcount() is most commonly used to determine how many characters were read by the last unformatted input operation, especially when working with functions like read() or getline() where the actual number of characters read may be less than the number of characters requested"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does ftell do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",ftell() returns the current file position of the specified stream with respect to the starting of the file. This function is used to get the total size of a file after moving the file pointer at the end of the file. It returns the current position in long type and the file can have more than 32767 bytes of data," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How would you check if the input has reached the end of a file without using eof?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","int offset = 0;
 char *str = (char *)malloc(2);
 while (fgets(str + offset, bufferSize - offset, fp) != NULL){
      offset = bufferSize - 1;
@@ -334,14 +1175,39 @@ for (int i = 0; i < bufferSize; i++){
          str[i] = '\0';
          break;
     }
- }",-,5,-,-
-C/CPP,What are the 3 constants that are used with fseek?,"SEEK_SET: Seek from the beginning of the file.
+ }"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the 3 constants that are used with fseek?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","SEEK_SET: Seek from the beginning of the file.
 SEEK_CUR: Seek from the current position of the file.
-SEEK_END: Seek from the end of the file.",-,5,-,-
-C/CPP,What does fseek do?,Move the file pointer to the specific place,-,5,-,-
-C/CPP,When does fgtets stop reading?,"It reads until a newline character is encountered, the end-of-file is reached, or the specified maximum number of characters is read (minus one, as the function automatically adds a null character \0 at the end to form a C-style string). fgets is commonly used to read lines from a text file.",-,5,-,-
-C/CPP,What are 2 ways to open a file in C++,"Use file.open() or a constructor std::fstream(""example.txt"", mode)",-,5,-,-
-C/CPP,What are the different modes in C++?,"ios_base::in or ios::in: Open the file for input (reading). This mode is typically used with ifstream and fstream.
+SEEK_END: Seek from the end of the file."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does fseek do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Move the file pointer to the specific place," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,When does fgtets stop reading?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","It reads until a newline character is encountered, the end-of-file is reached, or the specified maximum number of characters is read (minus one, as the function automatically adds a null character \0 at the end to form a C-style string). fgets is commonly used to read lines from a text file."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are 2 ways to open a file in C++,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Use file.open() or a constructor std::fstream(""example.txt"", mode)"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the different modes in C++?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","ios_base::in or ios::in: Open the file for input (reading). This mode is typically used with ifstream and fstream.
 
 ios_base::out or ios::out: Open the file for output (writing). If the file does not exist, it will be created. If the file exists, its contents will be truncated (erased) unless the ios::app or ios::ate mode is also specified. This mode is typically used with ofstream and fstream.
 
@@ -351,27 +1217,67 @@ ios_base::ate or ios::ate: Open the file for output and set the initial position
 
 ios_base::trunc or ios::trunc: Truncate the file if it already exists. This mode is implied by the ios::out mode, but you can use it explicitly if desired.
 
-ios_base::binary or ios::binary: Open the file in binary mode. By default, files are opened in text mode, which may involve translating newline characters between the file and the program. In binary mode, no translation is performed, and the file is read or written exactly as it is.",-,5,-,-
-C/CPP,What are the different seek flags in C++?,"ios_base::beg or ios::beg: The beginning of the file. This flag is used to set the read or write pointer relative to the start of the file.
+ios_base::binary or ios::binary: Open the file in binary mode. By default, files are opened in text mode, which may involve translating newline characters between the file and the program. In binary mode, no translation is performed, and the file is read or written exactly as it is."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the different seek flags in C++?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","ios_base::beg or ios::beg: The beginning of the file. This flag is used to set the read or write pointer relative to the start of the file.
 
 ios_base::cur or ios::cur: The current position of the read or write pointer. This flag is used to set the pointer relative to its current position, allowing you to move the pointer forward or backward within the file.
 
-ios_base::end or ios::end: The end of the file. This flag is used to set the read or write pointer relative to the end of the file, allowing you to move the pointer to a position before the end of the file.",-,5,-,-
-C/CPP,What is C++ equivalent of fseek and ftell,seekg and tellg,-,5,-,-
-C/CPP,What is the difference between seekg and seekp,"The main difference between seekg and seekp is their purpose within the file stream. seekg is used to manipulate the read pointer, while seekp is used to manipulate the write pointer.",-,5,-,-
-C/CPP,What is an exit statement?,"In C and C++, the exit statement is used to terminate the program execution and return control to the operating system. It is a part of the cstdlib (or stdlib.h in C) library and takes an integer value as an argument, which serves as the exit status code. This code is passed back to the operating system or calling process, where 0 typically indicates a successful program termination, while non-zero values indicate an error or abnormal termination.",-,5,-,-
-C/CPP,What is a variable length array parameter?,"A variable-length array (VLA) parameter in C refers to a function parameter that has an array type whose size is determined at runtime. This feature is supported in C99 and later, but it is optional in C11 and not supported in C++.
+ios_base::end or ios::end: The end of the file. This flag is used to set the read or write pointer relative to the end of the file, allowing you to move the pointer to a position before the end of the file."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is C++ equivalent of fseek and ftell,"int arri[10] = {1,2,3}; 
+sizeof(arri);",seekg and tellg," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the difference between seekg and seekp,"int arri[10] = {1,2,3}; 
+sizeof(arri);","The main difference between seekg and seekp is their purpose within the file stream. seekg is used to manipulate the read pointer, while seekp is used to manipulate the write pointer."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is an exit statement?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","In C and C++, the exit statement is used to terminate the program execution and return control to the operating system. It is a part of the cstdlib (or stdlib.h in C) library and takes an integer value as an argument, which serves as the exit status code. This code is passed back to the operating system or calling process, where 0 typically indicates a successful program termination, while non-zero values indicate an error or abnormal termination."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is a variable length array parameter?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","A variable-length array (VLA) parameter in C refers to a function parameter that has an array type whose size is determined at runtime. This feature is supported in C99 and later, but it is optional in C11 and not supported in C++.
 void print_array(int n, int arr[n]) {
     for (int i = 0; i < n; ++i) {
         printf(""%d "", arr[i]);
     }
     printf(""\n"");
-}",-,5,-,-
-C/CPP,What is a compound literal in C?,"A compound literal in C is a feature introduced in the C99 standard that allows you to create unnamed objects of a specified type with a given set of values. Compound literals can be used for various data types, including arrays, structures, and unions. They can also be used as function parameters, making it convenient to pass arrays or other data structures to functions without explicitly declaring them beforehand.",-,5,-,-
+}"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is a compound literal in C?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","A compound literal in C is a feature introduced in the C99 standard that allows you to create unnamed objects of a specified type with a given set of values. Compound literals can be used for various data types, including arrays, structures, and unions. They can also be used as function parameters, making it convenient to pass arrays or other data structures to functions without explicitly declaring them beforehand."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"Are you allowed to do this?
 int foo(int a = 2, int b = 5, int c = 10)
-int foo(int a, int b, int c)",No.,-,5,-,-
-C/CPP,What are the different ways you can pass an array into a function?,"Pointer to Array: 
+int foo(int a, int b, int c)","int arri[10] = {1,2,3}; 
+sizeof(arri);",No.," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the different ways you can pass an array into a function?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Pointer to Array: 
 void printArray(int *arr, int size)
 
 Reference: 
@@ -379,8 +1285,13 @@ void printArray(int (&arr)[5])
 
 Template:
 template <size_t N>
-void printArray(int (&arr)[N])",-,5,-,-
-C/CPP,What are the advantages and disadvantages of pass by value,"Advantages:
+void printArray(int (&arr)[N])"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the advantages and disadvantages of pass by value,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Advantages:
 It is simple and easy to understand.
 It prevents changes made inside a function from affecting the original value of the variable.
 It is less error-prone because the function cannot modify the original value of the variable.
@@ -388,8 +1299,13 @@ It can be faster in some cases because there are no extra memory accesses involv
 
 Disadvantages:
 It creates a copy of the original variable, which can be inefficient for large data structures.
-It may lead to memory issues if you pass large data structures by value.",-,5,-,-
-C/CPP,What are the advantages and disadvantages of pass by reference,"Advantages:
+It may lead to memory issues if you pass large data structures by value."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the advantages and disadvantages of pass by reference,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Advantages:
 It avoids making copies of large data structures, which can be more efficient.
 It can simplify function arguments by avoiding the need to return values from a function.
 It allows functions to modify the original value of the variable.
@@ -397,8 +1313,13 @@ It allows functions to modify the original value of the variable.
 Disadvantages:
 It can be more difficult to understand than pass by value.
 It requires more care when coding to avoid unintended changes to variables.
-It can lead to memory leaks if references are not handled properly.",-,5,-,-
-C/CPP,What are the advantages and disadvantages of pass by pointer,"Advantages:
+It can lead to memory leaks if references are not handled properly."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the advantages and disadvantages of pass by pointer,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Advantages:
 Pointers allow efficient memory management in languages that support them.
 They provide low-level access to memory, which is essential for certain programming tasks.
 They allow for flexible data structures and complex data manipulation.
@@ -406,64 +1327,243 @@ They allow for flexible data structures and complex data manipulation.
 Disadvantages:
 Pointers can lead to memory leaks and other memory-related bugs.
 They require a thorough understanding of memory management, which can be challenging for beginners.
-They can make code harder to read and maintain.",-,5,-,-
-C/CPP,What is an inline function?,"An inline function is a programming language feature used to optimize function calls by suggesting that the compiler insert the function's code directly into the calling code rather than generating a separate function call. Inline functions can improve the performance of a program by reducing function call overhead and enabling further optimizations, such as constant propagation and loop unrolling.",-,5,-,-
-C/CPP,Does putting the word inline actually inline the function?,"No. The use of the inline keyword is generally considered a hint or request to the compiler, rather than a strict requirement. The compiler can choose whether to actually inline the function or not, based on optimization settings and its own analysis of the potential performance impact.",-,5,-,-
-C/CPP,How does functions tell whether a function can be overloaded,Checks if the overloaded function signature is different from the original function signature,-,5,-,-
-C/CPP,Are you allowed to do this?,Yes. Member functions can be differentiated through const.,-,5,CCPP4010,-
-C/CPP,What are the 3 steps of how the compiler determines if function overloading can occur?,"The first step is to find a perfect fit that matches the parameter. If not, it will find the best match. If the first step fails, the second step is to implicitly convert the value. This will involve numeric promotion where smaller data types are promoted to larger data types. If the second step fails, the next step is to do a standard conversion where types are converted into other types.The final step is that it will try to do a user-defined conversion if possible.The compiler fails once it is unable to do all of that. The compiler will always go through these three steps for overloading. If there is a choice between a best match and a promotion, it will always go for the best match and if there is a choice between a promotion and a conversion, it will always go for the promotion.
-",-,5,-,-
-C/CPP,Which function will run?,"The answer for this question is f2. Firstly, it will try to match a with all of the parameters. There is no possible best match or promotion possible so it will do a type conversion instead. All functions will work with a type conversion as a long can be converted into any one of the first parameters. Next the compiler will look at the second parameter. Once again, there is no possible best match or promotion possible so it will go for the conversion. Like the first one, all functions have a valid conversion. Lastly, we look at the last parameter. There is no possible match so it tries a promotion. This time, function f2 allows for a promotion from a short to an int and the compiler will select f2 over the rest as the rest are not valid promotions for f2’s short parameter.",-,5,CCPP4012,-
+They can make code harder to read and maintain."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is an inline function?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","An inline function is a programming language feature used to optimize function calls by suggesting that the compiler insert the function's code directly into the calling code rather than generating a separate function call. Inline functions can improve the performance of a program by reducing function call overhead and enabling further optimizations, such as constant propagation and loop unrolling."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Does putting the word inline actually inline the function?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","No. The use of the inline keyword is generally considered a hint or request to the compiler, rather than a strict requirement. The compiler can choose whether to actually inline the function or not, based on optimization settings and its own analysis of the potential performance impact."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How does functions tell whether a function can be overloaded,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Checks if the overloaded function signature is different from the original function signature," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Are you allowed to do this?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Yes. Member functions can be differentiated through const.," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP4010,-
+C/CPP,What are the 3 steps of how the compiler determines if function overloading can occur?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","The first step is to find a perfect fit that matches the parameter. If not, it will find the best match. If the first step fails, the second step is to implicitly convert the value. This will involve numeric promotion where smaller data types are promoted to larger data types. If the second step fails, the next step is to do a standard conversion where types are converted into other types.The final step is that it will try to do a user-defined conversion if possible.The compiler fails once it is unable to do all of that. The compiler will always go through these three steps for overloading. If there is a choice between a best match and a promotion, it will always go for the best match and if there is a choice between a promotion and a conversion, it will always go for the promotion.
+"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Which function will run?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","The answer for this question is f2. Firstly, it will try to match a with all of the parameters. There is no possible best match or promotion possible so it will do a type conversion instead. All functions will work with a type conversion as a long can be converted into any one of the first parameters. Next the compiler will look at the second parameter. Once again, there is no possible best match or promotion possible so it will go for the conversion. Like the first one, all functions have a valid conversion. Lastly, we look at the last parameter. There is no possible match so it tries a promotion. This time, function f2 allows for a promotion from a short to an int and the compiler will select f2 over the rest as the rest are not valid promotions for f2’s short parameter."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP4012,-
 C/CPP,"What is the meaning of the two int main two command line arguments?
-int main(int argc, char*argv[])","argc stands for argument count, the number of command line arguments. argv is the array of pointers to the command line arguments stored in string form. argv[0] points to the name of the program while argv[1] to  argv[argc-1] points to remaining arguments. They can also be written as int main(int argc, char** argv) but the first one is better to read.",-,5,-,-
-C/CPP,What does storage mean?,Storage refers to the storage duration and memory location of a variable or function,-,5,-,-
-C/CPP,What are the different types of storages?,"Automatic, Static, External, Register",-,5,-,-
-C/CPP,What does automatic storage mean?,"Variables with automatic storage duration are allocated on the stack, and their lifetime is limited to the scope in which they are defined. Local variables have automatic storage duration by default.",-,5,-,-
-C/CPP,What does static storage mean?,"Variables with automatic storage duration are allocated on the stack, and their lifetime is limited to the scope in which they are defined. Local variables have automatic storage duration by default.",-,5,-,-
-C/CPP,What does external storage mean?,"Variables with external storage duration are similar to those with static storage duration, but they have external linkage, making them accessible from other translation units. In C, you can declare a variable with the extern keyword to specify external storage.",-,5,-,-
-C/CPP,What does register storage mean?,"Variables with register storage duration are stored in CPU registers for faster access. This storage class is specified using the register keyword in C and C++. However, the compiler is not obligated to honor this request, and it will make the decision based on the target architecture and optimization settings. Note that the register keyword is deprecated in C++ and has been removed in C++17.",-,5,-,-
-C/CPP,What does linkage mean?,"Linkage determines the visibility of an identifier across multiple translation units (i.e., separate source files) in a program.",-,5,-,-
-C/CPP,What are the 3 types of linkage?,"External, Internal, No Linkage",-,5,-,-
-C/CPP,What does external linkage mean?,"An identifier with external linkage can be accessed from other translation units. In C and C++, global variables and functions have external linkage by default, unless declared otherwise. ",-,5,-,-
-C/CPP,What does internal linkage mean?,"An identifier with internal linkage is only accessible within the translation unit where it is defined. In C/C++, you can declare a variable or function with the static keyword to give it internal linkage.",-,5,-,-
-C/CPP,What does no linkage mean?,"An identifier with no linkage can only be accessed within the scope where it is defined, such as a local variable within a function.",-,5,-,-
-C/CPP,How do you share a variable or function with external linkage between translation units,"To share a variable or function with external linkage between translation units, you declare it in one source file (definition) and use the extern keyword in other source files (declaration) to refer to the same variable or function.",-,5,-,-
+int main(int argc, char*argv[])","int arri[10] = {1,2,3}; 
+sizeof(arri);","argc stands for argument count, the number of command line arguments. argv is the array of pointers to the command line arguments stored in string form. argv[0] points to the name of the program while argv[1] to  argv[argc-1] points to remaining arguments. They can also be written as int main(int argc, char** argv) but the first one is better to read."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does storage mean?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Storage refers to the storage duration and memory location of a variable or function," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the different types of storages?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Automatic, Static, External, Register"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does automatic storage mean?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Variables with automatic storage duration are allocated on the stack, and their lifetime is limited to the scope in which they are defined. Local variables have automatic storage duration by default."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does static storage mean?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Variables with automatic storage duration are allocated on the stack, and their lifetime is limited to the scope in which they are defined. Local variables have automatic storage duration by default."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does external storage mean?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Variables with external storage duration are similar to those with static storage duration, but they have external linkage, making them accessible from other translation units. In C, you can declare a variable with the extern keyword to specify external storage."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does register storage mean?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Variables with register storage duration are stored in CPU registers for faster access. This storage class is specified using the register keyword in C and C++. However, the compiler is not obligated to honor this request, and it will make the decision based on the target architecture and optimization settings. Note that the register keyword is deprecated in C++ and has been removed in C++17."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does linkage mean?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Linkage determines the visibility of an identifier across multiple translation units (i.e., separate source files) in a program."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the 3 types of linkage?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","External, Internal, No Linkage"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does external linkage mean?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","An identifier with external linkage can be accessed from other translation units. In C and C++, global variables and functions have external linkage by default, unless declared otherwise. "," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does internal linkage mean?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","An identifier with internal linkage is only accessible within the translation unit where it is defined. In C/C++, you can declare a variable or function with the static keyword to give it internal linkage."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does no linkage mean?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","An identifier with no linkage can only be accessed within the scope where it is defined, such as a local variable within a function."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you share a variable or function with external linkage between translation units,"int arri[10] = {1,2,3}; 
+sizeof(arri);","To share a variable or function with external linkage between translation units, you declare it in one source file (definition) and use the extern keyword in other source files (declaration) to refer to the same variable or function."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"Is there a problem with this?
-constexpr extern g_variable",Yes. constexpr are not allowed to be forward declared because they can only accept values at compile time.,-,5,-,-
-C/CPP,What did C++17 add to help with removing global run time constants,Adding the ability for inline variables. Inline global variables to have external linkage by default. The linker will consolidate all inline definitions of a variable into a single variable definition (thus meeting the one definition rule).,-,5,-,-
-C/CPP,What properties does inline variables have?,"External linkage by default: Inline variables have external linkage, making them accessible from different translation units.
+constexpr extern g_variable","int arri[10] = {1,2,3}; 
+sizeof(arri);",Yes. constexpr are not allowed to be forward declared because they can only accept values at compile time.," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What did C++17 add to help with removing global run time constants,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Adding the ability for inline variables. Inline global variables to have external linkage by default. The linker will consolidate all inline definitions of a variable into a single variable definition (thus meeting the one definition rule).," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What properties does inline variables have?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","External linkage by default: Inline variables have external linkage, making them accessible from different translation units.
 
 Single shared instance: Despite being defined in multiple translation units, all instances of an inline variable refer to the same memory location, ensuring that there's only one shared instance of the variable throughout the entire program.
 
 Initialization is guaranteed to happen exactly once: When an inline variable has a non-trivial initialization (e.g., involving a constructor), the initialization is guaranteed to happen exactly once, even if the variable is defined in multiple translation units. This is similar to the behavior of static variables with block scope.
 
-They also maintain constexpr",-,5,-,-
-C/CPP,Why are inline variables useful?,"It allows you to declare global constexpr variables in header files without running into multiple-definition errors and you can do this
+They also maintain constexpr"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Why are inline variables useful?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","It allows you to declare global constexpr variables in header files without running into multiple-definition errors and you can do this
 namespace constants
 {
     inline constexpr double pi { 3.14159 };
     inline constexpr double myGravity { 9.2 };
 }
-",-,5,-,-
-C/CPP,What does scope mean?,Scope refers to the region of the program in which a variable or function can be accessed. ,-,5,-,-
-C/CPP,What are the 2 types of scope,Local and Global,-,5,-,-
-C/CPP,"In C++17, which syntax is used to declare a nested namespace in a more concise way?","namespace foo::goo // goo is a namespace inside foo (C++17 style)
+"," if (std::cin.fail()) 
 {
-}",-,5,-,-
-C/CPP,How do you declare a namespace alias?,"namespace b = an_extremely_long_namespace_name;
-cout << b::bark",-,5,-,-
-C/CPP,What is the point of anoymous namespaces?,"Anonymous namespaces, sometimes also called unnamed namespaces, serve a purpose similar to that of static keyword for global variables and functions. They are used to restrict the visibility of their contents to the translation unit (source file) they are defined in. This helps to avoid name clashes and unintended external linkage of variables, functions, or other entities.
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What does scope mean?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Scope refers to the region of the program in which a variable or function can be accessed. ," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the 2 types of scope,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Local and Global," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In C++17, which syntax is used to declare a nested namespace in a more concise way?","int arri[10] = {1,2,3}; 
+sizeof(arri);","namespace foo::goo // goo is a namespace inside foo (C++17 style)
+{
+}"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you declare a namespace alias?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","namespace b = an_extremely_long_namespace_name;
+cout << b::bark"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the point of anoymous namespaces?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Anonymous namespaces, sometimes also called unnamed namespaces, serve a purpose similar to that of static keyword for global variables and functions. They are used to restrict the visibility of their contents to the translation unit (source file) they are defined in. This helps to avoid name clashes and unintended external linkage of variables, functions, or other entities.
 
-When you use an anonymous namespace, the compiler creates a unique namespace for the contents. This unique namespace is only visible within the same source file or translation unit. This makes it impossible to accidentally access or modify the contents of the anonymous namespace from another source file, ensuring encapsulation and safer code.",-,5,-,-
-C/CPP,What is an inlined namespace?,"An ""inlined namespace"" is a C++ feature that allows a nested namespace to be automatically treated as if its contents were part of its parent namespace. This is achieved using the inline keyword when defining the nested namespace.
+When you use an anonymous namespace, the compiler creates a unique namespace for the contents. This unique namespace is only visible within the same source file or translation unit. This makes it impossible to accidentally access or modify the contents of the anonymous namespace from another source file, ensuring encapsulation and safer code."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is an inlined namespace?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","An ""inlined namespace"" is a C++ feature that allows a nested namespace to be automatically treated as if its contents were part of its parent namespace. This is achieved using the inline keyword when defining the nested namespace.
 
-Inlined namespaces are primarily used for versioning purposes. They can help manage multiple versions of an API or a library by isolating the versioned components within separate namespaces while keeping the common components accessible.",-,5,-,-
-C/CPP,How do you store a lambda,There are 3 ways,-,5,-,CCPP4036A
-C/CPP,What is the output?,0 1 0 1 2.Making auto lambdas makes each instance of the lambda be unique.,-,5,CCPP4037,-
-C/CPP,Is there a problem with this?,"When we are making our lambda return types be auto, all return statements must return the same data type. As you can see, the first return statement gives an integer but the second return statement will return a double and these two return statements are not of the same type and therefore will cause an error.",-,5,CCPP4038,-
-C/CPP,What happens if you put a variable in the capture clause: [var](){},"When a lambda definition is executed, for each variable that the lambda captures, a clone of that variable is made (with an identical name) inside the lambda. These cloned variables are initialised from the outer scope variables of the same name at this point. ",-,5,-,-
-C/CPP,Can you change a cloned variable in the capture clause?,"No, because its const. You would need to declare it as mutable or as a reference in order to do so.",-,5,-,-
-C/CPP,What is the output of the code?,"1 1 1. When you passed in the mutable lambda as argument to std::function, a clone of the lambda object is created which means that there will be 3 copies of the lambda object. ",-,5,CCPP4041,-
+Inlined namespaces are primarily used for versioning purposes. They can help manage multiple versions of an API or a library by isolating the versioned components within separate namespaces while keeping the common components accessible."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you store a lambda,"int arri[10] = {1,2,3}; 
+sizeof(arri);",There are 3 ways," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,CCPP4036A
+C/CPP,What is the output?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",0 1 0 1 2.Making auto lambdas makes each instance of the lambda be unique.," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP4037,-
+C/CPP,Is there a problem with this?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","When we are making our lambda return types be auto, all return statements must return the same data type. As you can see, the first return statement gives an integer but the second return statement will return a double and these two return statements are not of the same type and therefore will cause an error."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP4038,-
+C/CPP,What happens if you put a variable in the capture clause: [var](){},"int arri[10] = {1,2,3}; 
+sizeof(arri);","When a lambda definition is executed, for each variable that the lambda captures, a clone of that variable is made (with an identical name) inside the lambda. These cloned variables are initialised from the outer scope variables of the same name at this point. "," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Can you change a cloned variable in the capture clause?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","No, because its const. You would need to declare it as mutable or as a reference in order to do so."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the output of the code?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","1 1 1. When you passed in the mutable lambda as argument to std::function, a clone of the lambda object is created which means that there will be 3 copies of the lambda object. "," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP4041,-
 C/CPP,"Is this allowed?
 
 namespace f = Fruit;
@@ -471,80 +1571,216 @@ void function()
 {
   namespace f = Forest; //allowed
 }
-","Yes. Aliases defined outside of a function are still only visible within the file they were defined. You can reassign the alias to a different namespace but the definition must happen in a new scope. Otherwise, it is an illegal redefinition.",-,5,-,-
-C/CPP,How do you declare an array in C++,There are 3 types of declaration in C++,-,5,-,CCPP5000A
-C/CPP,"On initialisation, if you want to fill the rest of the array with 0s but initialise only a single element with a value, what can you do?","Use a designated initialiser
-int a[15] = {[2] = 29, [9] = 7, [14] = 48};",-,5,-,-
+","int arri[10] = {1,2,3}; 
+sizeof(arri);","Yes. Aliases defined outside of a function are still only visible within the file they were defined. You can reassign the alias to a different namespace but the definition must happen in a new scope. Otherwise, it is an illegal redefinition."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you declare an array in C++,"int arri[10] = {1,2,3}; 
+sizeof(arri);",There are 3 types of declaration in C++," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,CCPP5000A
+C/CPP,"On initialisation, if you want to fill the rest of the array with 0s but initialise only a single element with a value, what can you do?","int arri[10] = {1,2,3}; 
+sizeof(arri);","Use a designated initialiser
+int a[15] = {[2] = 29, [9] = 7, [14] = 48};"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What happens if you do this?
 int i = -1;
 int arr[10] = {0}
-cout << arr[-1]",You might see -1 appear because array memory is contiguous,-,5,-,-
-C/CPP,How do you find the size of an array?,int size = sizeof(arr)/sizeof(arr[0]);,-,5,-,-
+cout << arr[-1]","int arri[10] = {1,2,3}; 
+sizeof(arri);",You might see -1 appear because array memory is contiguous," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you find the size of an array?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",int size = sizeof(arr)/sizeof(arr[0]);," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What are potential problems with 
-int size = sizeof(arr)/sizeof(arr[0]);","If you pass an array to a function and use that parameter, the size will no longer be correct because that is a pointer",-,5,-,-
-C/CPP,What are the different ways to declare a string,"char myString[]= ""string"" ;
+int size = sizeof(arr)/sizeof(arr[0]);","int arri[10] = {1,2,3}; 
+sizeof(arri);","If you pass an array to a function and use that parameter, the size will no longer be correct because that is a pointer"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the different ways to declare a string,"int arri[10] = {1,2,3}; 
+sizeof(arri);","char myString[]= ""string"" ;
 char c[] = ""string"";
 char c[7]{'s','t','r','i','n','g','\0'};
-char c[7] = ""string"";",-,5,-,-
+char c[7] = ""string"";"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What happens if you do this
-char c[6]{‘s’,’t’,’r’,’i’,’n’,’g’}",The compiler wont see it as a real string but a char array,-,5,-,-
+char c[6]{‘s’,’t’,’r’,’i’,’n’,’g’}","int arri[10] = {1,2,3}; 
+sizeof(arri);",The compiler wont see it as a real string but a char array," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the size of 
-char a[] = ""Digipen"";",8,-,5,-,-
+char a[] = ""Digipen"";","int arri[10] = {1,2,3}; 
+sizeof(arri);",8," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the size of 
-char b[] = {'D', 'i', 'g', 'i', 'p', 'e', 'n'};",7,-,5,-,-
+char b[] = {'D', 'i', 'g', 'i', 'p', 'e', 'n'};","int arri[10] = {1,2,3}; 
+sizeof(arri);",7," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the size of 
-char c[] = {'D', 'i', 'g', '\0', 'i', 'p'};",6,-,5,-,-
+char c[] = {'D', 'i', 'g', '\0', 'i', 'p'};","int arri[10] = {1,2,3}; 
+sizeof(arri);",6," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the size of
-char *d = ""Digipen"";",8,-,5,-,-
+char *d = ""Digipen"";","int arri[10] = {1,2,3}; 
+sizeof(arri);",8," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the size of
-animals[][10]={ ""lion"", ""camel"", ""tiger"", ""cat"" };",40,-,5,-,-
+animals[][10]={ ""lion"", ""camel"", ""tiger"", ""cat"" };","int arri[10] = {1,2,3}; 
+sizeof(arri);",40," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"If you need to have a string that has more than one line so something like
 string s = ""Hello
 Hello""
-What can you do?","Backslash
+What can you do?","int arri[10] = {1,2,3}; 
+sizeof(arri);","Backslash
 printf(""Blah Blah Blah Blah     \
 Blah Blah Blah"");
 
 Two Adjacent Strings
 printf(""Genshin Impact is full of RNG”
-“I keep losing the 5050"");",-,5,-,-
+“I keep losing the 5050"");"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"If you need to have a string that has more than one line so something like
 string s = ""Hello
 Hello""
-What can you do?","Backslash
+What can you do?","int arri[10] = {1,2,3}; 
+sizeof(arri);","Backslash
 printf(""Blah Blah Blah Blah     \
 Blah Blah Blah"");
 
 Two Adjacent Strings
 printf(""Genshin Impact is full of RNG”
-“I keep losing the 5050"");",-,5,-,-
-C/CPP,"In C, If you want to use printf and scanf and put it into a buffer, what should you use instead",sprintf and sscanf works like printf and scanf but sprintf copies the value into a buffer or in other words a string.,-,5,-,-
+“I keep losing the 5050"");"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"In C, If you want to use printf and scanf and put it into a buffer, what should you use instead","int arri[10] = {1,2,3}; 
+sizeof(arri);",sprintf and sscanf works like printf and scanf but sprintf copies the value into a buffer or in other words a string.," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the problem with this
-char enemy[][9] = {""Ghost"",""Bat"", ""Skeleton""};","There is alot of empty space and waste alot of memory. You should do
-char const *enemy[] = {""Ghost"",""Bat"", ""Skeleton""};",-,5,-,-
-C/CPP,What is the output of this code?,hunt,-,5,CCPP5016,-
-C/CPP,How do you convert string to integer,atoi,-,5,-,-
-C/CPP,How do you convert string to float,atof,-,5,-,-
-C/CPP,How do you convert string to long,atol,-,5,-,-
-C/CPP,How do you convert string to long long,atoll,-,5,-,-
-C/CPP,How do you implement atoi,"int atoiEquivalent = 0;
+char enemy[][9] = {""Ghost"",""Bat"", ""Skeleton""};","int arri[10] = {1,2,3}; 
+sizeof(arri);","There is alot of empty space and waste alot of memory. You should do
+char const *enemy[] = {""Ghost"",""Bat"", ""Skeleton""};"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the output of this code?,"int arri[10] = {1,2,3}; 
+sizeof(arri);",hunt," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP5016,-
+C/CPP,How do you convert string to integer,"int arri[10] = {1,2,3}; 
+sizeof(arri);",atoi," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you convert string to float,"int arri[10] = {1,2,3}; 
+sizeof(arri);",atof," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you convert string to long,"int arri[10] = {1,2,3}; 
+sizeof(arri);",atol," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you convert string to long long,"int arri[10] = {1,2,3}; 
+sizeof(arri);",atoll," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you implement atoi,"int arri[10] = {1,2,3}; 
+sizeof(arri);","int atoiEquivalent = 0;
 for (int i = 0; str[i] != '\0'; ++i)
 {
   atoiEquivalent = atoiEquivalent * 10 + str[i] - '0';
-}",-,5,-,-
-C/CPP,How do you implement atol,"int atolEquivalent = 0;
+}"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you implement atol,"int arri[10] = {1,2,3}; 
+sizeof(arri);","int atolEquivalent = 0;
 for (int i = 0; str[i] != '\0'; ++i)
 {
   atolEquivalent= atolEquivalent* 10 + str[i] - '0';
-}",-,5,-,-
-C/CPP,How do you implement atoll,"int atollEquivalent = 0;
+}"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you implement atoll,"int arri[10] = {1,2,3}; 
+sizeof(arri);","int atollEquivalent = 0;
 for (int i = 0; str[i] != '\0'; ++i)
 {
   atollEquivalent = atollEquivalent * 10 + str[i] - '0';
-}",-,5,-,-
-C/CPP,Why is strcpy considered unsafe?,"The problem with strcpy is that it does not perform bounds checking on the destination array, which can lead to buffer overflows and potential security vulnerabilities. If the destination array is not large enough to hold the entire source string, strcpy will continue copying characters beyond the end of the array, overwriting adjacent memory and potentially causing program crashes, data corruption, or even execution of arbitrary code.",-,5,-,-
-C/CPP,"If strcpy is unsafe, what should you use instead?",strncpy,-,5,-,-
-C/CPP,What is the output of each of the following code,"2 because arrc is currently pointing to “.” and strlen reads “.7”
+}"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Why is strcpy considered unsafe?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","The problem with strcpy is that it does not perform bounds checking on the destination array, which can lead to buffer overflows and potential security vulnerabilities. If the destination array is not large enough to hold the entire source string, strcpy will continue copying characters beyond the end of the array, overwriting adjacent memory and potentially causing program crashes, data corruption, or even execution of arbitrary code."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"If strcpy is unsafe, what should you use instead?","int arri[10] = {1,2,3}; 
+sizeof(arri);",strncpy," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the output of each of the following code,"int arri[10] = {1,2,3}; 
+sizeof(arri);","2 because arrc is currently pointing to “.” and strlen reads “.7”
 
 3 because *animals is pointing to “lion” and adding 1 to animals becomes “elephant” so adding 3 becomes “cat”
 
@@ -554,53 +1790,162 @@ C/CPP,What is the output of each of the following code,"2 because arrc is curren
 
 CTE because you cant ++arrc
 
-",-,5,CCPP5026,-
+"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP5026,-
 C/CPP,"What is the value of strlen(b)
-char b[] = {'D', 'i', 'g', 'i', 'p', 'e', 'n'};",Undefined,-,5,-,-
+char b[] = {'D', 'i', 'g', 'i', 'p', 'e', 'n'};","int arri[10] = {1,2,3}; 
+sizeof(arri);",Undefined," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the value of strlen(c)
-char c[] = {'D', 'i', 'g', '\0', 'i', 'p'};",3,-,5,-,-
+char c[] = {'D', 'i', 'g', '\0', 'i', 'p'};","int arri[10] = {1,2,3}; 
+sizeof(arri);",3," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the value of strlen(d)
-char *d = ""Digipen"";",7,-,5,-,-
-C/CPP,How do you implement strlen,Here is the implementation,-,5,-,CCPP5030A
-C/CPP,How do you implement strcpy,Here is the implementation,-,5,-,CCPP5031A
-C/CPP,How do you implement strcat,Here is the implementation,-,5,-,CCPP5032A
-C/CPP,How do you implement strcmp,Here is the implementation,-,5,-,CCPP5033A
-C/CPP,What is a string literal,"In C++, a string literal is a sequence of characters enclosed in double quotes ("") that represents a constant string value.",-,5,-,-
-C/CPP,What happens if you use relational operators with strings,It compares them lexicographically,-,5,-,-
-C/CPP,What are the different ways to return an index in a std::string?,"find
+char *d = ""Digipen"";","int arri[10] = {1,2,3}; 
+sizeof(arri);",7," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you implement strlen,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Here is the implementation," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,CCPP5030A
+C/CPP,How do you implement strcpy,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Here is the implementation," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,CCPP5031A
+C/CPP,How do you implement strcat,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Here is the implementation," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,CCPP5032A
+C/CPP,How do you implement strcmp,"int arri[10] = {1,2,3}; 
+sizeof(arri);",Here is the implementation," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,CCPP5033A
+C/CPP,What is a string literal,"int arri[10] = {1,2,3}; 
+sizeof(arri);","In C++, a string literal is a sequence of characters enclosed in double quotes ("") that represents a constant string value."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What happens if you use relational operators with strings,"int arri[10] = {1,2,3}; 
+sizeof(arri);",It compares them lexicographically," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What are the different ways to return an index in a std::string?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","find
 s.find_first_of(""H"")
 s.find_last_of("" "")
 s.find_first_not_of("" "")
-s.find_last_not_of("" "")",-,5,-,-
-C/CPP,"If a std::string fails to find the character it is trying to find, what will it return?",It returns string::npos. string::npos is a value of size_type that is -1,-,5,-,-
-C/CPP,How do you convert a string to a c string,"There are 3 ways. 
+s.find_last_not_of("" "")"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"If a std::string fails to find the character it is trying to find, what will it return?","int arri[10] = {1,2,3}; 
+sizeof(arri);",It returns string::npos. string::npos is a value of size_type that is -1," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you convert a string to a c string,"int arri[10] = {1,2,3}; 
+sizeof(arri);","There are 3 ways. 
 str.data(), str.c_str()
 
 char buffer[11];
 str.copy(buffer, 10);
-buffer[10] = '\0';",-,5,-,-
-C/CPP,Why should you use a std::string view over a string,"Efficiency: std::string_view does not allocate or copy memory, which makes it more efficient than std::string when dealing with large strings or when frequent copies are required.
+buffer[10] = '\0';"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Why should you use a std::string view over a string,"int arri[10] = {1,2,3}; 
+sizeof(arri);","Efficiency: std::string_view does not allocate or copy memory, which makes it more efficient than std::string when dealing with large strings or when frequent copies are required.
 
 Flexibility: std::string_view can be constructed from a C-style string, a std::string object, or a portion of another std::string_view. This makes it more flexible than std::string, which can only be constructed from a C-style string or another std::string object.
 
 Readability: std::string_view provides a clear indication that the string is non-owning and read-only, which can help prevent bugs and make the code more readable.
 
-Interoperability: std::string_view can be used with functions that expect a C-style string or a std::string object, which makes it easier to integrate with existing code.",-,5,-,-
-C/CPP,How do you limit a view in a string view?,"std::string_view str{ ""Peach"" };
+Interoperability: std::string_view can be used with functions that expect a C-style string or a std::string object, which makes it easier to integrate with existing code."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,How do you limit a view in a string view?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","std::string_view str{ ""Peach"" };
 str.remove_prefix(1); // string_view now only sees each
-str.remove_suffix(2); //string view now only sees ea",-,5,-,-
+str.remove_suffix(2); //string view now only sees ea"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
 C/CPP,"What is the output?
 char arr[]{ ""Gold"" };
 std::string_view str{ arr };
 arr[3] = 'f';
-std::cout << str << '\n';",Golf,-,5,-,-
-C/CPP,Is there a problem with any of the three lines?,"The first is fine, because you can implicitly convert string_view to string but the second is not fine because you cannot do that for string to string_view. You would need to explicitly convert it which is why the third answer is fine",-,5,CCPP5042,-
-C/CPP,How do you convert string views to C strings?,"std::string_view sv{ ""balloon"" };
+std::cout << str << '\n';","int arri[10] = {1,2,3}; 
+sizeof(arri);",Golf," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,Is there a problem with any of the three lines?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","The first is fine, because you can implicitly convert string_view to string but the second is not fine because you cannot do that for string to string_view. You would need to explicitly convert it which is why the third answer is fine"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP5042,-
+C/CPP,How do you convert string views to C strings?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","std::string_view sv{ ""balloon"" };
 std::string str{ sv };
-auto szNullTerminated{ str.c_str() };",-,5,-,-
-C/CPP,What is the relationship of the lifetime of a string and a string view,"The lifetime of a string_view is not dependent on the string. If the string goes out of scope, the string_view does not go out of scope and trying to access the value in string_view will cause undefined behaviour.",-,5,-,-
-C/CPP,What is the output?,"It is undefined behavior because the lifetime of a string_view is not dependent on the string. If the string goes out of scope, the string_view does not go out of scope and trying to access the value in string_view will cause undefined behaviour.",-,5,CCPP5045,-
-C/CPP,What does stringstream do?,"In C++, a std::stringstream is a stream class that allows you to read from and write to a string as if it were a stream (i.e., an input or output source). It is defined in the <sstream> header file and is a part of the C++ Standard Library.",-,5,-,-
-C/CPP,"What is an easy way to initialise an integer from a string, for example intialising a value after reading from a text file","Use stringstream
-",-,5,-,CCPP5045
-C/CPP,,,-,,,
+auto szNullTerminated{ str.c_str() };"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the relationship of the lifetime of a string and a string view,"int arri[10] = {1,2,3}; 
+sizeof(arri);","The lifetime of a string_view is not dependent on the string. If the string goes out of scope, the string_view does not go out of scope and trying to access the value in string_view will cause undefined behaviour."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,What is the output?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","It is undefined behavior because the lifetime of a string_view is not dependent on the string. If the string goes out of scope, the string_view does not go out of scope and trying to access the value in string_view will cause undefined behaviour."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,CCPP5045,-
+C/CPP,What does stringstream do?,"int arri[10] = {1,2,3}; 
+sizeof(arri);","In C++, a std::stringstream is a stream class that allows you to read from and write to a string as if it were a stream (i.e., an input or output source). It is defined in the <sstream> header file and is a part of the C++ Standard Library."," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,-
+C/CPP,"What is an easy way to initialise an integer from a string, for example intialising a value after reading from a text file","int arri[10] = {1,2,3}; 
+sizeof(arri);","Use stringstream
+"," if (std::cin.fail()) 
+{
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}",5,-,CCPP5045
+C/CPP,,,,-,,,
