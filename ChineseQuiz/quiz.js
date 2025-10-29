@@ -19,6 +19,9 @@ let lastAction = null; // { key, deltaChange: +1|-1, rightInc:0|1, wrongInc:0|1,
 let allRows = [];     // full filtered dataset
 let rowLimit = null;  // numeric limit from the input
 let rowRanges = null; // array of [start,end] ranges (1-based indexing)
+let pinyinQuestionEnabled = false; // show pinyin under QUESTION if available
+let pinyinAnswerEnabled = false; // show pinyin under ANSWER if available
+
 
 
 // ---- Progress persistence (localStorage) ----
@@ -27,7 +30,7 @@ let progress = {}; // { [rowKey]: { delta:number, correct:number, wrong:number }
 
 function getRowKey(row) {
   // reasonably unique per card
-  return `${row[COLS.zh]||''}||${row[COLS.pinyin]||''}||${row[COLS.en]||''}`;
+  return `${row[COLS.zh] || ''}||${row[COLS.pinyin] || ''}||${row[COLS.en] || ''}`;
 }
 
 function loadProgress() {
@@ -77,25 +80,27 @@ const questionModeEl = el("questionMode");
 let orderMode = "random";  // "random" or "ordered"
 let currentIndex = 0;      // for ordered mode
 
+const togglePinyinQuestionBtn = document.getElementById("togglePinyinQuestion");
+const togglePinyinAnswerBtn = document.getElementById("togglePinyinAnswer");
+
 // Helpers
 const rand = n => Math.floor(Math.random() * n);
 
 function normalizeCategory(catRaw) {
   const s = String(catRaw || "").toLowerCase();
-  if (s.includes("both")) return ["english","chinese"];
+  if (s.includes("both")) return ["english", "chinese"];
   if (s.includes("english")) return ["english"];
   if (s.includes("sentence")) return ["sentence"]; // chinese sentence
   if (s.includes("chinese")) return ["chinese"];
   // Fallback to both main types
-  return ["english","chinese"];
+  return ["english", "chinese"];
 }
 
 function toPinyinFull(text) {
-  if (!text || !window.pinyinPro)
-    {
-      console.error("pinyinPro library not loaded");
-      return "";
-    } 
+  if (!text || !window.pinyinPro) {
+    console.error("pinyinPro library not loaded");
+    return "";
+  }
 
   // Segment words, keep non-Chinese as-is, tone marks on vowels.
   const arr = window.pinyinPro.pinyin(text, {
@@ -185,67 +190,67 @@ function renderCard() {
   showChineseUsageBtn.style.display = "none";
   showHintBtn.style.display = "none";
   rightBtn.style.display = "none";
-wrongBtn.style.display = "none";
-pinyinEl.textContent = "";
-pinyinEl.style.display = "none";
-pinyinAnswerEl.textContent = "";
-pinyinAnswerEl.style.display = "none";
-speakBtn.style.display = "none";
+  wrongBtn.style.display = "none";
+  pinyinEl.textContent = "";
+  pinyinEl.style.display = "none";
+  pinyinAnswerEl.textContent = "";
+  pinyinAnswerEl.style.display = "none";
+  speakBtn.style.display = "none";
 
-showEnglishUsageBtn.disabled = false; showEnglishUsageBtn.textContent = "Show English Usage";
-showChineseUsageBtn.disabled = false; showChineseUsageBtn.textContent = "Show Chinese Usage";
-showHintBtn.disabled = false; showHintBtn.textContent = "Show Hint (Chinese Usage Hint)";
+  showEnglishUsageBtn.disabled = false; showEnglishUsageBtn.textContent = "Show English Usage";
+  showChineseUsageBtn.disabled = false; showChineseUsageBtn.textContent = "Show Chinese Usage";
+  showHintBtn.disabled = false; showHintBtn.textContent = "Show Hint (Chinese Usage Hint)";
+
+  pinyinEl.textContent = ""; pinyinEl.style.display = "none";
+  if (pinyinAnswerEl) {
+    pinyinAnswerEl.textContent = ""; pinyinAnswerEl.style.display = "none";
+  }
 
   // Core labels
   quizTypeTag.textContent = type === "english" ? "English quiz"
-                          : type === "chinese" ? "Chinese quiz"
-                          : "Chinese sentence quiz";
+    : type === "chinese" ? "Chinese quiz"
+      : "Chinese sentence quiz";
   categoryEl.textContent = row[COLS.category] || "—";
-const eff = getEffectiveColor(row);
-if (eff != null) {
-  colorText.textContent = eff;
-  colorChip.style.background = getColorShade(eff);
-} else {
-  colorText.textContent = "—";
-  colorChip.style.background = "transparent";
-}
-  rowIndex.textContent = rows.indexOf(row) >= 0 ? `Row ${rows.indexOf(row)+1}/${rows.length}` : "—";
+  const eff = getEffectiveColor(row);
+  if (eff != null) {
+    colorText.textContent = eff;
+    colorChip.style.background = getColorShade(eff);
+  } else {
+    colorText.textContent = "—";
+    colorChip.style.background = "transparent";
+  }
+  rowIndex.textContent = rows.indexOf(row) >= 0 ? `Row ${rows.indexOf(row) + 1}/${rows.length}` : "—";
 
   // Question & pinyin
   pinyinEl.textContent = "";
-if (type === "english") {
-  questionEl.textContent = row[COLS.zh] || "—";
-  if (row[COLS.pinyin]) {
-    pinyinEl.textContent = row[COLS.pinyin];
-    pinyinEl.style.display = "block";
-  }
+  if (type === "english") {
+    questionEl.textContent = row[COLS.zh] || "—";
 
-showHintBtn.style.display = row[COLS.zhHint] ? "inline-block" : "none";
+    showHintBtn.style.display = row[COLS.zhHint] ? "inline-block" : "none";
 
-} else if (type === "chinese") {
-  // Show English term as question (translate to Chinese)
-  questionEl.textContent = row[COLS.en] || "—";
+  } else if (type === "chinese") {
+    // Show English term as question (translate to Chinese)
+    questionEl.textContent = row[COLS.en] || "—";
 
-  // Show English usage immediately (once)
-  if (row[COLS.enUsage]) {
-    const block = document.createElement("div");
-    block.id = "english-usage";
-    block.className = "usage-block";
-    block.innerHTML = `<strong>English Usage:</strong>\n${row[COLS.enUsage]}`;
-    extrasArea.appendChild(block);
+    // Show English usage immediately (once)
+    if (row[COLS.enUsage]) {
+      const block = document.createElement("div");
+      block.id = "english-usage";
+      block.className = "usage-block";
+      block.innerHTML = `<strong>English Usage:</strong>\n${row[COLS.enUsage]}`;
+      extrasArea.appendChild(block);
 
-    showEnglishUsageBtn.style.display = "none";
-    showEnglishUsageBtn.disabled = true;
-  }
+      showEnglishUsageBtn.style.display = "none";
+      showEnglishUsageBtn.disabled = true;
+    }
 
-  // Hint button available for Chinese quiz
-  showHintBtn.style.display = row[COLS.zhHint] ? "inline-block" : "none";
+    // Hint button available for Chinese quiz
+    showHintBtn.style.display = row[COLS.zhHint] ? "inline-block" : "none";
 
 
   } else {
     // "sentence" — ask to use word in a sentence
     questionEl.textContent = (row[COLS.zh] || "—") + "  —  use this word in your own Chinese sentence.";
-    if (row[COLS.pinyin]) pinyinEl.textContent = row[COLS.pinyin];
   }
 
   // Hidden answer
@@ -259,6 +264,8 @@ showHintBtn.style.display = row[COLS.zhHint] ? "inline-block" : "none";
     const pin = row[COLS.pinyin] ? ` (${row[COLS.pinyin]})` : "";
     answerEl.textContent = `Target word: ${zh}${pin}\nMeaning: ${en}`;
   }
+
+   updatePinyinUI();
 }
 
 function reveal() {
@@ -266,22 +273,11 @@ function reveal() {
   answerEl.style.display = "block";
   rightBtn.style.display = "inline-block";
   wrongBtn.style.display = "inline-block";
-  
+
   // Hide hint and remove any existing hint text once the answer is revealed
   showHintBtn.style.display = "none";
   const hint = document.getElementById("hint-block");
   if (hint) hint.remove();
-
- if (current.type === "chinese") {
-    if (pinyinEl) {
-      pinyinEl.textContent = "";
-      pinyinEl.style.display = "none";
-    }
-    if (typeof pinyinAnswerEl !== "undefined" && pinyinAnswerEl && current.row[COLS.pinyin]) {
-      pinyinAnswerEl.textContent = current.row[COLS.pinyin];
-      pinyinAnswerEl.style.display = "block";
-    }
-  }
 
   // After reveal: show usage buttons as before
   if (current.type === "english") {
@@ -297,6 +293,7 @@ function reveal() {
     speakBtn.style.display = hasChinese ? "inline-block" : "none";
     speakBtn.disabled = !hasChinese;
   }
+   updatePinyinUI();
 }
 
 
@@ -323,24 +320,49 @@ function updateStats() {
 
 function showChineseUsage() {
   if (!current) return;
-  if (document.getElementById("chinese-usage")) return; // already appended
+  if (document.getElementById("chinese-usage")) return;
 
   const txt = current.row[COLS.zhUsage];
   if (!txt) return;
 
   const block = document.createElement("div");
-  block.id = "chinese-usage";               // marker to prevent duplicates
+  block.id = "chinese-usage";
   block.className = "usage-block";
   block.innerHTML = `<strong>Chinese Usage:</strong>\n${txt}`;
 
-  // 🔊 Add a play button for the sentence
+  // 🔊 Play-sentence button
   const playBtn = document.createElement("button");
   playBtn.className = "btn";
   playBtn.style.marginTop = "8px";
   playBtn.textContent = "🔊 Play sentence";
   playBtn.addEventListener("click", () => speakChinese(txt));
+
+  // ➕ Pinyin-on-demand button
+  const usagePinBtn = document.createElement("button");
+  usagePinBtn.className = "btn";
+  usagePinBtn.style.marginTop = "8px";
+  usagePinBtn.style.marginLeft = "8px";
+  usagePinBtn.textContent = "Show Pinyin for Usage";
+
+  usagePinBtn.addEventListener("click", () => {
+    const p = toPinyinFull(txt); // uses pinyin-pro
+    if (!p) return;
+
+    const pinDiv = document.createElement("div");
+    pinDiv.className = "usage-pinyin";
+    pinDiv.textContent = p;
+
+    // ✅ Insert pinyin ABOVE the buttons
+    block.insertBefore(pinDiv, playBtn);
+
+    usagePinBtn.disabled = true;
+    usagePinBtn.textContent = "Pinyin Shown";
+  });
+
+  // Add buttons (in same line order)
   block.appendChild(document.createElement("br"));
   block.appendChild(playBtn);
+  block.appendChild(usagePinBtn);
 
   extrasArea.appendChild(block);
 
@@ -351,42 +373,58 @@ function showChineseUsage() {
 
 function showHint() {
   if (!current) return;
-  if (document.getElementById("hint-block")) return; // already appended
+  if (document.getElementById("hint-block")) return; // already shown
 
   const txt = current.row[COLS.zhHint];
   if (!txt) return;
 
-  // Create the hint block (no pinyin yet)
+  // Build the hint block
   const block = document.createElement("div");
   block.id = "hint-block";
   block.className = "hint-block";
   block.innerHTML = `<strong>Hint:</strong>\n${txt}`;
 
-  // Add a "Show Pinyin" button that appears with the hint
+  // 🔊 Speak button for the hint (optional)
+  const playHintBtn = document.createElement("button");
+  playHintBtn.className = "btn";
+  playHintBtn.style.marginTop = "8px";
+  playHintBtn.textContent = "🔊 Play hint (Chinese)";
+  playHintBtn.addEventListener("click", () => speakChinese(txt));
+  block.appendChild(document.createElement("br"));
+  block.appendChild(playHintBtn);
+
+  // On-demand pinyin button for the hint
   const pinBtn = document.createElement("button");
   pinBtn.className = "btn";
   pinBtn.style.marginTop = "8px";
+  pinBtn.style.marginLeft = "8px";
   pinBtn.textContent = "Show Pinyin for Hint";
   pinBtn.addEventListener("click", () => {
-    // Compute pinyin only on demand
-    const pinyin = toPinyinFull(txt); // uses pinyin-pro already loaded
+    const pinyin = toPinyinFull(txt);
     if (!pinyin) return;
 
-    // Append pinyin under the hint once
     const pin = document.createElement("div");
     pin.className = "hint-pinyin";
     pin.textContent = pinyin;
-    block.appendChild(document.createElement("br"));
-    block.appendChild(pin);
+
+    // Insert pinyin line just above the buttons we added inside the block
+    block.insertBefore(pin, playHintBtn);
 
     pinBtn.disabled = true;
     pinBtn.textContent = "Pinyin Shown";
   });
-
-  block.appendChild(document.createElement("br"));
   block.appendChild(pinBtn);
-  extrasArea.appendChild(block);
 
+  // 👉 Place the hint ABOVE the buttons row (the row that contains Flip/Right/Wrong)
+  const buttonsRow = document.getElementById("flipBtn")?.parentElement;
+  if (buttonsRow && buttonsRow.parentElement) {
+    buttonsRow.parentElement.insertBefore(block, buttonsRow);
+  } else {
+    // Fallback: if structure changes, append to top extras area
+    extrasArea.prepend(block);
+  }
+
+  // Disable the "Show Hint" trigger
   showHintBtn.disabled = true;
   showHintBtn.textContent = "Hint Shown";
 }
@@ -399,36 +437,36 @@ document.addEventListener("DOMContentLoaded", () => {
   el("flipBtn").addEventListener("click", reveal);
   el("nextBtn").addEventListener("click", pickNewCard);
 
-el("rightBtn").addEventListener("click", () => {
-  if (!current) return;
-  const key = getRowKey(current.row);
-  const entry = progress[key] || { delta: 0, correct: 0, wrong: 0 };
+  el("rightBtn").addEventListener("click", () => {
+    if (!current) return;
+    const key = getRowKey(current.row);
+    const entry = progress[key] || { delta: 0, correct: 0, wrong: 0 };
 
-  // apply
-  entry.delta = (entry.delta || 0) - 1;
-  entry.correct = (entry.correct || 0) + 1;
-  progress[key] = entry; saveProgress();
-  
+    // apply
+    entry.delta = (entry.delta || 0) - 1;
+    entry.correct = (entry.correct || 0) + 1;
+    progress[key] = entry; saveProgress();
 
-  // record for undo
-  lastAction = { key, deltaChange: -1, rightInc: 1, wrongInc: 0, rowRef: current.row };
 
-  // ui updates
-  right++; updateStats();
-  refreshCurrentColorUI();
+    // record for undo
+    lastAction = { key, deltaChange: -1, rightInc: 1, wrongInc: 0, rowRef: current.row };
 
-  // next
-  setTimeout(pickNewCard, 120);
-});
+    // ui updates
+    right++; updateStats();
+    refreshCurrentColorUI();
 
-const rowLimitInput = el("rowLimit");
-if (rowLimitInput) {
-  rowLimitInput.addEventListener("input", () => {
-    const v = parseInt(rowLimitInput.value, 10);
-    rowLimit = Number.isFinite(v) && v > 0 ? v : null;
-    if (allRows.length) applyRowLimit();
+    // next
+    setTimeout(pickNewCard, 120);
   });
-}
+
+  const rowLimitInput = el("rowLimit");
+  if (rowLimitInput) {
+    rowLimitInput.addEventListener("input", () => {
+      const v = parseInt(rowLimitInput.value, 10);
+      rowLimit = Number.isFinite(v) && v > 0 ? v : null;
+      if (allRows.length) applyRowLimit();
+    });
+  }
 
   const rowRangeInput = el("rowRange");
   if (rowRangeInput) {
@@ -439,68 +477,87 @@ if (rowLimitInput) {
   }
 
   if (questionModeEl) {
-  questionModeEl.addEventListener("change", () => {
-    questionMode = questionModeEl.value || "random";
-    // Start a fresh card using the new mode
-    if (rows.length) pickNewCard();
-  });
-}
-
-const orderModeEl = el("orderMode");
-if (orderModeEl) {
-  orderModeEl.addEventListener("change", () => {
-    orderMode = orderModeEl.value || "random";
-    currentIndex = 0; // reset to first card if ordered
-    if (rows.length) pickNewCard();
-  });
-}
-
-el("wrongBtn").addEventListener("click", () => {
-  if (!current) return;
-  const key = getRowKey(current.row);
-  const entry = progress[key] || { delta: 0, correct: 0, wrong: 0 };
-
-  // apply
-  entry.delta = (entry.delta || 0) + 1;
-  entry.wrong = (entry.wrong || 0) + 1;
-  progress[key] = entry; saveProgress();
-
-  // record for undo
-  lastAction = { key, deltaChange: +1, rightInc: 0, wrongInc: 1, rowRef: current.row };
-
-  // ui updates
-  wrong++; updateStats();
-  refreshCurrentColorUI();
-
-  // next
-  setTimeout(pickNewCard, 120);
-});
-
-el("undoBtn").addEventListener("click", () => {
-  if (!lastAction) return;
-
-  // revert progress
-  const entry = progress[lastAction.key] || { delta: 0, correct: 0, wrong: 0 };
-  entry.delta = (entry.delta || 0) - lastAction.deltaChange;           // reverse delta
-  entry.correct = (entry.correct || 0) - (lastAction.rightInc || 0);   // reverse counts
-  entry.wrong   = (entry.wrong   || 0) - (lastAction.wrongInc || 0);
-  progress[lastAction.key] = entry; saveProgress();
-
-  // revert global stats
-  right -= (lastAction.rightInc || 0);
-  wrong -= (lastAction.wrongInc || 0);
-  if (right < 0) right = 0;
-  if (wrong < 0) wrong = 0;
-  updateStats();
-
-  // If the current card is the same as the undone one, refresh its color UI
-  if (current && getRowKey(current.row) === lastAction.key) {
-    refreshCurrentColorUI();
+    questionModeEl.addEventListener("change", () => {
+      questionMode = questionModeEl.value || "random";
+      // Start a fresh card using the new mode
+      if (rows.length) pickNewCard();
+    });
   }
 
-  // Clear last action (single‑level undo)
-  lastAction = null;
-});
+  const orderModeEl = el("orderMode");
+  if (orderModeEl) {
+    orderModeEl.addEventListener("change", () => {
+      orderMode = orderModeEl.value || "random";
+      currentIndex = 0; // reset to first card if ordered
+      if (rows.length) pickNewCard();
+    });
+  }
+
+  el("wrongBtn").addEventListener("click", () => {
+    if (!current) return;
+    const key = getRowKey(current.row);
+    const entry = progress[key] || { delta: 0, correct: 0, wrong: 0 };
+
+    // apply
+    entry.delta = (entry.delta || 0) + 1;
+    entry.wrong = (entry.wrong || 0) + 1;
+    progress[key] = entry; saveProgress();
+
+    // record for undo
+    lastAction = { key, deltaChange: +1, rightInc: 0, wrongInc: 1, rowRef: current.row };
+
+    // ui updates
+    wrong++; updateStats();
+    refreshCurrentColorUI();
+
+    // next
+    setTimeout(pickNewCard, 120);
+  });
+
+  if (togglePinyinQuestionBtn) {
+    togglePinyinQuestionBtn.addEventListener("click", () => {
+      pinyinQuestionEnabled = !pinyinQuestionEnabled;
+      updatePinyinToggleButtons();
+      updatePinyinUI();
+    });
+  }
+  if (togglePinyinAnswerBtn) {
+    togglePinyinAnswerBtn.addEventListener("click", () => {
+      pinyinAnswerEnabled = !pinyinAnswerEnabled;
+      updatePinyinToggleButtons();
+      updatePinyinUI();
+    });
+  }
+
+  // Initialize labels on load
+  updatePinyinToggleButtons();
+
+
+  el("undoBtn").addEventListener("click", () => {
+    if (!lastAction) return;
+
+    // revert progress
+    const entry = progress[lastAction.key] || { delta: 0, correct: 0, wrong: 0 };
+    entry.delta = (entry.delta || 0) - lastAction.deltaChange;           // reverse delta
+    entry.correct = (entry.correct || 0) - (lastAction.rightInc || 0);   // reverse counts
+    entry.wrong = (entry.wrong || 0) - (lastAction.wrongInc || 0);
+    progress[lastAction.key] = entry; saveProgress();
+
+    // revert global stats
+    right -= (lastAction.rightInc || 0);
+    wrong -= (lastAction.wrongInc || 0);
+    if (right < 0) right = 0;
+    if (wrong < 0) wrong = 0;
+    updateStats();
+
+    // If the current card is the same as the undone one, refresh its color UI
+    if (current && getRowKey(current.row) === lastAction.key) {
+      refreshCurrentColorUI();
+    }
+
+    // Clear last action (single‑level undo)
+    lastAction = null;
+  });
 
   el("showEnglishUsage").addEventListener("click", showEnglishUsage);
   el("showChineseUsage").addEventListener("click", showChineseUsage);
@@ -513,13 +570,13 @@ el("undoBtn").addEventListener("click", () => {
   });
 
   speakBtn.addEventListener("click", () => {
-  if (!current) return;
-  if (current.type === "english" || current.type === "sentence") {
-    speakChinese(current.row[COLS.zh]);
-  } else if (current.type === "chinese") {
-    speakChinese(current.row[COLS.zh]);
-  }
-});
+    if (!current) return;
+    if (current.type === "english" || current.type === "sentence") {
+      speakChinese(current.row[COLS.zh]);
+    } else if (current.type === "chinese") {
+      speakChinese(current.row[COLS.zh]);
+    }
+  });
 
   // 2) Default fetch from same repo path
   el("loadDefault").addEventListener("click", async () => {
@@ -540,7 +597,7 @@ el("undoBtn").addEventListener("click", () => {
       alert("Could not load CSV from repo path. Error: " + e.message);
     }
   });
-  
+
 });
 
 // CSV parsing for local file
@@ -549,11 +606,11 @@ function parseCSVFile(file) {
     header: true,
     skipEmptyLines: true,
     complete: (res) => {
-       allRows = res.data.filter(r => {
-  if (!r) return false;
-  return r[COLS.zh]?.trim() && r[COLS.en]?.trim() && r[COLS.category]?.trim();
-});
-applyRowLimit();
+      allRows = res.data.filter(r => {
+        if (!r) return false;
+        return r[COLS.zh]?.trim() && r[COLS.en]?.trim() && r[COLS.category]?.trim();
+      });
+      applyRowLimit();
     },
     error: (err) => {
       alert("CSV parse error: " + err.message);
@@ -640,7 +697,7 @@ function parseRowRanges(str) {
     if (!isNaN(start) && !isNaN(end) && start <= end) {
       return [start, end];
     }
-    if (!isNaN(start) && isNaN(end)) { 
+    if (!isNaN(start) && isNaN(end)) {
       return [start, start]; // single row
     }
     return null;
@@ -650,8 +707,51 @@ function parseRowRanges(str) {
 function speakChinese(text) {
   if (!text) return;
   // stop anything already speaking
-  try { speechSynthesis.cancel(); } catch {}
+  try { speechSynthesis.cancel(); } catch { }
   const u = new SpeechSynthesisUtterance(String(text));
   u.lang = "zh-CN"; // Mandarin
   speechSynthesis.speak(u);
 }
+
+function updatePinyinToggleButtons() {
+  if (togglePinyinQuestionBtn) {
+    togglePinyinQuestionBtn.textContent = `Pinyin (Question): ${pinyinQuestionEnabled ? "On" : "Off"}`;
+  }
+  if (togglePinyinAnswerBtn) {
+    togglePinyinAnswerBtn.textContent = `Pinyin (Answer): ${pinyinAnswerEnabled ? "On" : "Off"}`;
+  }
+}
+
+function updatePinyinUI() {
+  if (!current) return;
+
+  const hasPin = !!current.row?.[COLS.pinyin];
+
+  // QUESTION side:
+  // Show pinyin only when the QUESTION is Chinese → types "english" or "sentence".
+  const questionIsChinese = (current.type === "english" || current.type === "sentence");
+  if (pinyinEl) {
+    if (pinyinQuestionEnabled && hasPin && questionIsChinese) {
+      pinyinEl.textContent = current.row[COLS.pinyin];
+      pinyinEl.style.display = "block";
+    } else {
+      pinyinEl.textContent = "";
+      pinyinEl.style.display = "none";
+    }
+  }
+
+  // ANSWER side:
+  // Show pinyin only when the ANSWER is Chinese → type "chinese" after reveal.
+  const answerShown = answerEl && answerEl.style.display === "block";
+  const answerIsChinese = (current.type === "chinese");
+  if (pinyinAnswerEl) {
+    if (pinyinAnswerEnabled && hasPin && answerShown && answerIsChinese) {
+      pinyinAnswerEl.textContent = current.row[COLS.pinyin];
+      pinyinAnswerEl.style.display = "block";
+    } else {
+      pinyinAnswerEl.textContent = "";
+      pinyinAnswerEl.style.display = "none";
+    }
+  }
+}
+

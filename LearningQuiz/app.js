@@ -163,12 +163,18 @@ function flipCard() {
 function renderCard() {
   const q = state.questions[state.currentIndex];
 
+  const langBadgeQ = document.getElementById("lang-q");
+  const langBadgeA = document.getElementById("lang-a");
+
+  // Hide badges by default before rendering
+  langBadgeQ.classList.add("hidden");
+  langBadgeA.classList.add("hidden");
+
   // Meta
   document.getElementById("category").textContent = `Category: ${q.category || "—"}`;
   document.getElementById("score").textContent = `Score: ${q.color}`;
   document.getElementById("progress").textContent = `Question ${state.currentIndex + 1} of ${state.questions.length}`;
 
-  
   // Faces
   const front = document.getElementById("card-front");
   const back = document.getElementById("card-back");
@@ -199,13 +205,19 @@ if (hasCodeA) {
   codeBlock.classList.remove("hidden");
   copyBtn.classList.remove("hidden");
 
-  const langA = detectLanguage(q.codeAnswer.trim());
-  codeContent.textContent = q.codeAnswer.trim();
+const langA = detectLanguage(q.codeAnswer.trim());
 
-  codeContent.className = "language-" + langA;
-  codeBlock.className = "language-" + langA;
+codeContent.textContent = q.codeAnswer.trim();
 
-  Prism.highlightElement(codeContent);
+codeContent.className = "language-" + langA;
+codeBlock.className = "language-" + langA;
+
+// Show the language badge
+langBadgeA.textContent = langA.toUpperCase();
+langBadgeA.classList.remove("hidden");
+
+// Highlight syntax
+Prism.highlightElement(codeContent);
 } else {
   codeAWrap.classList.add("hidden");
   codeBlock.classList.add("hidden");
@@ -228,15 +240,19 @@ if (hasCodeQ) {
   codeQBlock.classList.remove("hidden");
   copyQBtn.classList.remove("hidden");
 
-  const langQ = detectLanguage(q.codeQuestion.trim());
-  codeQContent.textContent = q.codeQuestion.trim();
+const langQ = detectLanguage(q.codeQuestion.trim());
 
-  // Set language on both elements
-  codeQContent.className = "language-" + langQ;
-  codeQBlock.className = "language-" + langQ;
+codeQContent.textContent = q.codeQuestion.trim();
 
-  // Highlight just this code node
-  Prism.highlightElement(codeQContent);
+codeQContent.className = "language-" + langQ;
+codeQBlock.className = "language-" + langQ;
+
+// Show the language badge
+langBadgeQ.textContent = langQ.toUpperCase();
+langBadgeQ.classList.remove("hidden");
+
+// Highlight syntax
+Prism.highlightElement(codeQContent);
 } else {
   codeQWrap.classList.add("hidden");
   codeQBlock.classList.add("hidden");

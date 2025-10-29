@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <title>Chinese Flashcard Quiz</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="quiz.css" />
   <!-- PapaParse for CSV parsing -->
-    <script src="https://cdn.jsdelivr.net/npm/pinyin-pro/dist/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pinyin-pro/dist/index.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
   <script src="quiz.js" defer></script>
 </head>
+
 <body>
   <div class="wrap">
     <div class="bar">
@@ -29,68 +31,72 @@
         </select>
       </label>
       <label class="pill">
-  Order:
-  <select id="orderMode" style="margin-left:6px">
-    <option value="random" selected>Random</option>
-    <option value="ordered">In Order</option>
-  </select>
-</label>
-
+        Order:
+        <select id="orderMode" style="margin-left:6px">
+          <option value="random" selected>Random</option>
+          <option value="ordered">In Order</option>
+        </select>
+      </label>
       <label class="pill">
-          Row range:
-          <input id="rowRange" type="text" placeholder="e.g. 10-20,30-40"
-                style="width:150px;margin-left:6px">
-        </label>
-  Limit rows:
-  <input id="rowLimit" type="number" min="1" step="1" style="width:80px;margin-left:6px">
-</label>
+        Row range:
+        <input id="rowRange" type="text" placeholder="e.g. 10-20,30-40" style="width:150px;margin-left:6px">
+      </label>
+      Limit rows:
+      <input id="rowLimit" type="number" min="1" step="1" style="width:80px;margin-left:6px">
+      </label>
+            <!-- after Right/Wrong buttons -->
+      <button class="btn" id="togglePinyinQuestion" title="Toggle pinyin under the question">Pinyin (Question):
+        Off</button>
+      <button class="btn" id="togglePinyinAnswer" title="Toggle pinyin under the answer">Pinyin (Answer): Off</button>
     </div>
 
-<div class="info-bar">
-  <div class="info-item">
-    <span class="label">Type</span>
-    <span id="quizTypeTag" class="value">—</span>
-  </div>
-  <div class="info-item">
-    <span class="label">Category</span>
-    <span id="category" class="value">—</span>
-  </div>
-  <div class="info-item">
-    <span class="label">Color</span>
-    <span class="color-chip" id="colorChip"></span>
-    <span id="colorText" class="value">—</span>
-  </div>
-  <div class="info-item">
-    <span class="label">Row</span>
-    <span id="rowIndex" class="value">—</span>
-  </div>
-</div>
-
-      <h2>Question</h2>
-      <div class="question" id="question">Load a CSV to start</div>
-      <div class="pinyin" id="pinyin"></div>
-
-      <div class="row" style="margin-top:14px">
-        <button class="btn primary" id="flipBtn">Flip / Reveal Answer</button>
-        <button class="btn" id="speakBtn" title="Play Chinese audio" style="display:none">🔊 Speak</button>
-        <button class="btn ok" id="rightBtn" title="Mark as correct">Right</button>
-        <button class="btn bad" id="wrongBtn" title="Mark as incorrect">Wrong</button>
+    <div class="info-bar">
+      <div class="info-item">
+        <span class="label">Type</span>
+        <span id="quizTypeTag" class="value">—</span>
       </div>
-
-      <div class="answer" id="answer"></div>
-      <div class="pinyin" id="pinyinAnswer" style="display:none"></div>
-
-      <div class="row spacey" style="margin-top:12px">
-        <button class="btn" id="showEnglishUsage" style="display:none">Show English Usage</button>
-        <button class="btn" id="showChineseUsage" style="display:none">Show Chinese Usage</button>
-        <button class="btn" id="showHint" style="display:none">Show Hint (Chinese Usage Hint)</button>
+      <div class="info-item">
+        <span class="label">Category</span>
+        <span id="category" class="value">—</span>
       </div>
-
-      <div style="margin-top:10px" id="extrasArea"></div>
+      <div class="info-item">
+        <span class="label">Color</span>
+        <span class="color-chip" id="colorChip"></span>
+        <span id="colorText" class="value">—</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Row</span>
+        <span id="rowIndex" class="value">—</span>
+      </div>
     </div>
+
+    <h2>Question</h2>
+    <div class="question" id="question">Load a CSV to start</div>
+    <div class="pinyin" id="pinyin"></div>
+
+    <div class="row" style="margin-top:14px">
+      <button class="btn primary" id="flipBtn">Flip / Reveal Answer</button>
+      <button class="btn" id="speakBtn" title="Play Chinese audio" style="display:none">🔊 Speak</button>
+      <button class="btn ok" id="rightBtn" title="Mark as correct">Right</button>
+      <button class="btn bad" id="wrongBtn" title="Mark as incorrect">Wrong</button>
+    </div>
+
+
+    <div class="answer" id="answer"></div>
+    <div class="pinyin" id="pinyinAnswer" style="display:none"></div>
+
+    <div class="row spacey" style="margin-top:12px">
+      <button class="btn" id="showEnglishUsage" style="display:none">Show English Usage</button>
+      <button class="btn" id="showChineseUsage" style="display:none">Show Chinese Usage</button>
+      <button class="btn" id="showHint" style="display:none">Show Hint (Chinese Usage Hint)</button>
+    </div>
+
+    <div style="margin-top:10px" id="extrasArea"></div>
   </div>
-    <footer class="footer">
+  </div>
+  <footer class="footer">
     Made with ChatGPT&nbsp;5
   </footer>
 </body>
+
 </html>
