@@ -725,13 +725,11 @@ function updatePinyinToggleButtons() {
 function updatePinyinUI() {
   if (!current) return;
 
+  // QUESTION-side pinyin (appears for rows that have pinyin and where it makes sense)
   const hasPin = !!current.row?.[COLS.pinyin];
-
-  // QUESTION side:
-  // Show pinyin only when the QUESTION is Chinese → types "english" or "sentence".
-  const questionIsChinese = (current.type === "english" || current.type === "sentence");
+  const isQuestionTypeThatShowsPin = (current.type === "english" || current.type === "sentence");
   if (pinyinEl) {
-    if (pinyinQuestionEnabled && hasPin && questionIsChinese) {
+    if (pinyinQuestionEnabled && hasPin && isQuestionTypeThatShowsPin) {
       pinyinEl.textContent = current.row[COLS.pinyin];
       pinyinEl.style.display = "block";
     } else {
@@ -740,12 +738,10 @@ function updatePinyinUI() {
     }
   }
 
-  // ANSWER side:
-  // Show pinyin only when the ANSWER is Chinese → type "chinese" after reveal.
+  // ANSWER-side pinyin (primarily for English→Chinese case)
   const answerShown = answerEl && answerEl.style.display === "block";
-  const answerIsChinese = (current.type === "chinese");
   if (pinyinAnswerEl) {
-    if (pinyinAnswerEnabled && hasPin && answerShown && answerIsChinese) {
+    if (pinyinAnswerEnabled && hasPin && answerShown) {
       pinyinAnswerEl.textContent = current.row[COLS.pinyin];
       pinyinAnswerEl.style.display = "block";
     } else {
@@ -754,4 +750,3 @@ function updatePinyinUI() {
     }
   }
 }
-
