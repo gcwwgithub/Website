@@ -38,33 +38,31 @@
 
     <main>
       <div id="card" class="card disabled">
-        <div id="card-front" class="card-face">
-          <div class="section-label">
-            Code <span id="lang-q" class="lang-badge hidden"></span>
-          </div>
-          <p id="question"></p>
+            <div id="card-front" class="card-face">
+      <div class="section-label">Question</div>
+      <p id="question"></p>
 
-          <div id="codeq-wrap" class="code-wrap hidden">
-            <div class="section-label">Code</div>
-            <pre id="codeq-block" class="hidden"><code class="language-none" id="codeq-content"></code></pre>
-            <button id="copyq-btn" class="hidden">Copy Code</button>
-          </div>
+      <div id="codeq-wrap" class="code-wrap hidden">
+        <div class="section-label">
+          Code <span id="lang-q" class="lang-badge hidden"></span>
         </div>
+        <pre id="codeq-block" class="hidden"><code class="language-none" id="codeq-content"></code></pre>
+        <button id="copyq-btn" class="hidden">Copy Code</button>
+      </div>
+    </div>
 
-        <div id="card-back" class="card-face hidden">
-          <div class="section-label">
-            Code <span id="lang-a" class="lang-badge hidden"></span>
-          </div>
-          <p id="answer"></p>
+       <div id="card-back" class="card-face hidden">
+  <div class="section-label">Answer</div>
+  <p id="answer"></p>
 
-          <div id="codea-wrap" class="code-wrap hidden">
-            <div class="section-label">Code</div>
-            <pre id="code-block" class="hidden"><code class="language-none" id="code-content"></code></pre>
-            <button id="copy-btn" class="hidden">Copy Code</button>
-          </div>
-        </div>
-
-
+  <div id="codea-wrap" class="code-wrap hidden">
+    <div class="section-label">
+      Code <span id="lang-a" class="lang-badge hidden"></span>
+    </div>
+    <pre id="code-block" class="hidden"><code class="language-none" id="code-content"></code></pre>
+    <button id="copy-btn" class="hidden">Copy Code</button>
+  </div>
+</div>
         <div class="controls">
           <button id="flip-btn" disabled>Flip</button>
           <button id="correct-btn" class="correct" disabled>✓ Correct</button>

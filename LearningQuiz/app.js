@@ -198,7 +198,10 @@ const codeBlock = document.getElementById("code-block");
 const codeContent = document.getElementById("code-content");
 const copyBtn = document.getElementById("copy-btn");
 
-const hasCodeA = typeof q.codeAnswer === "string" && q.codeAnswer.trim().length > 0;
+const hasCodeA =
+  typeof q.codeAnswer === "string" &&
+  q.codeAnswer.trim().length > 0 &&
+  q.codeAnswer.trim() !== "-";
 
 if (hasCodeA) {
   codeAWrap.classList.remove("hidden");
@@ -233,7 +236,10 @@ const codeQBlock = document.getElementById("codeq-block");
 const codeQContent = document.getElementById("codeq-content");
 const copyQBtn = document.getElementById("copyq-btn");
 
-const hasCodeQ = typeof q.codeQuestion === "string" && q.codeQuestion.trim().length > 0;
+const hasCodeQ =
+  typeof q.codeQuestion === "string" &&
+  q.codeQuestion.trim().length > 0 &&
+  q.codeQuestion.trim() !== "-";
 
 if (hasCodeQ) {
   codeQWrap.classList.remove("hidden");
