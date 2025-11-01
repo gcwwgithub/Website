@@ -83,6 +83,9 @@ let currentIndex = 0;      // for ordered mode
 const togglePinyinQuestionBtn = document.getElementById("togglePinyinQuestion");
 const togglePinyinAnswerBtn = document.getElementById("togglePinyinAnswer");
 
+let hskFilter = "all";                // "all" or an exact HSK value (e.g., "HSK1")
+const hskFilterEl = el("hskFilter");
+
 // Helpers
 const rand = n => Math.floor(Math.random() * n);
 
@@ -95,6 +98,35 @@ function normalizeCategory(catRaw) {
   // Fallback to both main types
   return ["english", "chinese"];
 }
+
+// Detect columns by header name (case-insensitive). Call this after Papa.parse.
+function detectColumns(fields) {
+  if (!fields || !fields.length) return;
+  const find = (name) => fields.find(f => String(f).toLowerCase() === name);
+
+  // HSK column is optional; set when present
+  const hskField = find("hsk");
+  if (hskField) COLS.hsk = hskField;  // e.g., "HSK" or "hsk"
+}
+
+function populateHskOptions() {
+  if (!hskFilterEl || !COLS.hsk) 
+    return;         // skip if no HSK column
+  const vals = new Set();
+  for (const r of allRows) {
+    const v = (r[COLS.hsk] ?? "").toString().trim();
+    if (v) vals.add(v);
+  }
+  // reset options
+  hskFilterEl.innerHTML = '<option value="all">All</option>';
+  [...vals].sort().forEach(v => {
+    const opt = document.createElement("option");
+    opt.value = v;
+    opt.textContent = v;
+    hskFilterEl.appendChild(opt);
+  });
+}
+
 
 function toPinyinFull(text) {
   if (!text || !window.pinyinPro) {
@@ -126,17 +158,23 @@ function chooseTypeForRow(row) {
 }
 
 function applyRowLimit() {
+  // 1) Start from base (apply HSK filter if any)
+  let base = allRows;
+  if (COLS.hsk && hskFilter !== "all") {
+    base = base.filter(r => String(r[COLS.hsk] || "").trim() === hskFilter);
+  }
+
+  // 2) Apply range(s) or limit on the filtered base
   if (rowRanges && rowRanges.length) {
     rows = [];
     for (const [start, end] of rowRanges) {
-      // CSV rows are zero-based, but user input is 1-based
       const s = Math.max(0, start - 1);
-      const e = Math.min(allRows.length - 1, end - 1);
-      rows.push(...allRows.slice(s, e + 1));
+      const e = Math.min(base.length - 1, end - 1);
+      rows.push(...base.slice(s, e + 1));
     }
   } else {
-    const n = rowLimit && rowLimit > 0 ? Math.min(rowLimit, allRows.length) : allRows.length;
-    rows = allRows.slice(0, n);
+    const n = rowLimit && rowLimit > 0 ? Math.min(rowLimit, base.length) : base.length;
+    rows = base.slice(0, n);
   }
 
   right = 0; wrong = 0; updateStats();
@@ -459,6 +497,14 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(pickNewCard, 120);
   });
 
+  if (hskFilterEl) {
+  hskFilterEl.addEventListener("change", () => {
+    hskFilter = hskFilterEl.value || "all";
+    // When filter changes, re-apply the slicing (range/limit) on the new base set
+    if (allRows.length) applyRowLimit();
+  });
+}
+
   const rowLimitInput = el("rowLimit");
   if (rowLimitInput) {
     rowLimitInput.addEventListener("input", () => {
@@ -589,6 +635,8 @@ document.addEventListener("DOMContentLoaded", () => {
         skipEmptyLines: true,
         complete: (res) => {
           allRows = res.data.filter(r => r && (r[COLS.zh] || r[COLS.en]));
+          detectColumns(res.meta?.fields);
+          populateHskOptions();
           applyRowLimit();
         },
         error: (err) => alert("CSV parse error: " + err.message)
@@ -606,10 +654,21 @@ function parseCSVFile(file) {
     header: true,
     skipEmptyLines: true,
     complete: (res) => {
-      allRows = res.data.filter(r => {
-        if (!r) return false;
-        return r[COLS.zh]?.trim() && r[COLS.en]?.trim() && r[COLS.category]?.trim();
-      });
+      // 1) Detect columns from headers first
+      detectColumns(res.meta?.fields);
+
+      // 2) Build allRows once
+      allRows = res.data.filter(r =>
+        r &&
+        r[COLS.zh]?.trim() &&
+        r[COLS.en]?.trim() &&
+        r[COLS.category]?.trim()
+      );
+
+      // 3) Populate HSK dropdown (if HSK exists)
+      populateHskOptions();
+
+      // 4) Apply HSK filter + range/limit and render
       applyRowLimit();
     },
     error: (err) => {
@@ -617,6 +676,7 @@ function parseCSVFile(file) {
     }
   });
 }
+
 
 function getColorShade(val) {
   // Clamp value between 1 and 10
@@ -636,18 +696,11 @@ function csvEscape(s) {
 }
 
 function buildProgressCsv() {
-  // Exact original column order
   const header = [
-    COLS.zh,
-    COLS.pinyin,
-    COLS.en,
-    COLS.qtype,
-    COLS.category,
-    COLS.zhUsage,
-    COLS.enUsage,
-    COLS.color,
-    COLS.zhHint
+    COLS.zh, COLS.pinyin, COLS.en, COLS.qtype, COLS.category,
+    COLS.zhUsage, COLS.enUsage, COLS.color, COLS.zhHint
   ];
+  if (COLS.hsk) header.push(COLS.hsk); // 👈 include HSK if present
 
   const lines = [header.map(csvEscape).join(",")];
 
@@ -657,7 +710,6 @@ function buildProgressCsv() {
     const delta = (progress[key]?.delta) || 0;
     const eff = isNaN(baseColor) ? "" : (baseColor + delta);
 
-    // Write original values, except Color which uses effective value
     const record = [
       row[COLS.zh] || "",
       row[COLS.pinyin] || "",
@@ -669,12 +721,13 @@ function buildProgressCsv() {
       eff === "" ? "" : String(eff),
       row[COLS.zhHint] || ""
     ];
+    if (COLS.hsk) record.push(row[COLS.hsk] || ""); // 👈 include value
 
     lines.push(record.map(csvEscape).join(","));
   }
-
-  return lines.join("\r\n"); // Windows-friendly newlines
+  return lines.join("\r\n");
 }
+
 
 function downloadProgressCsv() {
   const csv = buildProgressCsv();

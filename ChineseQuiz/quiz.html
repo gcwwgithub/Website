@@ -14,41 +14,70 @@
 
 <body>
   <div class="wrap">
-    <div class="bar">
-      <button class="btn" id="loadDefault">Load CSV in repo (Chinese - Sheet1.csv)</button>
-      <input type="file" id="csvFile" accept=".csv" />
-      <button class="btn" id="nextBtn" title="Skip to a new card">Next</button>
-      <span class="pill" id="stats">0 right · 0 wrong</span>
-      <button class="btn" id="downloadProgress">Download Progress (CSV)</button>
-      <button class="btn" id="undoBtn" title="Undo last mark">Undo</button>
-      <label class="pill">
-        Mode:
-        <select id="questionMode" style="margin-left:6px">
-          <option value="random" selected>Random</option>
-          <option value="english">English (CN → EN)</option>
-          <option value="chinese">Chinese (EN → CN)</option>
-          <option value="sentence">Chinese sentence</option>
-        </select>
-      </label>
-      <label class="pill">
-        Order:
-        <select id="orderMode" style="margin-left:6px">
-          <option value="random" selected>Random</option>
-          <option value="ordered">In Order</option>
-        </select>
-      </label>
+   <div class="bar toolbar">
+  <!-- PRIMARY ACTIONS -->
+  <div class="toolbar-group">
+    <button class="btn" id="loadDefault">Load CSV in repo (Chinese - Sheet1.csv)</button>
+    <input type="file" id="csvFile" accept=".csv" />
+    <button class="btn" id="nextBtn" title="Skip to a new card">Next</button>
+    <span class="pill" id="stats">0 right · 0 wrong</span>
+  </div>
+
+  <!-- QUIZ BEHAVIOR -->
+  <div class="toolbar-group">
+    <label class="pill">
+      Mode:
+      <select id="questionMode" style="margin-left:6px">
+        <option value="random" selected>Random</option>
+        <option value="english">English (CN → EN)</option>
+        <option value="chinese">Chinese (EN → CN)</option>
+        <option value="sentence">Chinese sentence</option>
+      </select>
+    </label>
+
+    <label class="pill">
+      Order:
+      <select id="orderMode" style="margin-left:6px">
+        <option value="random" selected>Random</option>
+        <option value="ordered">In Order</option>
+      </select>
+    </label>
+
+    <label class="pill">
+      HSK:
+      <select id="hskFilter" style="margin-left:6px">
+        <option value="all" selected>All</option>
+      </select>
+    </label>
+  </div>
+
+  <!-- ADVANCED (collapsible) -->
+  <details id="advancedPanel" class="toolbar-advanced">
+    <summary class="btn">⚙️ Advanced</summary>
+    <div class="toolbar-advanced-body">
       <label class="pill">
         Row range:
         <input id="rowRange" type="text" placeholder="e.g. 10-20,30-40" style="width:150px;margin-left:6px">
       </label>
-      Limit rows:
-      <input id="rowLimit" type="number" min="1" step="1" style="width:80px;margin-left:6px">
+
+      <label class="pill">
+        Limit rows:
+        <input id="rowLimit" type="number" min="1" step="1" style="width:80px;margin-left:6px">
       </label>
-            <!-- after Right/Wrong buttons -->
-      <button class="btn" id="togglePinyinQuestion" title="Toggle pinyin under the question">Pinyin (Question):
-        Off</button>
-      <button class="btn" id="togglePinyinAnswer" title="Toggle pinyin under the answer">Pinyin (Answer): Off</button>
+
+      <button class="btn" id="togglePinyinQuestion" title="Toggle pinyin under the question">
+        Pinyin (Question): Off
+      </button>
+      <button class="btn" id="togglePinyinAnswer" title="Toggle pinyin under the answer">
+        Pinyin (Answer): Off
+      </button>
+
+      <button class="btn" id="undoBtn" title="Undo last mark">Undo</button>
+      <button class="btn" id="downloadProgress">Download Progress (CSV)</button>
     </div>
+  </details>
+</div>
+
 
     <div class="info-bar">
       <div class="info-item">

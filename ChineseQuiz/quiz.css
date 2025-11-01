@@ -75,3 +75,24 @@ h2{font-size:18px;margin:0 0 10px;color:var(--muted)}
   font-size: 15px;
   color: #cfe1ff;
 }
+
+.toolbar { gap: 10px; }
+.toolbar-group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+.toolbar-advanced { margin-left: auto; } /* push to the right if space allows */
+.toolbar-advanced > summary.btn {
+  list-style: none; cursor: pointer; user-select: none;
+}
+.toolbar-advanced > summary.btn::-webkit-details-marker { display: none; }
+
+.toolbar-advanced-body {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;
+  padding: 10px; background: #202632; border-radius: 12px;
+  border: 1px solid #2a3240;
+}
+
+/* Make pills tighter on small screens */
+@media (max-width: 640px) {
+  .pill { padding: 6px 8px; font-size: 12px; }
+  .toolbar-advanced-body { gap: 8px; }
+}
