@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mixed CN/EN Reader</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+    <div class="card">
+        <div class="toolbar">
+            <!-- Controls (left) -->
+            <div class="group">
+                <button id="speakBtn">Speak</button>
+                <button id="pauseBtn">Pause</button>
+                <button id="resumeBtn">Resume</button>
+                <button id="cancelBtn">Cancel</button>
+            </div>
+
+            <!-- Voice picker + highlight toggle -->
+            <div class="group">
+                <label for="voiceSelect">Voice</label>
+                <select id="voiceSelect" aria-label="Voice"></select>
+
+                <div class="highlight-toggle">
+                    <label for="hlToggle">Highlight</label>
+                    <input id="hlToggle" type="checkbox" checked />
+                </div>
+            </div>
+
+            <!-- Sliders (right) -->
+            <div class="group sliders">
+                <div class="control-block">
+                    <label for="rate">Rate</label>
+                    <input id="rate" type="range" min="0.5" max="2" step="0.05" value="1.0" />
+                    <span id="rateVal" class="knob-val">1.00×</span>
+                </div>
+
+                <div class="control-block">
+                    <label for="pitch">Pitch</label>
+                    <input id="pitch" type="range" min="0.8" max="1.2" step="0.01" value="1.0" />
+                    <span id="pitchVal" class="knob-val">1.00×</span>
+                </div>
+
+                <div class="control-block">
+                    <label for="volume">Vol</label>
+                    <input id="volume" type="range" min="0.5" max="1" step="0.01" value="1.0" />
+                    <span id="volumeVal" class="knob-val">100%</span>
+                </div>
+
+                <div class="control-block">
+                    <label for="sentenceDelay">Pause (ms)</label>
+                    <input id="sentenceDelay" type="range" min="0" max="300" step="10" value="80" />
+                    <span id="pauseVal" class="knob-val">80 ms</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="card-body">
+            <textarea id="txt" placeholder="Paste your mixed Chinese/English text here…"></textarea>
+            <div id="readPane" class="read-pane" aria-live="polite" aria-label="Reading highlight view"></div>
+        </div>
+    </div>
+
+    <!-- Load JS last -->
+    <script src="app.js"></script>
+</body>
+</html>

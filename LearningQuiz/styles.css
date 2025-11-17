@@ -116,21 +116,19 @@ h1{ font-size:24px; margin:0 0 6px }
 
 /* Question text smaller than before */
 #question{
-  font-size:22px;   /* was 28px */
+  font-size:22px;
   font-weight:700;
   letter-spacing:.2px;
   margin:6px 0 0;
 }
 
-/* Answer text also tidy */
+/* Answer text */
 #answer{
-  font-size:22px;   /* was 28px */
-  font-weight:700;
-  letter-spacing:.2px;
-  margin:6px 0 0;
+  font-size:18px;
+  margin-top:10px;
 }
 
-
+/* Code blocks */
 pre{
   background:#1e1e1e;
   border:1px dashed #263041;
@@ -140,13 +138,11 @@ pre{
   white-space:pre-wrap;
   margin-top:8px;
 }
-
 code, pre{
   font-family:'Cascadia Code','Consolas','Courier New',monospace;
   font-size:15px;
   line-height:1.45;
 }
-
 
 .hidden{ display:none !important }
 
@@ -158,7 +154,6 @@ code, pre{
   justify-content:center;
   margin-top:8px;
 }
-
 button{
   border:0;
   border-radius:12px;
@@ -180,6 +175,35 @@ button.ghost{
   color:var(--text);
 }
 
+/* MCQ */
+.mcq-wrap{ margin-top:14px; }
+.mcq-grid{
+  display:grid;
+  gap:10px;
+  grid-template-columns: 1fr;
+}
+.mcq-option{
+  background:#202632;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 12px;
+  text-align:left;
+  cursor:pointer;
+}
+.mcq-option:hover{ filter:brightness(1.1) }
+.mcq-option.correct{
+  background: rgba(55,214,122,0.18);
+  border-color: var(--ok);
+}
+.mcq-option.wrong{
+  background: rgba(255,107,107,0.18);
+  border-color: var(--bad);
+}
+.mcq-option.disabled{
+  opacity: .75;
+  pointer-events: none;
+}
+
 /* Footer */
 footer{
   font-size:14px;
@@ -189,7 +213,7 @@ footer{
   padding-top:12px;
 }
 
-/* Prism theme hook (optional tweaks) */
+/* Prism theme hook */
 code[class*="language-"], pre[class*="language-"]{
   text-shadow:none;
   background:transparent;
@@ -213,7 +237,6 @@ code[class*="language-"], pre[class*="language-"]{
   opacity: 0.8;
   user-select: none;
 }
-
 #credits-footer .accent {
   color: var(--accent);
   font-weight: 600;
@@ -232,7 +255,4 @@ code[class*="language-"], pre[class*="language-"]{
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-
-.lang-badge.hidden {
-  display: none !important;
-}
+.lang-badge.hidden { display: none !important; }

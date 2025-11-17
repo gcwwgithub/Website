@@ -1,5 +1,5 @@
 // =======================================
-// Learning Flashcards (Upload CSV version)
+// Learning Flashcards (Upload CSV + MCQ)
 // =======================================
 
 const state = {
@@ -7,6 +7,10 @@ const state = {
   currentIndex: 0,
   isFlipped: false,
   loaded: false,
+  mode: "normal",      // already there if you used my MCQ version
+  mcqLocked: false,    // already there
+  lockFlip: false,     // NEW: hide Flip after MCQ pressed
+  lockMcq: false,      // NEW: hide MCQ after Flip pressed
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,9 +22,17 @@ document.addEventListener("DOMContentLoaded", () => {
   fileInput.addEventListener("change", onFileChosen);
   loadSampleBtn.addEventListener("click", loadSampleCsvIfHosted);
 
-  document.getElementById("flip-btn").onclick = flipCard;
-  document.getElementById("correct-btn").onclick = () => updateColor(-1);
-  document.getElementById("wrong-btn").onclick = () => updateColor(+1);
+  document.getElementById("flip-btn").onclick = onFlipClicked;
+  document.getElementById("mcq-btn").onclick = startMcqMode;
+  document.getElementById("correct-btn").onclick = () => {
+    updateColor(+1);   
+    nextQuestion();
+  };
+
+  document.getElementById("wrong-btn").onclick = () => {
+    updateColor(-1);
+    nextQuestion();
+  };
   document.getElementById("next-btn").onclick = nextQuestion;
   document.getElementById("copy-btn").onclick = copyCode;
   document.getElementById("reset-btn").onclick = resetScores;
@@ -31,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!state.loaded) return;
     if (e.code === "Space" || e.key === "Enter") {
       e.preventDefault();
-      flipCard();
+      onFlipClicked();
     } else if (e.key === "ArrowRight") {
       nextQuestion();
     } else if (e.key === "1") {
@@ -70,7 +82,7 @@ function parseCsvFile(file) {
   });
 }
 
-// ---- Optional: load a sample hosted CSV (works on GitHub Pages / localhost) ----
+// ---- Optional: load a sample hosted CSV ----
 async function loadSampleCsvIfHosted() {
   try {
     const res = await fetch("./questions.csv", { cache: "no-store" });
@@ -78,7 +90,7 @@ async function loadSampleCsvIfHosted() {
     const text = await res.text();
     const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
     buildQuestions(parsed.data);
-    document.getElementById("file-name").textContent = "Loaded: data/questions.csv";
+    document.getElementById("file-name").textContent = "Loaded: questions.csv";
     afterQuestionsLoaded();
   } catch (e) {
     alert("Could not load ./questions.csv. Upload a CSV instead.");
@@ -88,18 +100,23 @@ async function loadSampleCsvIfHosted() {
 // ---- Build internal model ----
 function buildQuestions(rows) {
   const questions = [];
-  console.log("Building questions from rows:", rows);
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
 
-    // Column contract
+    // Column contract (new order)
+    // Category, Question, Code Question, QuestionImage, Answer, Code Answer, AnswerImage, Color, WrongAnswer1, WrongAnswer2, WrongAnswer3
     const category = (row["Category"] ?? "").toString().trim();
     const question = (row["Question"] ?? "").toString().trim();
     const codeQuestion = (row["Code Question"] ?? "").toString();
+    // images ignored for now
     const answer = (row["Answer"] ?? "").toString().trim();
     const codeAnswer = (row["Code Answer"] ?? "").toString();
-
     const colorCsv = Number.parseInt((row["Color"] ?? "0").toString(), 10);
+
+    // wrong answers (may be empty or "-")
+    const w1 = (row["WrongAnswer1"] ?? "").toString().trim();
+    const w2 = (row["WrongAnswer2"] ?? "").toString().trim();
+    const w3 = (row["WrongAnswer3"] ?? "").toString().trim();
 
     if (!question) continue; // skip empty questions
 
@@ -115,6 +132,7 @@ function buildQuestions(rows) {
       answer,
       codeAnswer: codeAnswer?.trim() || "",
       color,
+      wrongs: [w1, w2, w3],
     });
   }
 
@@ -131,11 +149,11 @@ function afterQuestionsLoaded() {
   enableUi(true);
   pickRandomQuestion();
   renderCard();
-  document.getElementById("tips").textContent = "Loaded. Use Flip / Correct / Wrong / Next or keyboard (Space, 1, 2, →).";
+  document.getElementById("tips").textContent = "Loaded. Use Flip / Do MCQ / Correct / Wrong / Next (Space, 1, 2, →).";
 }
 
 function enableUi(enable) {
-  const ids = ["flip-btn", "correct-btn", "wrong-btn", "next-btn", "reset-btn"];
+  const ids = ["flip-btn", "mcq-btn", "correct-btn", "wrong-btn", "next-btn", "reset-btn"];
   ids.forEach((id) => (document.getElementById(id).disabled = !enable));
 
   const card = document.getElementById("card");
@@ -147,6 +165,12 @@ function pickRandomQuestion() {
   const n = state.questions.length;
   state.currentIndex = Math.floor(Math.random() * n);
   state.isFlipped = false;
+  state.mode = "normal";
+  state.mcqLocked = false;
+
+  // 🔹 Reset locks for the new question
+  state.lockFlip = false;
+  state.lockMcq = false;
 }
 
 function nextQuestion() {
@@ -154,19 +178,37 @@ function nextQuestion() {
   renderCard();
 }
 
-function flipCard() {
+function onFlipClicked() {
   if (!state.loaded) return;
+
   state.isFlipped = !state.isFlipped;
+
+  // 🔹 If this question has ever been flipped, MCQ is disabled until Next
+  state.lockMcq = true;
+  state.mode = "normal"; // ensure we're not in MCQ mode
+
   renderCard();
 }
 
+function startMcqMode() {
+  if (!state.loaded) return;
+  state.mode = "mcq";
+  state.isFlipped = false;  // MCQ always on front
+  state.mcqLocked = false;
+
+  // 🔹 Once MCQ is chosen, Flip is disabled until Next
+  state.lockFlip = true;
+
+  renderCard();
+}
+
+
+// ---- Render ----
 function renderCard() {
   const q = state.questions[state.currentIndex];
 
   const langBadgeQ = document.getElementById("lang-q");
   const langBadgeA = document.getElementById("lang-a");
-
-  // Hide badges by default before rendering
   langBadgeQ.classList.add("hidden");
   langBadgeA.classList.add("hidden");
 
@@ -175,104 +217,230 @@ function renderCard() {
   document.getElementById("score").textContent = `Score: ${q.color}`;
   document.getElementById("progress").textContent = `Question ${state.currentIndex + 1} of ${state.questions.length}`;
 
-  // Faces
+  // Faces visibility
   const front = document.getElementById("card-front");
   const back = document.getElementById("card-back");
   front.classList.toggle("hidden", state.isFlipped);
   back.classList.toggle("hidden", !state.isFlipped);
 
+  // Controls visibility logic
+  const flipBtn = document.getElementById("flip-btn");
+  const mcqBtn = document.getElementById("mcq-btn");
+  const correctBtn = document.getElementById("correct-btn");
+  const wrongBtn = document.getElementById("wrong-btn");
+
+  // 🔹 Flip button visibility
+  // If MCQ was chosen for this question, hide Flip
+  if (state.lockFlip) {
+    flipBtn.style.display = "none";
+  } else {
+    flipBtn.style.display = "";
+  }
+
+  // 🔹 MCQ button visibility
+  // Only show MCQ if:
+  // - not flipped yet for this question (lockMcq is false)
+  // - not currently flipped to the back
+  // - not already in MCQ mode
+  if (!state.lockMcq && !state.isFlipped && state.mode !== "mcq") {
+    mcqBtn.style.display = "";
+  } else {
+    mcqBtn.style.display = "none";
+  }
+
+  // ===============================
+  // MCQ BUTTON VISIBILITY LOGIC
+  // ===============================
+
+  // Case 1: In MCQ mode but NOT answered yet
+  if (state.mode === "mcq" && !state.mcqLocked) {
+    correctBtn.style.display = "none";
+    wrongBtn.style.display = "none";
+  }
+  // Case 2: MCQ answered — show only the relevant one
+  else if (state.mode === "mcq" && state.mcqLocked) {
+    // If scoring update set a hidden flag on Correct or Wrong, respect it
+    // (we will set these when clicking options)
+  }
+  // Case 3: Normal (Flip mode or plain question)
+  else {
+    correctBtn.style.display = "";
+    wrongBtn.style.display = "";
+  }
+
+  // ----- FRONT content (Question) -----
   document.getElementById("question").textContent = q.question;
-  // Normalize answer: treat "-" or blank as no answer
-const hasAnswer =
-  typeof q.answer === "string" &&
-  q.answer.trim().length > 0 &&
-  q.answer.trim() !== "-";
 
-document.getElementById("answer").textContent = hasAnswer
-  ? q.answer.trim()
-  : "(No text answer)";
+  // Code Question
+  const codeQWrap = document.getElementById("codeq-wrap");
+  const codeQBlock = document.getElementById("codeq-block");
+  const codeQContent = document.getElementById("codeq-content");
+  const copyQBtn = document.getElementById("copyq-btn");
 
+  const hasCodeQ =
+    typeof q.codeQuestion === "string" &&
+    q.codeQuestion.trim().length > 0 &&
+    q.codeQuestion.trim() !== "-";
 
-const codeAWrap = document.getElementById("codea-wrap");
-const codeBlock = document.getElementById("code-block");
-const codeContent = document.getElementById("code-content");
-const copyBtn = document.getElementById("copy-btn");
+  if (!state.isFlipped) {
+    if (hasCodeQ) {
+      codeQWrap.classList.remove("hidden");
+      codeQBlock.classList.remove("hidden");
+      copyQBtn.classList.remove("hidden");
 
-const hasCodeA =
-  typeof q.codeAnswer === "string" &&
-  q.codeAnswer.trim().length > 0 &&
-  q.codeAnswer.trim() !== "-";
+      const langQ = detectLanguage(q.codeQuestion.trim());
+      codeQContent.textContent = q.codeQuestion.trim();
+      codeQContent.className = "language-" + langQ;
+      codeQBlock.className = "language-" + langQ;
 
-if (hasCodeA) {
-  codeAWrap.classList.remove("hidden");
-  codeBlock.classList.remove("hidden");
-  copyBtn.classList.remove("hidden");
+      // Language badge
+      langBadgeQ.textContent = langQ.toUpperCase();
+      langBadgeQ.classList.remove("hidden");
 
-const langA = detectLanguage(q.codeAnswer.trim());
+      Prism.highlightElement(codeQContent);
+    } else {
+      codeQWrap.classList.add("hidden");
+      codeQBlock.classList.add("hidden");
+      copyQBtn.classList.add("hidden");
+      codeQContent.textContent = "";
+      codeQContent.className = "";
+      codeQBlock.className = "";
+    }
+  } else {
+    // If showing back, ensure front code area is hidden
+    codeQWrap.classList.add("hidden");
+  }
 
-codeContent.textContent = q.codeAnswer.trim();
+  // ----- MCQ (front only) -----
+  const mcqWrap = document.getElementById("mcq-wrap");
+  const mcqOptions = document.getElementById("mcq-options");
+  mcqWrap.classList.add("hidden");
+  mcqOptions.innerHTML = "";
 
-codeContent.className = "language-" + langA;
-codeBlock.className = "language-" + langA;
+  if (!state.isFlipped && state.mode === "mcq") {
+    const opts = buildMcqOptions(q);
+    // If we can't build 2+ options, fallback to normal (hide MCQ UI)
+    if (opts.length >= 2) {
+      mcqWrap.classList.remove("hidden");
+      renderMcqOptions(opts, q);
+    } else {
+      state.mode = "normal";
+    }
+  }
 
-// Show the language badge
-langBadgeA.textContent = langA.toUpperCase();
-langBadgeA.classList.remove("hidden");
+  // ----- BACK content (Answer) -----
+  // text answer (treat "-" or blank as no answer)
+  const hasAnswer =
+    typeof q.answer === "string" &&
+    q.answer.trim().length > 0 &&
+    q.answer.trim() !== "-";
+  document.getElementById("answer").textContent = hasAnswer ? q.answer.trim() : "(No text answer)";
 
-// Highlight syntax
-Prism.highlightElement(codeContent);
-} else {
-  codeAWrap.classList.add("hidden");
-  codeBlock.classList.add("hidden");
-  copyBtn.classList.add("hidden");
-  codeContent.textContent = "";
-  codeContent.className = "";
-  codeBlock.className = "";
+  // Code Answer
+  const codeAWrap = document.getElementById("codea-wrap");
+  const codeBlock = document.getElementById("code-block");
+  const codeContent = document.getElementById("code-content");
+  const copyBtn = document.getElementById("copy-btn");
+
+  const hasCodeA =
+    typeof q.codeAnswer === "string" &&
+    q.codeAnswer.trim().length > 0 &&
+    q.codeAnswer.trim() !== "-";
+
+  if (state.isFlipped && hasCodeA) {
+    codeAWrap.classList.remove("hidden");
+    codeBlock.classList.remove("hidden");
+    copyBtn.classList.remove("hidden");
+
+    const langA = detectLanguage(q.codeAnswer.trim());
+    codeContent.textContent = q.codeAnswer.trim();
+    codeContent.className = "language-" + langA;
+    codeBlock.className = "language-" + langA;
+
+    langBadgeA.textContent = langA.toUpperCase();
+    langBadgeA.classList.remove("hidden");
+
+    Prism.highlightElement(codeContent);
+  } else {
+    codeAWrap.classList.add("hidden");
+    codeBlock.classList.add("hidden");
+    copyBtn.classList.add("hidden");
+    codeContent.textContent = "";
+    codeContent.className = "";
+    codeBlock.className = "";
+  }
 }
 
+// ---- MCQ helpers ----
+function buildMcqOptions(q) {
+  const opts = [];
+  const correct = (q.answer || "").trim();
+  if (correct && correct !== "-") {
+    opts.push({ text: correct, isCorrect: true });
+  }
 
-const codeQWrap = document.getElementById("codeq-wrap");
-const codeQBlock = document.getElementById("codeq-block");
-const codeQContent = document.getElementById("codeq-content");
-const copyQBtn = document.getElementById("copyq-btn");
+  // Collect wrong answers, drop blanks / "-"
+  const wrongs = (q.wrongs || []).map(w => (w || "").trim()).filter(w => w && w !== "-");
 
-const hasCodeQ =
-  typeof q.codeQuestion === "string" &&
-  q.codeQuestion.trim().length > 0 &&
-  q.codeQuestion.trim() !== "-";
+  // Use up to 3 wrong answers
+  for (const w of wrongs) {
+    if (opts.length >= 4) break;
+    if (!opts.some(o => o.text === w)) {
+      opts.push({ text: w, isCorrect: false });
+    }
+  }
 
-if (hasCodeQ) {
-  codeQWrap.classList.remove("hidden");
-  codeQBlock.classList.remove("hidden");
-  copyQBtn.classList.remove("hidden");
-
-const langQ = detectLanguage(q.codeQuestion.trim());
-
-codeQContent.textContent = q.codeQuestion.trim();
-
-codeQContent.className = "language-" + langQ;
-codeQBlock.className = "language-" + langQ;
-
-// Show the language badge
-langBadgeQ.textContent = langQ.toUpperCase();
-langBadgeQ.classList.remove("hidden");
-
-// Highlight syntax
-Prism.highlightElement(codeQContent);
-} else {
-  codeQWrap.classList.add("hidden");
-  codeQBlock.classList.add("hidden");
-  copyQBtn.classList.add("hidden");
-  codeQContent.textContent = "";
-  codeQContent.className = "";
-  codeQBlock.className = "";
+  // If more than 1 option, shuffle
+  if (opts.length > 1) shuffle(opts);
+  return opts;
 }
 
+function renderMcqOptions(opts, q) {
+  const mcqOptions = document.getElementById("mcq-options");
+  const correctBtn = document.getElementById("correct-btn");
+  const wrongBtn = document.getElementById("wrong-btn");
 
-if (hasCodeQ || hasCodeA) {
-  Prism.highlightAll();
-}
+  // Hide MCQ button once shown
+  document.getElementById("mcq-btn").style.display = "none";
 
+  // reset lock
+  state.mcqLocked = false;
+
+  opts.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "mcq-option";
+    btn.textContent = opt.text;
+
+    btn.addEventListener("click", () => {
+      if (state.mcqLocked) return;
+      state.mcqLocked = true;
+
+      // Disable all options
+      [...mcqOptions.children].forEach(n => n.classList.add("disabled"));
+
+      if (opt.isCorrect) {
+        btn.classList.add("correct");
+
+        // MCQ answered correctly → show Correct button, hide Wrong
+        correctBtn.style.display = "";
+        wrongBtn.style.display = "none";
+
+        // ✅ No updateColor here; scoring happens when Correct button is pressed
+      } else {
+        btn.classList.add("wrong");
+
+        // MCQ answered wrongly → show Wrong button, hide Correct
+        wrongBtn.style.display = "";
+        correctBtn.style.display = "none";
+
+        // ✅ No updateColor here; scoring happens when Wrong button is pressed
+      }
+
+
+    });
+
+    mcqOptions.appendChild(btn);
+  });
 }
 
 // ---- Scoring / persistence ----
@@ -281,7 +449,8 @@ function updateColor(delta) {
   const q = state.questions[state.currentIndex];
   q.color = clamp(q.color + delta, -999, 999);
   saveColor(q.id, q.color);
-  renderCard();
+  // Re-render but keep current face/mode; ensure we don't rebuild MCQ options after answering
+  document.getElementById("score").textContent = `Score: ${q.color}`;
 }
 
 function saveColor(id, color) {
@@ -309,6 +478,12 @@ function resetScores() {
 function clamp(v, lo, hi) {
   return Math.max(lo, Math.min(hi, v));
 }
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
 
 async function copyCode() {
   if (!state.loaded) return;
@@ -324,7 +499,6 @@ async function copyCode() {
     console.error("Copy failed", e);
   }
 }
-
 async function copyQuestionCode() {
   if (!state.loaded) return;
   const q = state.questions[state.currentIndex];
@@ -340,7 +514,8 @@ async function copyQuestionCode() {
   }
 }
 
-function detectLanguage(code){
+// Lightweight language detector
+function detectLanguage(code) {
   const s = code;
   if (/\b#include\b|\bstd::|::\s*\w+\s*\(|\btemplate\s*<|->\s*\w+\(/.test(s)) return "cpp";
   if (/\busing\s+namespace\s+std\b/.test(s)) return "cpp";
@@ -348,7 +523,5 @@ function detectLanguage(code){
   if (/\bdef\s+\w+\s*\(/.test(s) || /\bprint\(.+\)/.test(s)) return "python";
   if (/\bfunction\b|\bconst\b|\blet\b/.test(s) && /[{;)]\s*$/.test(s)) return "javascript";
   if (/\bclass\b\s+\w+\s*{/.test(s) && /public:|private:/.test(s)) return "cpp";
-  // default
   return "cpp";
 }
-

@@ -8,7 +8,7 @@
 
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- Prism.js for code highlighting -->
+  <!-- Prism theme (VS Code Dark+) -->
   <link href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-vsc-dark-plus.min.css" rel="stylesheet">
 </head>
 
@@ -38,37 +38,52 @@
 
     <main>
       <div id="card" class="card disabled">
-            <div id="card-front" class="card-face">
-      <div class="section-label">Question</div>
-      <p id="question"></p>
 
-      <div id="codeq-wrap" class="code-wrap hidden">
-        <div class="section-label">
-          Code <span id="lang-q" class="lang-badge hidden"></span>
+        <!-- FRONT (Question) -->
+        <div id="card-front" class="card-face">
+          <div class="section-label">Question</div>
+          <p id="question"></p>
+
+          <!-- Code Question -->
+          <div id="codeq-wrap" class="code-wrap hidden">
+            <div class="section-label">
+              Code <span id="lang-q" class="lang-badge hidden"></span>
+            </div>
+            <pre id="codeq-block" class="hidden"><code class="language-none" id="codeq-content"></code></pre>
+            <button id="copyq-btn" class="hidden">Copy Code</button>
+          </div>
+
+          <!-- MCQ options (shown only when MCQ mode is chosen) -->
+          <div id="mcq-wrap" class="mcq-wrap hidden">
+            <div class="section-label">Choose one</div>
+            <div id="mcq-options" class="mcq-grid"></div>
+          </div>
         </div>
-        <pre id="codeq-block" class="hidden"><code class="language-none" id="codeq-content"></code></pre>
-        <button id="copyq-btn" class="hidden">Copy Code</button>
-      </div>
-    </div>
 
-       <div id="card-back" class="card-face hidden">
-  <div class="section-label">Answer</div>
-  <p id="answer"></p>
+        <!-- BACK (Answer) -->
+        <div id="card-back" class="card-face hidden">
+          <div class="section-label">Answer</div>
+          <p id="answer"></p>
 
-  <div id="codea-wrap" class="code-wrap hidden">
-    <div class="section-label">
-      Code <span id="lang-a" class="lang-badge hidden"></span>
-    </div>
-    <pre id="code-block" class="hidden"><code class="language-none" id="code-content"></code></pre>
-    <button id="copy-btn" class="hidden">Copy Code</button>
-  </div>
-</div>
+          <!-- Code Answer -->
+          <div id="codea-wrap" class="code-wrap hidden">
+            <div class="section-label">
+              Code <span id="lang-a" class="lang-badge hidden"></span>
+            </div>
+            <pre id="code-block" class="hidden"><code class="language-none" id="code-content"></code></pre>
+            <button id="copy-btn" class="hidden">Copy Code</button>
+          </div>
+        </div>
+
+        <!-- Controls -->
         <div class="controls">
           <button id="flip-btn" disabled>Flip</button>
+          <button id="mcq-btn" class="ghost" disabled>Do MCQ</button>
           <button id="correct-btn" class="correct" disabled>✓ Correct</button>
           <button id="wrong-btn" class="wrong" disabled>✗ Wrong</button>
           <button id="next-btn" disabled>Next →</button>
         </div>
+      </div>
     </main>
 
     <footer>
@@ -80,18 +95,16 @@
   <!-- Vendors -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
-
-  <!-- Load the grammars explicitly -->
+  <!-- Load grammars explicitly -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-clike.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-cpp.min.js"></script>
-  <!-- Optional: C# -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-csharp.min.js"></script>
-
 
   <!-- App -->
   <script src="app.js"></script>
 </body>
+
 <footer id="credits-footer">
   Made with <span class="accent">ChatGPT 5</span>
 </footer>
