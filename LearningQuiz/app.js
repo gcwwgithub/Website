@@ -406,41 +406,56 @@ function renderMcqOptions(opts, q) {
   // reset lock
   state.mcqLocked = false;
 
-  opts.forEach((opt, idx) => {
-    const btn = document.createElement("button");
-    btn.className = "mcq-option";
-    btn.textContent = opt.text;
+ opts.forEach((opt, idx) => {
+  const btn = document.createElement("button");
+  btn.className = "mcq-option";
+  btn.textContent = opt.text;
 
-    btn.addEventListener("click", () => {
-      if (state.mcqLocked) return;
-      state.mcqLocked = true;
+  btn.addEventListener("click", () => {
+    if (state.mcqLocked) return;
+    state.mcqLocked = true;
 
-      // Disable all options
-      [...mcqOptions.children].forEach(n => n.classList.add("disabled"));
+    const allOptions = [...mcqOptions.children];
 
-      if (opt.isCorrect) {
-        btn.classList.add("correct");
-
-        // MCQ answered correctly → show Correct button, hide Wrong
-        correctBtn.style.display = "";
-        wrongBtn.style.display = "none";
-
-        // ✅ No updateColor here; scoring happens when Correct button is pressed
-      } else {
-        btn.classList.add("wrong");
-
-        // MCQ answered wrongly → show Wrong button, hide Correct
-        wrongBtn.style.display = "";
-        correctBtn.style.display = "none";
-
-        // ✅ No updateColor here; scoring happens when Wrong button is pressed
-      }
-
-
+    // Disable all options and clear any previous correct/wrong styling
+    allOptions.forEach(n => {
+      n.classList.add("disabled");
+      n.classList.remove("correct", "wrong");
     });
 
-    mcqOptions.appendChild(btn);
+    if (opt.isCorrect) {
+      // Only the clicked option should be green
+      btn.classList.add("correct");
+
+      // MCQ answered correctly → show Correct button, hide Wrong
+      correctBtn.style.display = "";
+      wrongBtn.style.display   = "none";
+
+      // scoring happens when Correct button is pressed
+    } else {
+      // Clicked option is wrong -> red
+      btn.classList.add("wrong");
+
+      // Also reveal which one was actually correct -> green
+      const correctIndex = opts.findIndex(o => o.isCorrect);
+      if (correctIndex !== -1) {
+        const correctNode = allOptions[correctIndex];
+        if (correctNode && correctNode !== btn) {
+          correctNode.classList.add("correct");
+        }
+      }
+
+      // MCQ answered wrongly → show Wrong button, hide Correct
+      wrongBtn.style.display   = "";
+      correctBtn.style.display = "none";
+
+      // scoring happens when Wrong button is pressed
+    }
   });
+
+  mcqOptions.appendChild(btn);
+});
+
 }
 
 // ---- Scoring / persistence ----
