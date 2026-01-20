@@ -8,7 +8,8 @@ const COLS = {
   zhUsage: "Chinese Usage in a Sentence",
   enUsage: "English Usage in a sentence",
   color: "Color",
-  zhHint: "Chinese Usage in a Sentence Hint"
+  zhHint: "Chinese Usage in a Sentence Hint",
+  hsk: "Band 0 HSK"
 };
 
 // State
@@ -102,16 +103,24 @@ function normalizeCategory(catRaw) {
 // Detect columns by header name (case-insensitive). Call this after Papa.parse.
 function detectColumns(fields) {
   if (!fields || !fields.length) return;
-  const find = (name) => fields.find(f => String(f).toLowerCase() === name);
 
-  // HSK column is optional; set when present
-  const hskField = find("hsk");
-  if (hskField) COLS.hsk = hskField;  // e.g., "HSK" or "hsk"
+  const norm = (s) => String(s || "").trim().toLowerCase();
+
+  // match header that is exactly "hsk" OR contains "hsk"
+  const hskField = fields.find(f => {
+    const n = norm(f);
+    return n === "band" || n.includes("Band");
+  });
+
+  if (hskField) 
+    COLS.hsk = hskField;
 }
 
 function populateHskOptions() {
-  if (!hskFilterEl || !COLS.hsk) 
+  if (!hskFilterEl || !COLS.hsk)
+  {
     return;         // skip if no HSK column
+  }
   const vals = new Set();
   for (const r of allRows) {
     const v = (r[COLS.hsk] ?? "").toString().trim();
@@ -303,7 +312,7 @@ function renderCard() {
     answerEl.textContent = `Target word: ${zh}${pin}\nMeaning: ${en}`;
   }
 
-   updatePinyinUI();
+  updatePinyinUI();
 }
 
 function reveal() {
@@ -331,7 +340,7 @@ function reveal() {
     speakBtn.style.display = hasChinese ? "inline-block" : "none";
     speakBtn.disabled = !hasChinese;
   }
-   updatePinyinUI();
+  updatePinyinUI();
 }
 
 
@@ -473,7 +482,21 @@ document.addEventListener("DOMContentLoaded", () => {
   loadProgress();
   el("downloadProgress").addEventListener("click", downloadProgressCsv);
   el("flipBtn").addEventListener("click", reveal);
-  el("nextBtn").addEventListener("click", pickNewCard);
+  el("nextBtn").addEventListener("click", () => {
+    if (!current) return;
+
+    const isRevealed = (answerEl && answerEl.style.display === "block");
+
+    // If still on question, behave like Flip first (reveal UI), but do NOT score.
+    if (!isRevealed) {
+      reveal(); // shows answer + buttons + usage/hint changes + speak visibility
+      setTimeout(pickNewCard, 120); // like Right/Wrong timing, but no stat/progress changes
+      return;
+    }
+
+    // If already revealed, just go next immediately
+    pickNewCard();
+  });
 
   el("rightBtn").addEventListener("click", () => {
     if (!current) return;
@@ -498,12 +521,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   if (hskFilterEl) {
-  hskFilterEl.addEventListener("change", () => {
-    hskFilter = hskFilterEl.value || "all";
-    // When filter changes, re-apply the slicing (range/limit) on the new base set
-    if (allRows.length) applyRowLimit();
-  });
-}
+    hskFilterEl.addEventListener("change", () => {
+      hskFilter = hskFilterEl.value || "all";
+      // When filter changes, re-apply the slicing (range/limit) on the new base set
+      if (allRows.length) applyRowLimit();
+    });
+  }
 
   const rowLimitInput = el("rowLimit");
   if (rowLimitInput) {
