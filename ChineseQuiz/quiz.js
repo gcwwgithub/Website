@@ -112,13 +112,12 @@ function detectColumns(fields) {
     return n === "band" || n.includes("Band");
   });
 
-  if (hskField) 
+  if (hskField)
     COLS.hsk = hskField;
 }
 
 function populateHskOptions() {
-  if (!hskFilterEl || !COLS.hsk)
-  {
+  if (!hskFilterEl || !COLS.hsk) {
     return;         // skip if no HSK column
   }
   const vals = new Set();
@@ -134,6 +133,20 @@ function populateHskOptions() {
     opt.textContent = v;
     hskFilterEl.appendChild(opt);
   });
+}
+
+function goToIndex(index) {
+  if (!rows.length) return;
+
+  // Clamp safely
+  const i = Math.max(0, Math.min(index, rows.length - 1));
+
+  currentIndex = i;
+  const row = rows[currentIndex];
+  const type = chooseTypeForRow(row);
+
+  current = { row, type };
+  renderCard();
 }
 
 
@@ -199,18 +212,65 @@ function pickNewCard() {
   let row;
 
   if (orderMode === "ordered") {
-    // sequential through the filtered set
+    // Sequential
     row = rows[currentIndex];
-    currentIndex = (currentIndex + 1) % rows.length; // loop around
   } else {
-    // random
+    // Random
     row = rows[rand(rows.length)];
   }
 
   const type = chooseTypeForRow(row);
   current = { row, type };
   renderCard();
+
+  // Move index forward only in ordered mode
+  if (orderMode === "ordered") {
+    currentIndex = (currentIndex + 1) % rows.length;
+  }
 }
+
+function resetCardUI() {
+  // Hide answer
+  answerEl.style.display = "none";
+
+  // Hide buttons
+  rightBtn.style.display = "none";
+  wrongBtn.style.display = "none";
+  speakBtn.style.display = "none";
+
+  // Remove hint block (IMPORTANT FIX)
+  const hint = document.getElementById("hint-block");
+  if (hint) hint.remove();
+
+  // Remove usage block if shown
+  const zhUsage = document.getElementById("chinese-usage");
+  if (zhUsage) zhUsage.remove();
+
+  const enUsage = document.getElementById("english-usage");
+  if (enUsage) enUsage.remove();
+
+  // Clear extras (still safe)
+  extrasArea.innerHTML = "";
+
+  // Reset hint/usage buttons
+  showHintBtn.style.display = "none";
+  showEnglishUsageBtn.style.display = "none";
+  showChineseUsageBtn.style.display = "none";
+
+  showHintBtn.disabled = false;
+  showEnglishUsageBtn.disabled = false;
+  showChineseUsageBtn.disabled = false;
+
+  // Clear pinyin
+  pinyinEl.textContent = "";
+  pinyinEl.style.display = "none";
+
+  if (pinyinAnswerEl) {
+    pinyinAnswerEl.textContent = "";
+    pinyinAnswerEl.style.display = "none";
+  }
+}
+
 
 
 function refreshCurrentColorUI() {
@@ -485,17 +545,28 @@ document.addEventListener("DOMContentLoaded", () => {
   el("nextBtn").addEventListener("click", () => {
     if (!current) return;
 
-    const isRevealed = (answerEl && answerEl.style.display === "block");
+    resetCardUI();   // ← clean slate first
+    pickNewCard();   // ← then load next
+  });
 
-    // If still on question, behave like Flip first (reveal UI), but do NOT score.
-    if (!isRevealed) {
-      reveal(); // shows answer + buttons + usage/hint changes + speak visibility
-      setTimeout(pickNewCard, 120); // like Right/Wrong timing, but no stat/progress changes
-      return;
-    }
 
-    // If already revealed, just go next immediately
-    pickNewCard();
+  // Go to first card
+  el("resetIndexBtn").addEventListener("click", () => {
+    if (!rows.length) return;
+    currentIndex = 0;
+    goToIndex(0);
+  });
+
+  // Go to specific row
+  el("gotoRowBtn").addEventListener("click", () => {
+    if (!rows.length) return;
+
+    const input = el("gotoRowInput");
+    const v = parseInt(input.value, 10);
+    if (!Number.isFinite(v)) return;
+
+    // User types 1-based number
+    goToIndex(v - 1);
   });
 
   el("rightBtn").addEventListener("click", () => {
