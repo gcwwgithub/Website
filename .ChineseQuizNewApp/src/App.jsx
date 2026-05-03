@@ -1,10 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import AppShell from "./components/AppShell.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import AddEditWord from "./pages/AddEditWord.jsx";
 import DailyQuiz from "./pages/DailyQuiz.jsx";
-import Login from "./pages/Login.jsx";
 import MainMenu from "./pages/MainMenu.jsx";
+import PlayMode from "./pages/PlayMode.jsx";
 import ProgressStats from "./pages/ProgressStats.jsx";
 import Settings from "./pages/Settings.jsx";
 import WordList from "./pages/WordList.jsx";
@@ -12,16 +11,9 @@ import WordList from "./pages/WordList.jsx";
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <AppShell />
-          </ProtectedRoute>
-        }
-      >
+      <Route path="/" element={<AppShell />}>
         <Route index element={<MainMenu />} />
+        <Route path="play" element={<PlayMode />} />
         <Route path="quiz" element={<DailyQuiz />} />
         <Route path="words" element={<WordList />} />
         <Route path="words/new" element={<AddEditWord />} />

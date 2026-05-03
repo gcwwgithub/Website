@@ -1,24 +1,23 @@
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { DEFAULT_USER_ID } from "../constants.js";
 import { db } from "../firebase.js";
-import { useAuth } from "../state/AuthContext.jsx";
 
 export default function ProgressStats() {
-  const { user } = useAuth();
   const [progress, setProgress] = useState([]);
   const [sessions, setSessions] = useState([]);
 
   useEffect(() => {
     async function loadStats() {
-      const progressSnapshot = await getDocs(collection(db, "users", user.uid, "progress"));
+      const progressSnapshot = await getDocs(collection(db, "users", DEFAULT_USER_ID, "progress"));
       const sessionSnapshot = await getDocs(
-        query(collection(db, "users", user.uid, "dailySessions"), orderBy("date", "desc"))
+        query(collection(db, "users", DEFAULT_USER_ID, "dailySessions"), orderBy("date", "desc"))
       );
       setProgress(progressSnapshot.docs.map((progressDoc) => ({ id: progressDoc.id, ...progressDoc.data() })));
       setSessions(sessionSnapshot.docs.map((sessionDoc) => ({ id: sessionDoc.id, ...sessionDoc.data() })));
     }
     loadStats();
-  }, [user.uid]);
+  }, []);
 
   const correct = progress.reduce((total, item) => total + (item.correctCount ?? 0), 0);
   const wrong = progress.reduce((total, item) => total + (item.wrongCount ?? 0), 0);

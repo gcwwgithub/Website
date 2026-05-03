@@ -1,0 +1,29 @@
+
+> chinese-quiz-new@0.1.0 dev
+> vite --base=/ --host 127.0.0.1 --force
+
+[2m22:59:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m Forced re-optimization of dependencies
+
+  [32m[1mVITE[22m v6.4.2[39m  [2mready in [0m[1m239[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5173[22m/[39m
+[2m23:02:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/AppShell.jsx[22m
+[2m23:02:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css[22m
+[2m23:03:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DailyQuiz.jsx[22m
+[2m23:03:46[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css[22m
+[2m23:05:17[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DailyQuiz.jsx[22m
+[2m23:05:17[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css[22m
+[2m23:06:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DailyQuiz.jsx[22m
+[2m23:06:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DailyQuiz.jsx[22m
+[2m23:06:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css[22m
+[2m23:07:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DailyQuiz.jsx[22m
+[2m23:07:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css[22m
+[2m23:09:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DailyQuiz.jsx[22m
+[2m23:11:45[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/PlayMode.jsx[22m
+[2m23:11:45[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DailyQuiz.jsx[22m
+[2m23:11:45[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css[22m
+[2m23:13:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/PlayMode.jsx[22m
+[2m23:13:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DailyQuiz.jsx[22m
+[2m23:13:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css[22m
+[2m23:14:31[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/DailyQuiz.jsx[22m
+[2m23:14:32[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css[22m

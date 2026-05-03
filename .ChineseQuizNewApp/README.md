@@ -2,7 +2,7 @@
 
 React/Vite Firebase vocabulary quiz app for deployment under `/Website/ChineseQuizNew/`.
 
-Source lives in `ChineseQuizNewApp`. The GitHub Pages output is generated into `../ChineseQuizNew`.
+Source lives in `.ChineseQuizNewApp`. The GitHub Pages output is generated into `../ChineseQuizNew`.
 
 ## Setup
 
