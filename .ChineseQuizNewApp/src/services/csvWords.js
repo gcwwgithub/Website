@@ -22,6 +22,19 @@ export async function loadCsvWords() {
   }
 }
 
+export function filterCsvRowsByBand(rows, selectedBand) {
+  if (selectedBand === "all") {
+    return rows;
+  }
+
+  return rows.filter((row) =>
+    row["Band 0 HSK"]
+      .split(";")
+      .map((band) => band.trim())
+      .includes(selectedBand)
+  );
+}
+
 function parseCsv(csvText) {
   const rows = [];
   let row = [];
@@ -63,9 +76,10 @@ function parseCsv(csvText) {
   );
 
   return dataRows
-    .map((dataRow) =>
+    .map((dataRow, dataRowIndex) =>
       headers.reduce((word, header, index) => {
         word[header.trim()] = dataRow[index]?.trim() ?? "";
+        word.__rowNumber = dataRowIndex + 2;
         return word;
       }, {})
     )

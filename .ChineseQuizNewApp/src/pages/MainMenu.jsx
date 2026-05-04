@@ -7,9 +7,14 @@ export default function MainMenu() {
         <p className="eyebrow">Daily practice</p>
         <h2>Chinese Quiz</h2>
         <p className="home-copy">Review vocabulary with a simple weighted quiz.</p>
-        <Link className="play-button" to="/play">
-          Play
-        </Link>
+        <div className="home-actions">
+          <Link className="play-button" to="/play">
+            Play
+          </Link>
+          <Link className="secondary-button settings-link" to="/settings">
+            Settings
+          </Link>
+        </div>
       </section>
     </main>
   );

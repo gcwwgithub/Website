@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { loadCsvWords } from "../services/csvWords.js";
+import { filterCsvRowsByBand, loadCsvWords } from "../services/csvWords.js";
 import { getUserProgress, getWords, recordDailyAttempt, updateWordProgress } from "../services/words.js";
 import { DEFAULT_USER_ID } from "../constants.js";
 import { buildDailyQueue, getTodayKey, weightColor } from "../utils/quiz.js";
@@ -9,6 +9,12 @@ export default function DailyQuiz() {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode") === "english-to-chinese" ? "english-to-chinese" : "chinese-to-english";
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
+  const selectedBand = searchParams.get("band") || "all";
+  const rangeStart = Math.max(1, Number(searchParams.get("start")) || 1);
+  const rangeEnd = Math.max(rangeStart, Number(searchParams.get("end")) || Number.MAX_SAFE_INTEGER);
+  const orderMode = searchParams.get("order") === "weighted" ? "weighted" : "random";
+  const initialShowPinyin = searchParams.get("pinyin") !== "0";
+  const initialShowUsage = searchParams.get("usage") !== "0";
   const [queue, setQueue] = useState([]);
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState("");
@@ -18,9 +24,11 @@ export default function DailyQuiz() {
   const [csvIndex, setCsvIndex] = useState(0);
   const [csvResults, setCsvResults] = useState({ correct: 0, wrong: 0 });
   const [wrongCsvRows, setWrongCsvRows] = useState([]);
+  const [skippedCsvRows, setSkippedCsvRows] = useState([]);
+  const [csvHistory, setCsvHistory] = useState([]);
   const [isCsvFlipped, setIsCsvFlipped] = useState(false);
-  const [showFrontPinyin, setShowFrontPinyin] = useState(true);
-  const [showFrontUsage, setShowFrontUsage] = useState(true);
+  const [showFrontPinyin, setShowFrontPinyin] = useState(initialShowPinyin);
+  const [showFrontUsage, setShowFrontUsage] = useState(initialShowUsage);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -38,10 +46,15 @@ export default function DailyQuiz() {
       try {
         if (mode === "chinese-to-english") {
           const loadedCsvRows = await loadCsvWords();
-          setCsvRows(buildRandomCsvSession(loadedCsvRows, requestedCount));
+          const filteredRows = filterCsvRowsByBand(loadedCsvRows, selectedBand);
+          const rangedRows = filteredRows.slice(rangeStart - 1, rangeEnd);
+          const rowsWithSavedProgress = applySavedColorProgress(rangedRows);
+          setCsvRows(buildCsvSession(rowsWithSavedProgress, requestedCount, orderMode));
           setCsvIndex(0);
           setCsvResults({ correct: 0, wrong: 0 });
           setWrongCsvRows([]);
+          setSkippedCsvRows([]);
+          setCsvHistory([]);
           setIsCsvFlipped(false);
           return;
         }
@@ -55,7 +68,7 @@ export default function DailyQuiz() {
       }
     }
     loadQuiz();
-  }, [mode, requestedCount]);
+  }, [mode, orderMode, rangeEnd, rangeStart, requestedCount, selectedBand]);
 
   async function submitAnswer(event) {
     event.preventDefault();
@@ -105,15 +118,79 @@ export default function DailyQuiz() {
     const isCsvComplete = csvRows.length > 0 && csvIndex >= csvRows.length;
 
     function answerCsvQuestion(wasCorrect) {
+      const nextColor = updateColorValue(csvRow?.Color, wasCorrect);
+      const answeredRow = csvRow ? { ...csvRow, Color: nextColor } : csvRow;
+      if (answeredRow) {
+        saveColorProgress(answeredRow.__rowNumber, nextColor);
+      }
+
+      setCsvHistory((current) => [
+        ...current,
+        {
+          index: csvIndex,
+          row: answeredRow,
+          previousColor: csvRow?.Color,
+          type: wasCorrect ? "correct" : "wrong",
+          wasFlipped: isCsvFlipped,
+        },
+      ]);
+      setCsvRows((current) =>
+        current.map((row, rowIndex) => (rowIndex === csvIndex ? answeredRow : row))
+      );
       setCsvResults((current) => ({
         correct: current.correct + (wasCorrect ? 1 : 0),
         wrong: current.wrong + (wasCorrect ? 0 : 1),
       }));
-      if (!wasCorrect && csvRow) {
-        setWrongCsvRows((current) => [...current, csvRow]);
+      if (!wasCorrect && answeredRow) {
+        setWrongCsvRows((current) => [...current, answeredRow]);
       }
       setIsCsvFlipped(false);
       setCsvIndex((current) => current + 1);
+    }
+
+    function skipCsvQuestion() {
+      if (csvRow) {
+        setCsvHistory((current) => [
+          ...current,
+          {
+            index: csvIndex,
+            row: csvRow,
+            type: "skipped",
+            wasFlipped: isCsvFlipped,
+          },
+        ]);
+        setSkippedCsvRows((current) => [...current, csvRow]);
+      }
+      setIsCsvFlipped(false);
+      setCsvIndex((current) => current + 1);
+    }
+
+    function undoLastAction() {
+      const lastAction = csvHistory[csvHistory.length - 1];
+      if (!lastAction) {
+        return;
+      }
+
+      setCsvHistory((current) => current.slice(0, -1));
+      setCsvIndex(lastAction.index);
+      setIsCsvFlipped(lastAction.wasFlipped);
+      if (lastAction.previousColor !== undefined) {
+        saveColorProgress(lastAction.row.__rowNumber, lastAction.previousColor);
+        setCsvRows((current) =>
+          current.map((row, rowIndex) =>
+            rowIndex === lastAction.index ? { ...row, Color: lastAction.previousColor } : row
+          )
+        );
+      }
+
+      if (lastAction.type === "correct") {
+        setCsvResults((current) => ({ ...current, correct: Math.max(0, current.correct - 1) }));
+      } else if (lastAction.type === "wrong") {
+        setCsvResults((current) => ({ ...current, wrong: Math.max(0, current.wrong - 1) }));
+        setWrongCsvRows((current) => removeLastMatchingRow(current, lastAction.row));
+      } else if (lastAction.type === "skipped") {
+        setSkippedCsvRows((current) => removeLastMatchingRow(current, lastAction.row));
+      }
     }
 
     if (isCsvComplete) {
@@ -131,12 +208,28 @@ export default function DailyQuiz() {
                 <p>Wrong</p>
                 <strong>{csvResults.wrong}</strong>
               </section>
+              <section className="stat-card">
+                <p>Skipped</p>
+                <strong>{skippedCsvRows.length}</strong>
+              </section>
             </div>
             {wrongCsvRows.length > 0 && (
               <section className="wrong-list">
                 <h3>Words to review</h3>
                 {wrongCsvRows.map((row, rowIndex) => (
                   <article className="wrong-row" key={`${row["Chinese Words"]}-${rowIndex}`}>
+                    <strong>{row["Chinese Words"]}</strong>
+                    <span>{row.pinyin}</span>
+                    <span>{row["English Words"]}</span>
+                  </article>
+                ))}
+              </section>
+            )}
+            {skippedCsvRows.length > 0 && (
+              <section className="wrong-list skipped-list">
+                <h3>Skipped cards</h3>
+                {skippedCsvRows.map((row, rowIndex) => (
+                  <article className="wrong-row" key={`${row["Chinese Words"]}-skipped-${rowIndex}`}>
                     <strong>{row["Chinese Words"]}</strong>
                     <span>{row.pinyin}</span>
                     <span>{row["English Words"]}</span>
@@ -157,7 +250,7 @@ export default function DailyQuiz() {
           onClick={() => setIsOptionsOpen(true)}
           aria-label="Open quiz options"
         >
-          ☰
+          Menu
         </button>
         <div
           className={`drawer-backdrop ${isOptionsOpen ? "open" : ""}`}
@@ -193,36 +286,29 @@ export default function DailyQuiz() {
         </aside>
         <div className="quiz-main">
           <section className="quiz-card csv-quiz-card">
-            <p className="eyebrow">{csvRows.length ? `${csvIndex + 1} / ${csvRows.length}` : "CSV preview"}</p>
-            <h2>{csvRow?.["Chinese Words"] || "No row loaded"}</h2>
             {csvRow ? (
               <div className="csv-preview">
-                <div className="csv-fields">
-                  {!isCsvFlipped ? (
-                    <>
-                      {showFrontPinyin && <p><strong>pinyin:</strong> {csvRow.pinyin}</p>}
-                      {showFrontUsage && (
-                        <p>
-                          <strong>Chinese Usage in a Sentence:</strong> {csvRow["Chinese Usage in a Sentence"]}
-                        </p>
-                      )}
-                    </>
-                  ) : (
-                    Object.entries(csvRow)
-                      .filter(([column]) => column !== "Chinese Words")
-                      .map(([column, value]) => (
-                        <p key={column}>
-                          <strong>{column}:</strong> {value || "None"}
-                        </p>
-                      ))
-                  )}
-                </div>
+                <CsvFlashcard
+                  row={csvRow}
+                  isFlipped={isCsvFlipped}
+                  progressText={csvRows.length ? `${csvIndex + 1} / ${csvRows.length}` : "CSV preview"}
+                  showFrontPinyin={showFrontPinyin}
+                  showFrontUsage={showFrontUsage}
+                  canUndo={csvHistory.length > 0}
+                  onUndo={undoLastAction}
+                />
                 {!isCsvFlipped ? (
-                  <button onClick={() => setIsCsvFlipped(true)}>Flip</button>
+                  <div className="card-actions">
+                    <button onClick={() => setIsCsvFlipped(true)}>Flip</button>
+                    <button className="secondary-action" onClick={skipCsvQuestion}>Skip</button>
+                  </div>
                 ) : (
-                  <div className="answer-actions">
-                    <button onClick={() => answerCsvQuestion(true)}>Correct</button>
-                    <button className="wrong-button" onClick={() => answerCsvQuestion(false)}>Wrong</button>
+                  <div className="post-flip-actions">
+                    <div className="answer-actions">
+                      <button onClick={() => answerCsvQuestion(true)}>Correct</button>
+                      <button className="wrong-button" onClick={() => answerCsvQuestion(false)}>Wrong</button>
+                    </div>
+                    <button className="secondary-action" onClick={skipCsvQuestion}>Skip</button>
                   </div>
                 )}
               </div>
@@ -293,6 +379,125 @@ export default function DailyQuiz() {
   );
 }
 
+function CsvFlashcard({ row, isFlipped, progressText, showFrontPinyin, showFrontUsage, canUndo, onUndo }) {
+  const sentence = isFlipped
+    ? row["Chinese Usage in a Sentence"]
+    : row["Chinese Usage in a Sentence Hint"];
+  const shouldShowMeta = showFrontPinyin || isFlipped;
+  const shouldShowUsage = showFrontUsage || isFlipped;
+  const shouldShowDivider = shouldShowMeta && shouldShowUsage;
+
+  return (
+    <article className="dictionary-card">
+      <div className="dictionary-card-top">
+        <p className="eyebrow">{progressText}</p>
+        <p className="question-id">{row.__rowNumber || "?"}</p>
+        <button className="undo-button" onClick={onUndo} disabled={!canUndo}>
+          Undo
+        </button>
+      </div>
+
+      <h2>{row["Chinese Words"]}</h2>
+      <ColorBadge colorValue={row.Color} />
+
+      <div className="dictionary-body-grid">
+        <div>
+          {shouldShowMeta && (
+            <div className="dictionary-meta">
+              {(showFrontPinyin || isFlipped) && <em>{row.pinyin}</em>}
+              {isFlipped && <span>{row["English Words"]}</span>}
+            </div>
+          )}
+
+          {shouldShowDivider && <div className="dictionary-divider" />}
+
+          {shouldShowUsage && (
+            <div className="dictionary-sentence">
+              {(showFrontUsage || isFlipped) && (
+                <p className="chinese-line">
+                  {isFlipped ? highlightChineseWord(sentence, row["Chinese Words"]) : sentence}
+                </p>
+              )}
+              {isFlipped && <p>{row["English Usage in a sentence"]}</p>}
+            </div>
+          )}
+        </div>
+        <div className="audio-rail">
+          {shouldShowMeta && (
+            <IconAudioButton label="Read Chinese word" onClick={() => speakText(row["Chinese Words"], "zh-CN")} />
+          )}
+          {shouldShowUsage && (
+            <IconAudioButton label="Read sentence" onClick={() => speakText(sentence, "zh-CN")} />
+          )}
+        </div>
+      </div>
+
+      {isFlipped && (
+        <dl className="dictionary-details">
+          <div>
+            <dt>HSK</dt>
+            <dd>{row["Band 0 HSK"]}</dd>
+          </div>
+        </dl>
+      )}
+    </article>
+  );
+}
+
+function IconAudioButton({ label, onClick }) {
+  return (
+    <button className="icon-audio-button" type="button" aria-label={label} onClick={onClick}>
+      <span aria-hidden="true">Audio</span>
+    </button>
+  );
+}
+
+function ColorBadge({ colorValue }) {
+  const rawLevel = Number.parseInt(colorValue, 10);
+  const level = Math.max(1, Math.min(10, Number.isNaN(rawLevel) ? 1 : rawLevel));
+  return (
+    <div className="severity-meter" aria-label={`Severity ${level} out of 10`}>
+      <div className="severity-track">
+        <span style={{ width: `${level * 10}%` }} />
+      </div>
+      <strong>{level}/10</strong>
+    </div>
+  );
+}
+
+function highlightChineseWord(sentence, targetWord) {
+  if (!sentence || !targetWord || !sentence.includes(targetWord)) {
+    return sentence;
+  }
+
+  const parts = sentence.split(targetWord);
+  return parts.map((part, index) => (
+    <span key={`${part}-${index}`}>
+      {part}
+      {index < parts.length - 1 && <mark className="target-word-highlight">{targetWord}</mark>}
+    </span>
+  ));
+}
+
+function speakText(text, language = "zh-CN") {
+  if (!text || !window.speechSynthesis) {
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = language;
+  window.speechSynthesis.speak(utterance);
+}
+
+function buildCsvSession(rows, count, orderMode) {
+  if (orderMode === "weighted") {
+    return buildWeightedCsvSession(rows, count);
+  }
+
+  return buildRandomCsvSession(rows, count);
+}
+
 function buildRandomCsvSession(rows, count) {
   const shuffledRows = [...rows];
 
@@ -302,4 +507,97 @@ function buildRandomCsvSession(rows, count) {
   }
 
   return shuffledRows.slice(0, Math.min(count, shuffledRows.length));
+}
+
+function buildWeightedCsvSession(rows, count) {
+  const availableRows = [...rows];
+  const selectedRows = [];
+  const targetCount = Math.min(count, availableRows.length);
+
+  while (selectedRows.length < targetCount && availableRows.length) {
+    const totalWeight = availableRows.reduce((sum, row) => sum + getSelectionWeight(row.Color), 0);
+    let pick = Math.random() * totalWeight;
+    let selectedIndex = 0;
+
+    for (let index = 0; index < availableRows.length; index += 1) {
+      pick -= getSelectionWeight(availableRows[index].Color);
+      if (pick <= 0) {
+        selectedIndex = index;
+        break;
+      }
+    }
+
+    const [selectedRow] = availableRows.splice(selectedIndex, 1);
+    selectedRows.push(selectedRow);
+  }
+
+  return selectedRows;
+}
+
+function getSelectionWeight(colorValue) {
+  const parsedColor = Number.parseInt(colorValue, 10);
+  if (Number.isNaN(parsedColor)) {
+    return 1;
+  }
+
+  return Math.max(1, parsedColor);
+}
+
+function updateColorValue(colorValue, wasCorrect) {
+  const parsedColor = Number.parseInt(colorValue, 10);
+  const currentColor = Number.isNaN(parsedColor) ? 1 : parsedColor;
+
+  if (wasCorrect) {
+    return String(currentColor - 1);
+  }
+
+  return String(currentColor < 5 ? 7 : currentColor + 2);
+}
+
+const CSV_COLOR_PROGRESS_KEY = "chineseQuizNew.csvColorProgress.v1";
+
+function applySavedColorProgress(rows) {
+  const progress = readColorProgress();
+
+  return rows.map((row) => {
+    const savedColor = progress[row.__rowNumber];
+    if (savedColor === undefined) {
+      return row;
+    }
+
+    return { ...row, Color: String(savedColor) };
+  });
+}
+
+function readColorProgress() {
+  try {
+    const savedProgress = window.localStorage.getItem(CSV_COLOR_PROGRESS_KEY);
+    return savedProgress ? JSON.parse(savedProgress) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveColorProgress(rowNumber, colorValue) {
+  if (!rowNumber) {
+    return;
+  }
+
+  const progress = readColorProgress();
+  progress[rowNumber] = String(colorValue);
+
+  try {
+    window.localStorage.setItem(CSV_COLOR_PROGRESS_KEY, JSON.stringify(progress));
+  } catch {
+    // If storage is unavailable or full, the quiz should still continue normally.
+  }
+}
+
+function removeLastMatchingRow(rows, rowToRemove) {
+  const targetIndex = rows.map((row) => row.__rowNumber).lastIndexOf(rowToRemove.__rowNumber);
+  if (targetIndex === -1) {
+    return rows;
+  }
+
+  return rows.filter((_, index) => index !== targetIndex);
 }

@@ -1,57 +1,106 @@
 <!DOCTYPE html>
-<html lang= "en">
+<html lang="en">
   <head>
-    <title> WebPlayground</title>
+    <title>WebPlayground</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   </head>
-  
-  <div class = "section top">
-    <div class = header> GABRIEL CHIOK WEB PROJECTS</div>
-    <div class = body> A website made to showcase my web projects </div>
-    <div class = body> This website is under development </div>
-  </div>
-
-  <div class = section>
-    <div class = container>
-      <a href="./Portfolio/pages/landing_page.html">
-        <img src="./Images/portfolio.jpg" alt="Image" style="cursor: pointer;" class = "button">
-      </a>
-      <a href="./ChineseQuiz/quiz.html">
-        <img src="./Images/quiz.png" alt="Image" style="cursor: pointer;" class = "button">
-      </a>
-      <a href="./ChineseQuizNew/">
-        <img src="./Images/quiz.png" alt="ChineseQuizNew" style="cursor: pointer;" class = "button">
-      </a>
-       <a href="./LearningQuiz/index.html">
-        <img src="./Images/Computer_Science_Word_Cloud.png" alt="Image" style="cursor: pointer;" class = "button">
-      </a>
-       <a href="./VoiceTool/index.html">
-        <img src="./Images/tool.jpeg" alt="Image" style="cursor: pointer;" class = "button">
-      </a>
-    </div>
-  </div>
-
-  
-
-  <div class = "section">
-    <div class = "header">CONTACT</div>
-    <div class = "icon-container">
-      <a href="https://github.com/gcwwgithub" class="icon-link">
-        <i class="icon fa-brands fa-github"></i> </a>
-      <a href="https://www.linkedin.com/in/gabriel-chiok-418538152" class="icon-link">
-        <i class="icon fa-brands fa-linkedin"></i> </a>
-      <a href="mailto:gabrielchiok@hotmail.com" class="icon-link">
-        <i class="icon fa-solid fa-envelope"></i> </a>
-    </div>
-    <div class = "body copyright">Copyright © 2024 Gabriel Chiok</div>
-  </div>
-
-  
-
   <body>
-  </body> 
+    <header class="site-hero">
+      <nav class="site-nav" aria-label="Primary">
+        <a class="brand" href="./index.html">WebPlayground</a>
+        <div class="nav-links">
+          <a href="#projects">Projects</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </nav>
+
+      <section class="hero-content">
+        <p class="eyebrow">Gabriel Chiok Web Projects</p>
+        <h1>Small web tools, quizzes, and experiments in one place.</h1>
+        <p class="hero-copy">
+          A personal launcher for browser projects, learning tools, and interactive experiments.
+        </p>
+      </section>
+    </header>
+
+    <main>
+      <section class="section projects-section" id="projects">
+        <div class="section-heading">
+          <p class="eyebrow">Launch</p>
+          <h2>Projects</h2>
+        </div>
+
+        <div class="project-grid">
+          <a class="project-card featured-card" href="./ChineseQuizNew/">
+            <img src="./Images/quiz.png" alt="Chinese Quiz preview">
+            <div class="project-info">
+              <span class="project-tag">New</span>
+              <h3>Chinese Quiz</h3>
+              <p>Firebase-ready vocabulary quiz with CSV-powered flashcards.</p>
+            </div>
+          </a>
+
+          <a class="project-card" href="./ChineseQuiz/quiz.html">
+            <img src="./Images/quiz.png" alt="Classic Chinese quiz preview">
+            <div class="project-info">
+              <span class="project-tag">Classic</span>
+              <h3>Chinese Quiz Old</h3>
+              <p>The original Chinese vocabulary quiz page.</p>
+            </div>
+          </a>
+
+          <a class="project-card" href="./LearningQuiz/index.html">
+            <img src="./Images/Computer_Science_Word_Cloud.png" alt="Learning quiz preview">
+            <div class="project-info">
+              <span class="project-tag">Learning</span>
+              <h3>Learning Quiz</h3>
+              <p>Computer science revision and word practice.</p>
+            </div>
+          </a>
+
+          <a class="project-card" href="./VoiceTool/index.html">
+            <img src="./Images/tool.jpeg" alt="Voice tool preview">
+            <div class="project-info">
+              <span class="project-tag">Tool</span>
+              <h3>Voice Tool</h3>
+              <p>A browser utility for voice-focused experiments.</p>
+            </div>
+          </a>
+
+          <a class="project-card" href="./Portfolio/pages/landing_page.html">
+            <img src="./Images/portfolio.jpg" alt="Portfolio preview">
+            <div class="project-info">
+              <span class="project-tag">Portfolio</span>
+              <h3>Portfolio</h3>
+              <p>A personal portfolio landing page.</p>
+            </div>
+          </a>
+
+        </div>
+      </section>
+    </main>
+
+    <footer class="section site-footer" id="contact">
+      <div class="section-heading">
+        <p class="eyebrow">Contact</p>
+        <h2>Find Me</h2>
+      </div>
+      <div class="icon-container">
+        <a href="https://github.com/gcwwgithub" class="icon-link" aria-label="GitHub">
+          <i class="icon fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/gabriel-chiok-418538152" class="icon-link" aria-label="LinkedIn">
+          <i class="icon fa-brands fa-linkedin"></i>
+        </a>
+        <a href="mailto:gabrielchiok@hotmail.com" class="icon-link" aria-label="Email">
+          <i class="icon fa-solid fa-envelope"></i>
+        </a>
+      </div>
+      <p class="copyright">Copyright &copy; 2026 Gabriel Chiok</p>
+    </footer>
+  </body>
 </html>
