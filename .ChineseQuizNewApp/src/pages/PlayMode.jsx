@@ -1,30 +1,73 @@
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { filterCsvRowsByBand, loadCsvWords } from "../services/csvWords.js";
+import { filterCsvRowsByBand, loadCsvWords, loadEnglishToChineseRows } from "../services/csvWords.js";
+import {
+  formatBandsParam,
+  HSK_BANDS,
+  readChineseToEnglishSettings,
+  readEnglishToChineseSettings,
+  saveChineseToEnglishSettings,
+  saveEnglishToChineseSettings,
+} from "../services/quizSettings.js";
 
 export default function PlayMode() {
+  const savedSettings = useMemo(() => readChineseToEnglishSettings(), []);
+  const savedEnglishSettings = useMemo(() => readEnglishToChineseSettings(), []);
   const [selectedMode, setSelectedMode] = useState("");
-  const [questionCount, setQuestionCount] = useState("20");
-  const [hskBand, setHskBand] = useState("all");
-  const [rangeStart, setRangeStart] = useState("1");
-  const [rangeEnd, setRangeEnd] = useState("1");
-  const [orderMode, setOrderMode] = useState("random");
-  const [showPinyin, setShowPinyin] = useState(true);
-  const [showChineseUsage, setShowChineseUsage] = useState(true);
+  const [questionCount, setQuestionCount] = useState(savedSettings.questionCount);
+  const [hskBands, setHskBands] = useState(savedSettings.hskBands);
+  const [rangeStart, setRangeStart] = useState(savedSettings.rangeStart);
+  const [rangeEnd, setRangeEnd] = useState(savedSettings.rangeEnd);
+  const [orderMode, setOrderMode] = useState(savedSettings.orderMode);
+  const [showPinyin, setShowPinyin] = useState(savedSettings.showPinyin);
+  const [showChineseUsage, setShowChineseUsage] = useState(savedSettings.showChineseUsage);
+  const [englishQuestionCount, setEnglishQuestionCount] = useState(savedEnglishSettings.questionCount);
+  const [englishRangeStart, setEnglishRangeStart] = useState(savedEnglishSettings.rangeStart);
+  const [englishRangeEnd, setEnglishRangeEnd] = useState(savedEnglishSettings.rangeEnd);
+  const [showEnglishChineseSentence, setShowEnglishChineseSentence] = useState(savedEnglishSettings.showChineseSentence);
+  const [englishRows, setEnglishRows] = useState([]);
   const [csvRows, setCsvRows] = useState([]);
   const [loadingCsv, setLoadingCsv] = useState(false);
   const [csvError, setCsvError] = useState("");
   const parsedQuestionCount = Number.parseInt(questionCount, 10);
   const safeQuestionCount = Math.max(1, Math.min(100, parsedQuestionCount || 20));
-  const filteredRows = useMemo(() => filterCsvRowsByBand(csvRows, hskBand), [csvRows, hskBand]);
+  const parsedEnglishQuestionCount = Number.parseInt(englishQuestionCount, 10);
+  const safeEnglishQuestionCount = Math.max(1, Math.min(100, parsedEnglishQuestionCount || 20));
+  const filteredRows = useMemo(() => filterCsvRowsByBand(csvRows, hskBands), [csvRows, hskBands]);
+  const englishRangeMax = Math.max(1, englishRows.length);
+  const safeEnglishRangeStart = clampNumber(englishRangeStart, 1, englishRangeMax);
+  const safeEnglishRangeEnd = clampNumber(englishRangeEnd || englishRangeMax, safeEnglishRangeStart, englishRangeMax);
   const rangeMax = Math.max(1, filteredRows.length);
   const safeRangeStart = clampNumber(rangeStart, 1, rangeMax);
-  const safeRangeEnd = clampNumber(rangeEnd, safeRangeStart, rangeMax);
+  const safeRangeEnd = clampNumber(rangeEnd || rangeMax, safeRangeStart, rangeMax);
+  const englishQuizOptions = `count=${safeEnglishQuestionCount}&start=${safeEnglishRangeStart}&end=${safeEnglishRangeEnd}&sentence=${
+    showEnglishChineseSentence ? "1" : "0"
+  }`;
   const quizOptions = `count=${safeQuestionCount}&band=${encodeURIComponent(
-    hskBand
+    formatBandsParam(hskBands)
   )}&start=${safeRangeStart}&end=${safeRangeEnd}&order=${orderMode}&pinyin=${showPinyin ? "1" : "0"}&usage=${
     showChineseUsage ? "1" : "0"
   }`;
+
+  useEffect(() => {
+    if (selectedMode !== "english-to-chinese" || englishRows.length) {
+      return;
+    }
+
+    async function loadSetupData() {
+      setLoadingCsv(true);
+      setCsvError("");
+      try {
+        setEnglishRows(await loadEnglishToChineseRows());
+      } catch (error) {
+        setCsvError(error.message);
+      } finally {
+        setLoadingCsv(false);
+      }
+    }
+
+    loadSetupData();
+  }, [englishRows.length, selectedMode]);
 
   useEffect(() => {
     if (selectedMode !== "chinese-to-english" || csvRows.length) {
@@ -47,12 +90,52 @@ export default function PlayMode() {
   }, [csvRows.length, selectedMode]);
 
   useEffect(() => {
-    setRangeStart("1");
-    setRangeEnd(String(rangeMax));
-  }, [rangeMax]);
+    if (!englishRangeEnd && englishRangeMax > 1) {
+      setEnglishRangeEnd(String(englishRangeMax));
+    }
+  }, [englishRangeEnd, englishRangeMax]);
+
+  useEffect(() => {
+    if (!rangeEnd && rangeMax > 1) {
+      setRangeEnd(String(rangeMax));
+    }
+  }, [rangeEnd, rangeMax]);
+
+  useEffect(() => {
+    saveChineseToEnglishSettings({
+      questionCount,
+      hskBands,
+      rangeStart,
+      rangeEnd,
+      orderMode,
+      showPinyin,
+      showChineseUsage,
+    });
+  }, [hskBands, orderMode, questionCount, rangeEnd, rangeStart, showChineseUsage, showPinyin]);
+
+  useEffect(() => {
+    saveEnglishToChineseSettings({
+      questionCount: englishQuestionCount,
+      rangeStart: englishRangeStart,
+      rangeEnd: englishRangeEnd,
+      showChineseSentence: showEnglishChineseSentence,
+    });
+  }, [englishQuestionCount, englishRangeEnd, englishRangeStart, showEnglishChineseSentence]);
 
   function handleQuestionCountChange(event) {
     setQuestionCount(event.target.value.replace(/\D/g, ""));
+  }
+
+  function handleEnglishQuestionCountChange(event) {
+    setEnglishQuestionCount(event.target.value.replace(/\D/g, ""));
+  }
+
+  function handleEnglishRangeStartChange(event) {
+    setEnglishRangeStart(event.target.value.replace(/\D/g, ""));
+  }
+
+  function handleEnglishRangeEndChange(event) {
+    setEnglishRangeEnd(event.target.value.replace(/\D/g, ""));
   }
 
   function handleRangeStartChange(event) {
@@ -61,6 +144,21 @@ export default function PlayMode() {
 
   function handleRangeEndChange(event) {
     setRangeEnd(event.target.value.replace(/\D/g, ""));
+  }
+
+  function toggleHskBand(band) {
+    setHskBands((currentBands) => {
+      if (band === "all") {
+        return ["all"];
+      }
+
+      const activeBands = currentBands.includes("all") ? [] : currentBands;
+      const nextBands = activeBands.includes(band)
+        ? activeBands.filter((currentBand) => currentBand !== band)
+        : [...activeBands, band];
+
+      return nextBands.length ? nextBands : ["all"];
+    });
   }
 
   return (
@@ -92,9 +190,44 @@ export default function PlayMode() {
           </button>
         </div>
         {selectedMode === "english-to-chinese" && (
-          <Link className="play-button setup-start" to="/quiz?mode=english-to-chinese">
-            Start
-          </Link>
+          <div className="setup-options">
+            <label className="question-count">
+              Number of questions
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={englishQuestionCount}
+                onChange={handleEnglishQuestionCountChange}
+                placeholder="20"
+              />
+            </label>
+            <RangeSelector
+              max={englishRangeMax}
+              start={safeEnglishRangeStart}
+              end={safeEnglishRangeEnd}
+              onStartChange={handleEnglishRangeStartChange}
+              onEndChange={handleEnglishRangeEndChange}
+            />
+            <div className="setup-checks">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showEnglishChineseSentence}
+                  onChange={(event) => setShowEnglishChineseSentence(event.target.checked)}
+                />
+                Show Chinese sentence
+              </label>
+            </div>
+            <p className="muted">
+              Available range: 1 to {englishRangeMax}
+              {loadingCsv ? " loading..." : ""}
+            </p>
+            {csvError && <p className="error">{csvError}</p>}
+            <Link className="play-button setup-start" to={`/quiz?mode=english-to-chinese&${englishQuizOptions}`}>
+              Start
+            </Link>
+          </div>
         )}
         {selectedMode === "chinese-to-english" && (
           <div className="setup-options">
@@ -109,20 +242,27 @@ export default function PlayMode() {
                 placeholder="20"
               />
             </label>
-            <label className="question-count">
-              HSK band
-              <select value={hskBand} onChange={(event) => setHskBand(event.target.value)}>
-                <option value="all">All bands</option>
-                <option value="Band1">Band 1</option>
-                <option value="Band2">Band 2</option>
-                <option value="Band3">Band 3</option>
-                <option value="Band4">Band 4</option>
-                <option value="Band5">Band 5</option>
-                <option value="Band6">Band 6</option>
-                <option value="Band7">Band 7</option>
-                <option value="Unknown">Unknown</option>
-              </select>
-            </label>
+            <fieldset className="band-options">
+              <legend>HSK bands</legend>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={hskBands.includes("all")}
+                  onChange={() => toggleHskBand("all")}
+                />
+                All bands
+              </label>
+              {HSK_BANDS.map((band) => (
+                <label key={band}>
+                  <input
+                    type="checkbox"
+                    checked={hskBands.includes(band)}
+                    onChange={() => toggleHskBand(band)}
+                  />
+                  {band.replace("Band", "Band ")}
+                </label>
+              ))}
+            </fieldset>
             <div className="range-grid">
               <label>
                 Question range start
@@ -187,6 +327,57 @@ export default function PlayMode() {
         )}
       </section>
     </main>
+  );
+}
+
+function RangeSelector({ max, start, end, onStartChange, onEndChange }) {
+  return (
+    <div className="range-selector">
+      <div className="range-selector-header">
+        <span>Question range</span>
+        <strong>{start} - {end}</strong>
+      </div>
+      <div className="range-sliders">
+        <input
+          type="range"
+          min="1"
+          max={max}
+          value={start}
+          onChange={onStartChange}
+          aria-label="Starting question"
+        />
+        <input
+          type="range"
+          min="1"
+          max={max}
+          value={end}
+          onChange={onEndChange}
+          aria-label="Ending question"
+        />
+      </div>
+      <div className="range-grid">
+        <label>
+          Start
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={start}
+            onChange={onStartChange}
+          />
+        </label>
+        <label>
+          End
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={end}
+            onChange={onEndChange}
+          />
+        </label>
+      </div>
+    </div>
   );
 }
 

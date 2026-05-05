@@ -32,6 +32,29 @@ button,
   font: inherit;
   font-weight: 750;
   padding: 0.85rem 1rem;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    color 150ms ease,
+    opacity 150ms ease,
+    transform 120ms ease;
+}
+
+button:not(:disabled):hover,
+.button-link:hover,
+.play-button:hover {
+  box-shadow: 0 10px 26px rgba(45, 212, 191, 0.18);
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+button:not(:disabled):active,
+.button-link:active,
+.play-button:active {
+  box-shadow: 0 4px 14px rgba(45, 212, 191, 0.12);
+  filter: brightness(0.98);
+  transform: translateY(1px) scale(0.99);
 }
 
 button:disabled {
@@ -143,6 +166,12 @@ form {
   color: #e5e7eb;
 }
 
+.ghost-button:not(:disabled):hover,
+.secondary-button:hover {
+  background: #273548;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.24);
+}
+
 .text-button {
   padding: 0;
   background: transparent;
@@ -238,14 +267,38 @@ form {
   align-items: center;
   justify-content: center;
   min-width: 11rem;
+  border: 1px solid rgba(94, 234, 212, 0.4);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(45, 212, 191, 0.12), rgba(15, 23, 42, 0.72)),
+    #111827;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: #d8fff8;
   font-size: 1.05rem;
-  padding: 1rem 1.5rem;
+  font-weight: 850;
+  padding: 0.95rem 1.45rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.settings-link:hover {
+  border-color: rgba(94, 234, 212, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 28px rgba(20, 184, 166, 0.12);
+  transform: translateY(-1px);
 }
 
 .danger-button {
   width: fit-content;
   background: #ef4444;
   color: #fff7f7;
+}
+
+.danger-button:not(:disabled):hover,
+.wrong-button:not(:disabled):hover,
+.adverb-options button.wrong-option:not(:disabled):hover {
+  background: #f87171;
+  box-shadow: 0 10px 26px rgba(239, 68, 68, 0.2);
 }
 
 .success-message {
@@ -280,6 +333,11 @@ form {
   background: rgba(45, 212, 191, 0.1);
   padding: 1.25rem;
   text-align: center;
+}
+
+.mode-button:not(:disabled):hover {
+  border-color: rgba(94, 234, 212, 0.78);
+  background: rgba(45, 212, 191, 0.16);
 }
 
 .mode-button.selected {
@@ -348,6 +406,74 @@ form {
 }
 
 .setup-checks input {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+}
+
+.range-selector {
+  display: grid;
+  gap: 0.9rem;
+  width: min(460px, 100%);
+  margin: 0.25rem auto 0;
+  padding: 1rem;
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.range-selector-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #cbd5e1;
+  font-weight: 850;
+}
+
+.range-selector-header strong {
+  color: #5eead4;
+}
+
+.range-sliders {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.range-sliders input {
+  accent-color: #2dd4bf;
+  padding: 0;
+}
+
+.band-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  width: min(460px, 100%);
+  margin: 0.25rem auto 0;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.band-options legend {
+  grid-column: 1 / -1;
+  padding: 0 0.35rem;
+  color: #cbd5e1;
+  font-weight: 850;
+}
+
+.band-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0;
+  color: #d8e2f0;
+  font-weight: 750;
+}
+
+.band-options input {
   width: 1.05rem;
   height: 1.05rem;
   margin: 0;
@@ -543,6 +669,78 @@ form {
   text-align: left;
 }
 
+.english-card {
+  gap: 1.35rem;
+}
+
+.english-prompt {
+  display: flex;
+  align-items: center;
+  min-height: 10.5rem;
+  max-height: 10.5rem;
+  overflow: hidden;
+  color: #f8fafc;
+  font-size: clamp(1.45rem, 4vw, 2.6rem);
+  font-weight: 850;
+  line-height: 1.18;
+  overflow-wrap: anywhere;
+}
+
+.english-prompt-text {
+  display: block;
+  width: 100%;
+}
+
+.english-prompt.long {
+  font-size: clamp(1.16rem, 3vw, 1.9rem);
+}
+
+.english-prompt.very-long {
+  font-size: clamp(0.98rem, 2.45vw, 1.45rem);
+  line-height: 1.16;
+}
+
+.english-prompt.tiny {
+  font-size: clamp(0.88rem, 2.1vw, 1.2rem);
+  line-height: 1.14;
+}
+
+.english-sentence-block,
+.english-answer-block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  border-top: 1px solid #243044;
+  padding: 1.1rem 0 0;
+}
+
+.english-sentence-block p,
+.english-answer-block p {
+  margin: 0;
+}
+
+.english-sentence-block .chinese-line {
+  color: #dbe6f3;
+  font-size: 1.1rem;
+}
+
+.english-sentence-block .pinyin-line {
+  margin-top: 0.45rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.english-answer-block .dictionary-meta {
+  gap: 0.3rem;
+}
+
+.english-answer-block strong {
+  color: #f8fafc;
+  font-size: clamp(2.2rem, 7vw, 3.8rem);
+  line-height: 1;
+}
+
 .icon-audio-button {
   display: inline-grid;
   flex: 0 0 auto;
@@ -605,12 +803,12 @@ form {
 }
 
 .target-word-highlight {
-  border-radius: 6px;
-  background: rgba(45, 212, 191, 0.2);
-  box-shadow: inset 0 -0.35em 0 rgba(45, 212, 191, 0.28);
-  color: #f8fafc;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #5eead4;
   font-weight: 900;
-  padding: 0 0.12em;
+  padding: 0;
 }
 
 .dictionary-sentence .pinyin-line {
@@ -790,6 +988,14 @@ form {
   color: #e5e7eb;
 }
 
+.secondary-action:not(:disabled):hover,
+.undo-button:not(:disabled):hover,
+.drawer-close:not(:disabled):hover,
+.speech-actions button:not(:disabled):hover {
+  background: #273548;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.24);
+}
+
 .post-flip-actions {
   display: grid;
   gap: 0.75rem;
@@ -846,14 +1052,25 @@ form {
 }
 
 .adverb-options button {
+  border: 1px solid #243044;
   background: #111827;
   color: #eef2f8;
   text-align: left;
 }
 
+.adverb-options button:not(:disabled):hover {
+  border-color: rgba(94, 234, 212, 0.7);
+  background: #172033;
+}
+
 .adverb-options button.correct-option {
   background: #22c55e;
   color: #031209;
+}
+
+.adverb-options button.correct-option:not(:disabled):hover {
+  background: #4ade80;
+  box-shadow: 0 10px 26px rgba(34, 197, 94, 0.18);
 }
 
 .adverb-options button.wrong-option {
@@ -913,6 +1130,13 @@ form {
 
 .result-card .play-button {
   justify-self: center;
+}
+
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
 }
 
 .wrong-list {
