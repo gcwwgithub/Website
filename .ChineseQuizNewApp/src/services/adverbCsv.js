@@ -1,4 +1,5 @@
 const ADVERB_CSV_PATH = "data/mandarin_adverbs_grammar_game.csv";
+const REQUIRED_COLUMNS = ["item", "type", "category", "example sentence 1", "chinese sentence 1"];
 
 export async function loadAdverbRows() {
   const response = await fetch(ADVERB_CSV_PATH);
@@ -49,10 +50,16 @@ function parseCsv(csvText) {
   const [headers = [], ...dataRows] = rows.filter((currentRow) =>
     currentRow.some((value) => value.trim())
   );
+  const normalizedHeaders = headers.map((header) => header.trim());
+  const missingColumns = REQUIRED_COLUMNS.filter((column) => !normalizedHeaders.includes(column));
+
+  if (missingColumns.length) {
+    throw new Error(`Adverb CSV is missing required columns: ${missingColumns.join(", ")}`);
+  }
 
   return dataRows.map((dataRow) =>
-    headers.reduce((word, header, index) => {
-      word[header.trim()] = dataRow[index]?.trim() ?? "";
+    normalizedHeaders.reduce((word, header, index) => {
+      word[header] = dataRow[index]?.trim() ?? "";
       return word;
     }, {})
   );

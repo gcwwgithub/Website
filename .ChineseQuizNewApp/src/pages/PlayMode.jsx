@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { filterCsvRowsByBand, loadCsvWords, loadEnglishToChineseRows } from "../services/csvWords.js";
 import {
   formatBandsParam,
@@ -34,6 +34,8 @@ export default function PlayMode() {
   const parsedEnglishQuestionCount = Number.parseInt(englishQuestionCount, 10);
   const safeEnglishQuestionCount = Math.max(1, Math.min(100, parsedEnglishQuestionCount || 20));
   const filteredRows = useMemo(() => filterCsvRowsByBand(csvRows, hskBands), [csvRows, hskBands]);
+  const hskBandsKey = formatBandsParam(hskBands);
+  const previousHskBandsKey = useRef(hskBandsKey);
   const englishRangeMax = Math.max(1, englishRows.length);
   const safeEnglishRangeStart = clampNumber(englishRangeStart, 1, englishRangeMax);
   const safeEnglishRangeEnd = clampNumber(englishRangeEnd || englishRangeMax, safeEnglishRangeStart, englishRangeMax);
@@ -44,7 +46,7 @@ export default function PlayMode() {
     showEnglishChineseSentence ? "1" : "0"
   }`;
   const quizOptions = `count=${safeQuestionCount}&band=${encodeURIComponent(
-    formatBandsParam(hskBands)
+    hskBandsKey
   )}&start=${safeRangeStart}&end=${safeRangeEnd}&order=${orderMode}&pinyin=${showPinyin ? "1" : "0"}&usage=${
     showChineseUsage ? "1" : "0"
   }`;
@@ -100,6 +102,16 @@ export default function PlayMode() {
       setRangeEnd(String(rangeMax));
     }
   }, [rangeEnd, rangeMax]);
+
+  useEffect(() => {
+    if (previousHskBandsKey.current === hskBandsKey) {
+      return;
+    }
+
+    previousHskBandsKey.current = hskBandsKey;
+    setRangeStart("1");
+    setRangeEnd(String(rangeMax));
+  }, [hskBandsKey, rangeMax]);
 
   useEffect(() => {
     saveChineseToEnglishSettings({

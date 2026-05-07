@@ -1,5 +1,5 @@
-const CSV_PATH = "data/sheet.csv";
-const ENGLISH_TO_CHINESE_CSV_PATH = "data/sheet2.csv";
+const CSV_PATH = "data/sheet2.csv";
+const ENGLISH_TO_CHINESE_CSV_PATH = "data/sheet.csv";
 const VOCAB_REQUIRED_COLUMNS = [
   "Chinese Words",
   "pinyin",
@@ -10,7 +10,7 @@ const VOCAB_REQUIRED_COLUMNS = [
   "Chinese Usage in a Sentence Hint",
   "Band 0 HSK",
 ];
-const ENGLISH_TO_CHINESE_REQUIRED_COLUMNS = ["Chinese Words", "pinyin", "English Words"];
+const ENGLISH_TO_CHINESE_REQUIRED_COLUMNS = ["Chinese Words", "pinyin", "English Words", "Color"];
 
 export async function loadCsvWords() {
   return loadCsv(CSV_PATH, VOCAB_REQUIRED_COLUMNS);
@@ -95,7 +95,7 @@ function parseCsv(csvText, requiredColumns) {
   const [headers = [], ...dataRows] = rows.filter((currentRow) =>
     currentRow.some((value) => value.trim())
   );
-  const normalizedHeaders = headers.map((header) => header.trim());
+  const normalizedHeaders = headers.map((header) => normalizeHeaderName(header.trim()));
   const missingColumns = requiredColumns.filter((column) => !normalizedHeaders.includes(column));
 
   if (missingColumns.length) {
@@ -105,10 +105,21 @@ function parseCsv(csvText, requiredColumns) {
   return dataRows
     .map((dataRow, dataRowIndex) =>
       normalizedHeaders.reduce((word, header, index) => {
-        word[header] = dataRow[index]?.trim() ?? "";
+        const normalizedHeader = normalizeHeaderName(header);
+        if (normalizedHeader) {
+          word[normalizedHeader] = dataRow[index]?.trim() ?? "";
+        }
         word.__rowNumber = dataRowIndex + 2;
         return word;
       }, {})
     )
     .filter((word) => requiredColumns.every((column) => word[column]));
+}
+
+function normalizeHeaderName(header) {
+  if (header === "_apinyin") {
+    return "pinyin";
+  }
+
+  return header;
 }

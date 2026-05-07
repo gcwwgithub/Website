@@ -717,7 +717,9 @@ function EnglishToChineseFlashcard({ row, isFlipped, progressText, showChineseSe
     "Sentence pinyin",
     "pinyin sentence",
   ]);
-  const visibleSentence = isFlipped ? revealBracketText(chineseSentence) : hideBracketText(chineseSentence);
+  const visibleSentence = isFlipped
+    ? revealSentenceTarget(chineseSentence, row["Chinese Words"])
+    : hideSentenceTarget(chineseSentence, row["Chinese Words"]);
   const hasSentence = Boolean(chineseSentence);
 
   return (
@@ -738,7 +740,9 @@ function EnglishToChineseFlashcard({ row, isFlipped, progressText, showChineseSe
       {showChineseSentence && hasSentence && (
         <div className="english-sentence-block">
           <div>
-            <p className="chinese-line">{isFlipped ? highlightBracketText(chineseSentence) : visibleSentence}</p>
+            <p className="chinese-line">
+              {isFlipped ? highlightSentenceTarget(chineseSentence, row["Chinese Words"]) : visibleSentence}
+            </p>
             {sentencePinyin && <p className="pinyin-line">{sentencePinyin}</p>}
           </div>
           <IconAudioButton
@@ -816,6 +820,41 @@ function hideBracketText(text) {
 
 function revealBracketText(text) {
   return text.replace(/\[([^\]]+)\]/g, "$1");
+}
+
+function hideSentenceTarget(sentence, targetWord) {
+  if (!sentence) {
+    return "";
+  }
+  if (hasBracketTarget(sentence)) {
+    return hideBracketText(sentence);
+  }
+  if (!targetWord) {
+    return sentence;
+  }
+
+  return sentence.split(targetWord).join("____");
+}
+
+function revealSentenceTarget(sentence) {
+  if (!sentence) {
+    return "";
+  }
+  return hasBracketTarget(sentence) ? revealBracketText(sentence) : sentence;
+}
+
+function highlightSentenceTarget(sentence, targetWord) {
+  if (!sentence) {
+    return "";
+  }
+  if (hasBracketTarget(sentence)) {
+    return highlightBracketText(sentence);
+  }
+  return highlightChineseWord(sentence, targetWord);
+}
+
+function hasBracketTarget(text) {
+  return /\[[^\]]+\]/.test(text);
 }
 
 function ColorBadge({ colorValue }) {
