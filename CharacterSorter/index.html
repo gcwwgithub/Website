@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Sorter</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="top-bar">
+        <a href="../index.html" class="home-link">Main Page</a>
+        <p id="progressText">0% sorted</p>
+      </header>
+
+      <section class="intro-panel" id="startPanel">
+        <p class="eyebrow">Pairwise Sorter</p>
+        <h1>Character Sorter</h1>
+        <p class="intro-copy">
+          Pick your favorite between two characters until the sorter builds your ranking.
+        </p>
+
+        <div class="import-panel">
+          <label for="importFile">Import characters</label>
+          <input id="importFile" type="file" accept=".csv,.json,application/json,text/csv">
+          <label for="savedListSelect">Load saved list</label>
+          <div class="saved-list-row">
+            <select id="savedListSelect"></select>
+            <button id="deleteSavedListButton" type="button" class="secondary-button">Delete</button>
+          </div>
+          <p id="importStatus">Using sample characters. Import CSV or JSON to replace them.</p>
+        </div>
+
+        <fieldset class="category-panel">
+          <legend>Categories</legend>
+          <div id="categoryOptions"></div>
+        </fieldset>
+
+        <label class="toggle-row">
+          <input type="checkbox" id="disableTies">
+          Disable ties
+        </label>
+
+        <button id="startButton" type="button">Start Sorting</button>
+      </section>
+
+      <section class="sort-panel hidden" id="sortPanel" aria-live="polite">
+        <div class="choice-grid">
+          <button class="character-card" id="leftChoice" type="button"></button>
+          <button class="character-card" id="rightChoice" type="button"></button>
+        </div>
+
+        <div class="sort-actions">
+          <button id="tieButton" type="button" class="secondary-button">Tie</button>
+          <button id="undoButton" type="button" class="secondary-button">Undo</button>
+          <button id="restartButton" type="button" class="secondary-button">Restart</button>
+        </div>
+      </section>
+
+      <section class="results-panel hidden" id="resultsPanel">
+        <p class="eyebrow">Results</p>
+        <h2>Your Ranking</h2>
+        <ol id="resultsList"></ol>
+        <div class="result-actions">
+          <button id="downloadButton" type="button">Download Ranking</button>
+          <button id="sortAgainButton" type="button" class="secondary-button">Sort Again</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="./sorter.js"></script>
+  </body>
+</html>

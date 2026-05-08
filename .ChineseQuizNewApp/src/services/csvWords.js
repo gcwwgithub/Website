@@ -1,5 +1,5 @@
-const CSV_PATH = "data/sheet2.csv";
-const ENGLISH_TO_CHINESE_CSV_PATH = "data/sheet.csv";
+const CSV_PATH = "data/sheet.csv";
+const ENGLISH_TO_CHINESE_CSV_PATH = "data/sheet2.csv";
 const VOCAB_REQUIRED_COLUMNS = [
   "Chinese Words",
   "pinyin",
@@ -7,10 +7,10 @@ const VOCAB_REQUIRED_COLUMNS = [
   "Chinese Usage in a Sentence",
   "English Usage in a sentence",
   "Color",
-  "Chinese Usage in a Sentence Hint",
   "Band 0 HSK",
+  "Dao",
 ];
-const ENGLISH_TO_CHINESE_REQUIRED_COLUMNS = ["Chinese Words", "pinyin", "English Words", "Color"];
+const ENGLISH_TO_CHINESE_REQUIRED_COLUMNS = ["Chinese Words", "pinyin", "English Words", "Color", "Band 0 HSK", "Dao"];
 
 export async function loadCsvWords() {
   return loadCsv(CSV_PATH, VOCAB_REQUIRED_COLUMNS);
@@ -43,17 +43,45 @@ async function loadCsv(path, requiredColumns) {
 }
 
 export function filterCsvRowsByBand(rows, selectedBands) {
-  const bands = Array.isArray(selectedBands) ? selectedBands : [selectedBands];
-  if (bands.includes("all")) {
+  return filterCsvRows(rows, "hsk", selectedBands);
+}
+
+export function filterCsvRows(rows, filterType, selectedValues) {
+  const values = Array.isArray(selectedValues) ? selectedValues : [selectedValues];
+  if (values.includes("all")) {
     return rows;
   }
+  const column = filterType === "dao" ? "Dao" : "Band 0 HSK";
 
   return rows.filter((row) =>
-    (row["Band 0 HSK"] || "")
+    (row[column] || "")
       .split(";")
-      .map((band) => band.trim())
-      .some((band) => bands.includes(band))
+      .map((value) => value.trim())
+      .some((value) => values.includes(value))
   );
+}
+
+export function getCsvFilterValues(rows, filterType) {
+  const column = filterType === "dao" ? "Dao" : "Band 0 HSK";
+  const values = rows.flatMap((row) =>
+    (row[column] || "")
+      .split(";")
+      .map((value) => value.trim())
+      .filter(Boolean)
+  );
+
+  return [...new Set(values)].sort(compareFilterValues);
+}
+
+function compareFilterValues(firstValue, secondValue) {
+  const firstNumber = Number.parseFloat(firstValue.replace(/^Band/i, ""));
+  const secondNumber = Number.parseFloat(secondValue.replace(/^Band/i, ""));
+
+  if (!Number.isNaN(firstNumber) && !Number.isNaN(secondNumber)) {
+    return firstNumber - secondNumber;
+  }
+
+  return firstValue.localeCompare(secondValue, undefined, { numeric: true });
 }
 
 function parseCsv(csvText, requiredColumns) {
@@ -119,6 +147,12 @@ function parseCsv(csvText, requiredColumns) {
 function normalizeHeaderName(header) {
   if (header === "_apinyin") {
     return "pinyin";
+  }
+  if (header === "_HSK") {
+    return "Band 0 HSK";
+  }
+  if (header === "_Dao") {
+    return "Dao";
   }
 
   return header;

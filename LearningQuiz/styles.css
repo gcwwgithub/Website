@@ -27,6 +27,23 @@ body{
   min-height:100vh;
 }
 
+.main-page-link {
+  align-self:flex-start;
+  margin:16px 0 0 16px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#202632;
+  color:var(--text);
+  font-weight:700;
+  padding:9px 12px;
+  text-decoration:none;
+}
+
+.main-page-link:hover {
+  border-color:var(--accent);
+  filter:brightness(1.08);
+}
+
 /* Layout containers */
 #app{ max-width:980px; margin:32px auto; padding:0 16px; width:100% }
 

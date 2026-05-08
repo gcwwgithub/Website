@@ -28,6 +28,25 @@ body {
     padding: 20px;
 }
 
+.main-page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(30, 41, 59, 0.9);
+    color: var(--fg);
+    font-weight: 700;
+    padding: 9px 12px;
+    text-decoration: none;
+}
+
+.main-page-link:hover {
+    border-color: var(--accent);
+    background: rgba(59, 130, 246, 0.16);
+}
+
 /* =========================================================
    Cards & Layout Containers
 ========================================================= */
@@ -155,6 +174,29 @@ textarea {
     padding: 12px;
     resize: vertical;
     min-height: 100px;
+}
+
+.pinyin-pane {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.72);
+    padding: 10px 12px;
+}
+
+.pinyin-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+#currentPinyin {
+    color: #93c5fd;
+    font-size: 1.2rem;
 }
 
 /* Pane showing highlighted spoken words */

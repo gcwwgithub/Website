@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local Tierlist (No Server)</title>
+  <style>
+    :root{
+      --bg:#0f1115; --panel:#151923; --muted:#2a3040; --text:#e8ebf0; --sub:#b7c1d1; --accent:#6aa7ff;
+      --tile:#1b2130; --tile-br:#2e3b55; --danger:#ff6b6b; --ok:#4cd137;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+    header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--panel),#121621);border-bottom:1px solid var(--muted);padding:10px 12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+    header h1{font-size:16px;margin:0 10px 0 0;opacity:.9}
+    .main-page-link{color:var(--text);text-decoration:none;border:1px solid var(--tile-br);background:var(--tile);padding:8px 10px;border-radius:10px;font-weight:700}
+    .main-page-link:hover{filter:brightness(1.1)}
+    button{background:var(--tile);color:var(--text);border:1px solid var(--tile-br);padding:8px 10px;border-radius:10px;cursor:pointer}
+    button:hover{filter:brightness(1.1)}
+    .danger{border-color:#6b2a2a;background:#2a1717;color:#ffb0b0}
+    .success{border-color:#23522f;background:#17281b;color:#b8fcb8}
+    input[type="text"], input[type="color"], select, textarea{background:#111624;border:1px solid var(--muted);color:var(--text);padding:8px;border-radius:8px}
+    textarea{width:100%;resize:none;overflow:hidden;line-height:1.25;font-weight:700;letter-spacing:.5px}
+    #workspace{display:grid;grid-template-columns: 280px 1fr; gap:14px; padding:14px; flex:1 1 auto}
+    @media(max-width:900px){#workspace{grid-template-columns:1fr}}
+    .side{background:var(--panel); border:1px solid var(--muted); border-radius:14px; padding:12px; position:sticky; top:64px; align-self:start}
+    .rows{display:flex;flex-direction:column;gap:10px}
+    /* Row now: left = tier name (textarea), right = bin */
+    .row{display:grid;grid-template-columns: 260px 1fr; gap:8px; align-items:stretch}
+    .leftCol{display:flex;flex-direction:column;gap:8px}
+    .swatch{width:22px;height:22px;border-radius:6px;border:1px solid #0003}
+    .bin{background:var(--panel); border:1px dashed var(--tile-br); border-radius:14px; min-height:120px; padding:10px; overflow:auto}
+    .bin[data-droptarget="true"]{outline:2px dashed var(--accent)}
+    .tile{width:84px;height:84px; border-radius:10px; overflow:hidden; border:1px solid var(--tile-br); background:var(--tile); cursor:grab; position:relative; display:inline-block; margin:4px}
+    .tile img{width:100%;height:100%;object-fit:cover; display:block}
+    .tile.dragging{opacity:.6}
+    .rowTools{display:flex; gap:6px; align-items:center}
+    .grid{display:grid;gap:10px}
+    .row-head{display:flex;align-items:center; gap:8px}
+    .hint{color:var(--sub);font-size:12px}
+    .muted{opacity:.7}
+    footer{padding:10px 12px;color:var(--sub);font-size:12px;border-top:1px solid var(--muted);background:#0f131d}
+    .spacer{flex:1}
+    .pill{padding:6px 9px;border-radius:999px;background:#11182b;border:1px solid var(--muted)}
+    .kbd{font-size:11px;border:1px solid var(--muted);padding:2px 6px;border-radius:6px;background:#0b1020;color:#cfe}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <a class="main-page-link" href="../index.html">Main Page</a>
+    <h1>Local Tierlist</h1>
+    <input id="fileInput" type="file" accept="image/*" multiple style="display:none" />
+    <button id="loadBtn">Load Images</button>
+    <button id="addTierBtn">Add Tier</button>
+    <div class="spacer"></div>
+    <button id="openFileBtn">Open File</button>
+    <button id="saveBtn" class="success">Save</button>
+    <button id="saveAsBtn">Save As…</button>
+    <label class="hint" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="autosaveChk"/> Autosave</label>
+    <button id="exportBtn">Export (Legacy)</button>
+    <button id="importBtn">Import (Legacy)</button>
+    <button id="resetBtn" class="danger">Reset</button>
+  </header>
+
+  <div id="workspace">
+    <aside class="side">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span class="pill" id="stat"></span>
+        <span class="hint">Drag tiles into tiers →</span>
+      </div>
+      <div class="grid" style="gap:8px">
+        <label class="hint">Project name</label>
+        <input id="projectName" type="text" placeholder="MyTierList" />
+        <label class="hint">Unplaced Images</label>
+        <div class="bin" id="pool" data-bin="pool"></div>
+      </div>
+      <div class="hint" style="margin-top:10px">
+        <div>Mode: <span id="modeLbl" class="kbd">Local File</span></div>
+        <div id="fileLbl" class="muted" style="word-break:break-all"></div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="rows" id="rows"></div>
+    </main>
+  </div>
+
+  <footer>
+    Copyright © 2025 Gabriel Chiok.
+  </footer>
+</div>
+
+<script>
+/********************** IndexedDB helper ************************/ 
+const DB_NAME = 'tierlist-db';
+const IMG_STORE = 'images';
+const META_STORE = 'meta';
+let db;
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open(DB_NAME,2);
+    req.onupgradeneeded = e=>{
+      const db = e.target.result;
+      if(!db.objectStoreNames.contains(IMG_STORE)){
+        db.createObjectStore(IMG_STORE,{keyPath:'id', autoIncrement:true});
+      }
+      if(!db.objectStoreNames.contains(META_STORE)){
+        db.createObjectStore(META_STORE,{keyPath:'key'});
+      }
+    };
+    req.onsuccess = e=>{db=e.target.result; resolve(db)};
+    req.onerror = e=>reject(e.target.error);
+  });
+}
+function putImage(name, blob){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction([IMG_STORE],'write' in IDBTransaction ? 'write':'readwrite');
+    const st = tx.objectStore(IMG_STORE);
+    const req = st.add({name, blob});
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = e=>reject(e.target.error);
+  });
+}
+function getAllImages(){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction([IMG_STORE],'readonly');
+    const st = tx.objectStore(IMG_STORE);
+    const req = st.getAll();
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = e=>reject(e.target.error);
+  });
+}
+function getImagesByIds(ids){
+  return Promise.all(ids.map(id=>new Promise((resolve,reject)=>{
+    const tx = db.transaction([IMG_STORE],'readonly');
+    const st = tx.objectStore(IMG_STORE);
+    const req = st.get(id);
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = e=>reject(e.target.error);
+  })));
+}
+function clearImages(){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction([IMG_STORE],'readwrite');
+    const st = tx.objectStore(IMG_STORE);
+    const req = st.clear();
+    req.onsuccess = ()=>resolve();
+    req.onerror = e=>reject(e.target.error);
+  });
+}
+function putMeta(key, value){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction([META_STORE],'readwrite');
+    const st = tx.objectStore(META_STORE);
+    const req = st.put({key, value});
+    req.onsuccess = ()=>resolve();
+    req.onerror = e=>reject(e.target.error);
+  });
+}
+function getMeta(key){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction([META_STORE],'readonly');
+    const st = tx.objectStore(META_STORE);
+    const req = st.get(key);
+    req.onsuccess = ()=>resolve(req.result ? req.result.value : null);
+    req.onerror = e=>reject(e.target.error);
+  });
+}
+
+/********************** File System Access ************************/ 
+let fileHandle = null;         // FileSystemFileHandle (Chromium)
+let autosave = true;
+const FILE_META_KEY = 'fileHandle';
+
+function supportsFS(){
+  return 'showSaveFilePicker' in window && 'showOpenFilePicker' in window;
+}
+async function ensurePerm(handle, mode='readwrite'){
+  if(!handle) return false;
+  const opts = {mode};
+  if((await handle.queryPermission(opts)) === 'granted') return true;
+  return (await handle.requestPermission(opts)) === 'granted';
+}
+async function writeToHandle(handle, text){
+  const writable = await handle.createWritable();
+  await writable.write(text);
+  await writable.close();
+}
+async function saveToFile(){
+  const payload = await buildPayload();
+  const json = JSON.stringify(payload);
+  if(!fileHandle){ await saveAs(); return; }
+  if(!(await ensurePerm(fileHandle,'readwrite'))){ alert('No write permission to the chosen file. Use "Save As".'); return; }
+  await writeToHandle(fileHandle, json);
+  updateModeLabel();
+}
+async function saveAs(){
+  if(!supportsFS()){ alert('Your browser does not support direct file saving. Use Export instead.'); return; }
+  fileHandle = await window.showSaveFilePicker({
+    suggestedName: `${state.projectName || 'tierlist'}.tier.json`,
+    types: [{description: 'Tierlist JSON', accept: {'application/json':['.json','.tier.json']}}]
+  });
+  await putMeta(FILE_META_KEY, fileHandle);
+  await saveToFile();
+}
+async function openFile(){
+  if(!supportsFS()){ alert('Your browser does not support direct file open. Use Import instead.'); return; }
+  const [h] = await window.showOpenFilePicker({
+    types: [{description:'Tierlist JSON', accept:{'application/json':['.json','.tier.json']}}],
+    excludeAcceptAllOption: false, multiple: false
+  });
+  fileHandle = h;
+  await putMeta(FILE_META_KEY, fileHandle);
+  await loadFromFileHandle(fileHandle);
+  updateModeLabel();
+}
+async function loadFromFileHandle(handle){
+  if(!(await ensurePerm(handle,'read'))){ alert('Read permission was denied.'); return; }
+  const file = await handle.getFile();
+  const text = await file.text();
+  const data = JSON.parse(text);
+  await clearImages();
+  state.projectName = data.layout.projectName || 'MyTierList';
+  state.tiers = data.layout.tiers.map(t=>({id:t.id,name:t.name,color:t.color,images:[]}));
+  state.pool = [];
+  const idMap = new Map();
+  for(const img of data.images){
+    const blob = dataURLToBlob(img.dataURL);
+    const newId = await putImage(img.name, blob);
+    idMap.set(img.id, newId);
+  }
+  for(const t of data.layout.tiers){
+    const target = state.tiers.find(x=>x.id===t.id);
+    if(!target) continue;
+    target.images.push(...t.images.map(old=>idMap.get(old)).filter(Boolean));
+  }
+  state.pool.push(...data.layout.pool.map(old=>idMap.get(old)).filter(Boolean));
+  render(); saveLocalMirror();
+}
+function updateModeLabel(){
+  const lbl = document.getElementById('modeLbl');
+  const fileLbl = document.getElementById('fileLbl');
+  if(fileHandle){
+    lbl.textContent = autosave ? 'Local File (autosave)' : 'Local File';
+    fileLbl.textContent = fileHandle.name || '(unsaved)';
+  } else {
+    lbl.textContent = 'Local Storage';
+    fileLbl.textContent = '';
+  }
+}
+
+/********************** Persistent keys (local mirror) ************************/ 
+const CURRENT_KEY_META = 'tierlist-current-key';
+const keyFor = (name)=> 'tierlist-state:'+name;
+function setCurrentKey(k){ localStorage.setItem(CURRENT_KEY_META, k); }
+function getCurrentKey(){ return localStorage.getItem(CURRENT_KEY_META); }
+
+function saveLocalMirror(){
+  const k = keyFor(state.projectName);
+  localStorage.setItem(k, JSON.stringify({
+    projectName: state.projectName,
+    tiers: state.tiers.map(t=>({id:t.id,name:t.name,color:t.color,images:[...t.images]})),
+    pool:[...state.pool]
+  }));
+  setCurrentKey(k);
+  updateStat();
+}
+
+/********************** App State ************************/ 
+const rowsEl = document.getElementById('rows');
+const poolEl = document.getElementById('pool');
+const statEl = document.getElementById('stat');
+const nameEl = document.getElementById('projectName');
+const autosaveChk = document.getElementById('autosaveChk');
+
+const DEFAULT_TIERS = [
+  { name:'S', color:'#e74c3c' },
+  { name:'A', color:'#f39c12' },
+  { name:'B', color:'#f1c40f' },
+  { name:'C', color:'#2ecc71' },
+  { name:'D', color:'#3498db' }
+];
+
+let state = {
+  projectName: 'MyTierList',
+  tiers: [],                 // [{id,name,color,images:[imageId,...]}]
+  pool: []                   // [imageId,...]
+};
+
+async function buildPayload(){
+  const layout = { projectName: state.projectName, tiers: state.tiers, pool: state.pool };
+  const images = await getAllImages();
+  const b64 = await Promise.all(images.map(rec=>blobToDataURL(rec.blob).then(url=>({id:rec.id,name:rec.name,dataURL:url}))));
+  return { layout, images: b64 };
+}
+
+function save(){
+  // Always keep a local mirror for safety
+  saveLocalMirror();
+  // If a file is set and autosave is on, write to it
+  if(fileHandle && autosave){ saveToFile(); }
+}
+
+function loadByKey(k){
+  const raw = localStorage.getItem(k);
+  if(!raw) return false;
+  try {
+    const obj = JSON.parse(raw);
+    state.projectName = obj.projectName || 'MyTierList';
+    state.tiers = (obj.tiers||[]).map(t=>({id:t.id,name:t.name,color:t.color,images:[...t.images]}));
+    state.pool = obj.pool || [];
+    return true;
+  } catch { return false; }
+}
+
+function updateStat(){
+  const total = state.tiers.reduce((a,t)=>a+t.images.length,0)+state.pool.length;
+  statEl.textContent = `${total} images · ${state.tiers.length} tiers`;
+}
+
+/********************** UI Builders ************************/ 
+function h(tag, attrs={}, ...children){
+  const el = document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs)){
+    if(k==='class') el.className=v;
+    else if(k.startsWith('on')) el.addEventListener(k.slice(2),v);
+    else if(k==='dataset') Object.assign(el.dataset,v);
+    else if(k==='style') el.setAttribute('style', v);
+    else if(k==='value') el.value = v;
+    else el.setAttribute(k,v);
+  }
+  for(const c of children){
+    if(c==null) continue;
+    el.appendChild(c.nodeType?c:document.createTextNode(c));
+  }
+  return el;
+}
+
+function autoResizeTextarea(ta){
+  ta.style.height = 'auto';
+  ta.style.height = (ta.scrollHeight) + 'px';
+}
+
+function syncTierHeight(ta, bin){
+  const desired = Math.max(120, ta.scrollHeight + 10);
+  bin.style.minHeight = desired + 'px';
+}
+
+function render(){
+  nameEl.value = state.projectName;
+  rowsEl.innerHTML='';
+
+  state.tiers.forEach((tier, idx)=>{
+    const titleTA = h('textarea', {value: tier.name, rows: 1, placeholder:'Tier name...', oninput: (e)=>{
+      tier.name = e.target.value; autoResizeTextarea(titleTA); const binEl = document.querySelector(`[data-bin="${tier.id}"]`); if(binEl) syncTierHeight(titleTA, binEl); save();
+    }});
+    requestAnimationFrame(()=>autoResizeTextarea(titleTA));
+
+    const colorPicker = h('input', {type:'color', value:tier.color, onchange:e=>{ tier.color=e.target.value; save(); }});
+
+    const tools = h('div',{class:'rowTools'},
+      h('button',{title:'Move Up', onclick:()=>{ if(idx>0){ [state.tiers[idx-1],state.tiers[idx]]=[state.tiers[idx],state.tiers[idx-1]]; render(); save(); } }}, '↑'),
+      h('button',{title:'Move Down', onclick:()=>{ if(idx<state.tiers.length-1){ [state.tiers[idx+1],state.tiers[idx]]=[state.tiers[idx],state.tiers[idx+1]]; render(); save(); } }}, '↓'),
+      h('button',{class:'danger', title:'Delete Tier', onclick:()=>{ if(confirm('Delete tier and return its images to pool?')){ state.pool.push(...tier.images); state.tiers.splice(idx,1); render(); save(); } }}, 'Delete')
+    );
+
+    const leftCol = h('div',{class:'leftCol'},
+      h('div',{class:'row-head'}, h('div',{class:'swatch', style:`background:${tier.color}`}), h('div',{class:'hint'},'Tier Name')),
+      titleTA,
+      h('div',{}, h('label',{class:'hint'},'Color'), ' ', colorPicker),
+      tools
+    );
+
+    const bin = h('div',{class:'bin', dataset:{bin:tier.id}});
+
+    const row = h('div',{class:'row'}, leftCol, bin);
+    rowsEl.appendChild(row);
+
+    tier.images.forEach(id=>{ createTile(id).then(tile=> bin.appendChild(tile)); });
+    enableDrop(bin);
+
+    requestAnimationFrame(()=>{ autoResizeTextarea(titleTA); syncTierHeight(titleTA, bin); });
+  });
+
+  // Pool
+  poolEl.innerHTML='';
+  state.pool.forEach(id=>{ createTile(id).then(tile=> poolEl.appendChild(tile)); });
+  enableDrop(poolEl);
+
+  updateStat();
+  updateModeLabel();
+}
+
+function enableDrop(container){
+  container.addEventListener('dragover', e=>{ e.preventDefault(); container.dataset.droptarget='true'; });
+  container.addEventListener('dragleave', ()=>{ container.dataset.droptarget='false'; });
+  container.addEventListener('drop', e=>{
+    e.preventDefault(); container.dataset.droptarget='false';
+    const id = Number(e.dataTransfer.getData('text/plain'));
+    if(Number.isNaN(id)) return;
+    moveImageToContainer(id, container.dataset.bin);
+  });
+}
+
+async function createTile(id){
+  const rec = await getImagesByIds([id]).then(xs=>xs[0]);
+  const url = URL.createObjectURL(rec.blob);
+  const img = new Image(); img.src=url; img.draggable=false;
+  const el = h('div',{class:'tile', draggable:true, dataset:{id}}, img);
+  el.addEventListener('dragstart', e=>{ el.classList.add('dragging'); e.dataTransfer.setData('text/plain', String(id)); });
+  el.addEventListener('dragend', ()=>{ el.classList.remove('dragging'); });
+  return el;
+}
+
+function moveImageToContainer(id, binId){
+  state.pool = state.pool.filter(x=>x!==id);
+  state.tiers.forEach(t=>{ t.images = t.images.filter(x=>x!==id) });
+  if(binId==='pool') state.pool.push(id);
+  else{
+    const tier = state.tiers.find(t=>String(t.id)===String(binId));
+    if(tier) tier.images.push(id);
+  }
+  render(); save();
+}
+
+/********************** Image Loading ************************/ 
+async function handleFiles(files){
+  if (!dbReady) {
+    await openDB();
+    dbReady = true;
+  }
+  const list = [...files];
+  for (const f of list){
+    const id = await putImage(f.name, f);
+    state.pool.push(id);
+  }
+  render();
+  save();
+}
+
+/********************** Tiers ************************/ 
+function addTier(name, color){
+  const id = crypto.randomUUID();
+  state.tiers.push({id, name, color, images:[]});
+  render(); save();
+}
+
+/********************** Export / Import (legacy) ************************/ 
+async function exportProject(){
+  const payload = await buildPayload();
+  const blob = new Blob([JSON.stringify(payload)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${state.projectName || 'tierlist'}.tier.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+async function importProject(file){
+  const text = await file.text();
+  const data = JSON.parse(text);
+  await clearImages();
+  state.projectName = data.layout.projectName || 'MyTierList';
+  state.tiers = data.layout.tiers.map(t=>({id:t.id,name:t.name,color:t.color,images:[]}));
+  state.pool = [];
+  const idMap = new Map();
+  for(const img of data.images){
+    const blob = dataURLToBlob(img.dataURL);
+    const newId = await putImage(img.name, blob);
+    idMap.set(img.id, newId);
+  }
+  for(const t of data.layout.tiers){
+    const target = state.tiers.find(x=>x.id===t.id);
+    if(!target) continue;
+    target.images.push(...t.images.map(old=>idMap.get(old)).filter(Boolean));
+  }
+  state.pool.push(...data.layout.pool.map(old=>idMap.get(old)).filter(Boolean));
+  render(); saveLocalMirror();
+}
+
+function blobToDataURL(blob){
+  return new Promise((resolve)=>{
+    const fr = new FileReader();
+    fr.onload = ()=>resolve(fr.result);
+    fr.readAsDataURL(blob);
+  });
+}
+function dataURLToBlob(dataURL){
+  const [hdr, b64] = dataURL.split(',');
+  const mime = hdr.match(/data:(.*);base64/)[1];
+  const bin = atob(b64); const len = bin.length; const u8=new Uint8Array(len);
+  for(let i=0;i<len;i++) u8[i]=bin.charCodeAt(i);
+  return new Blob([u8], {type:mime});
+}
+
+/********************** Wiring ************************/ 
+let dbReady = false;
+
+(async function init(){
+  await openDB();
+  dbReady = true;
+
+  // Enable UI buttons now that DB is ready
+  loadBtn.disabled = false;
+  // Try to restore a previously chosen file handle (Chromium only)
+  try{
+    const savedHandle = await getMeta(FILE_META_KEY);
+    if(savedHandle){ fileHandle = savedHandle; }
+  }catch{}
+
+  // If we have a handle and can read it, prefer that
+  if(fileHandle && supportsFS()){
+    try{ await loadFromFileHandle(fileHandle); }catch{ /* fall back below */ }
+  }
+
+  if(!rowsEl.children.length){
+    // Fallback: try any existing saved state
+    const current = getCurrentKey();
+    let loaded = false;
+    if(current) loaded = loadByKey(current);
+    if(!loaded){
+      const keys = Object.keys(localStorage).filter(k=>k.startsWith('tierlist-state:'));
+      for(const k of keys){ if(loadByKey(k)){ setCurrentKey(k); loaded=true; break; } }
+    }
+    if(!loaded){
+      state.projectName = 'MyTierList';
+      state.tiers = [];
+      state.pool = [];
+      DEFAULT_TIERS.forEach(t=>addTier(t.name,t.color));
+    } else {
+      render();
+      saveLocalMirror();
+    }
+  }
+
+  autosave = true;
+  autosaveChk.checked = autosave;
+  updateModeLabel();
+  updateStat();
+})();
+
+// Keep state when project name changes (migrate key)
+nameEl.addEventListener('change', ()=>{
+  const oldK = getCurrentKey() || keyFor(state.projectName);
+  const newName = nameEl.value || 'MyTierList';
+  state.projectName = newName;
+  const newK = keyFor(state.projectName);
+  localStorage.setItem(newK, localStorage.getItem(oldK) || JSON.stringify({projectName:newName, tiers:state.tiers, pool:state.pool}));
+  setCurrentKey(newK);
+  if(oldK !== newK) localStorage.removeItem(oldK);
+  save();
+});
+
+// Header controls
+const fileInput = document.getElementById('fileInput');
+const loadBtn = document.getElementById('loadBtn');
+loadBtn.onclick=()=>fileInput.click();
+fileInput.onchange=e=>handleFiles(e.target.files);
+
+document.getElementById('addTierBtn').onclick=()=>{
+  const name = prompt('Tier name?','New Tier');
+  if(!name) return; const color = '#9b59b6'; addTier(name,color);
+};
+
+document.getElementById('openFileBtn').onclick=openFile;
+const saveBtn = document.getElementById('saveBtn');
+saveBtn.onclick=saveToFile;
+document.getElementById('saveAsBtn').onclick=saveAs;
+autosaveChk.addEventListener('change', ()=>{ autosave = !!autosaveChk.checked; updateModeLabel(); if(autosave && fileHandle) saveToFile(); });
+
+// Export / Import / Reset (legacy)
+const exportBtn = document.getElementById('exportBtn');
+exportBtn.onclick=exportProject;
+
+const importBtn = document.getElementById('importBtn');
+importBtn.onclick=()=>{
+  const inp = document.createElement('input');
+  inp.type='file'; inp.accept='application/json';
+  inp.onchange=()=>inp.files[0] && importProject(inp.files[0]);
+  inp.click();
+};
+
+const resetBtn = document.getElementById('resetBtn');
+resetBtn.onclick=async()=>{
+  if(!confirm('Clear everything? This removes images from the browser database and the layout.')) return;
+  await clearImages();
+  const k = getCurrentKey(); if(k) localStorage.removeItem(k);
+  state = { projectName:'MyTierList', tiers:[], pool:[] };
+  fileHandle = null; await putMeta(FILE_META_KEY, null);
+  DEFAULT_TIERS.forEach(t=>addTier(t.name,t.color));
+  render(); saveLocalMirror(); updateModeLabel();
+};
+
+// Save on tab hide/close just in case
+window.addEventListener('beforeunload', save);
+window.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') save(); });
+
+// Global drag & drop guard (prevents page navigation)
+window.addEventListener('dragover', (e)=>{ e.preventDefault(); if(e.dataTransfer) e.dataTransfer.dropEffect = 'copy'; });
+window.addEventListener('drop', (e)=>{
+  if(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length){
+    e.preventDefault();
+    const binEl = e.target && (e.target.closest ? e.target.closest('.bin') : null);
+    const targetBinId = binEl ? binEl.dataset.bin : 'pool';
+    (async ()=>{
+      const list = [...e.dataTransfer.files].filter(f=>/^image\//.test(f.type));
+      const newIds = [];
+      for(const f of list){ const id = await putImage(f.name, f); newIds.push(id); }
+      if(targetBinId==='pool'){ state.pool.push(...newIds); }
+      else { const tier = state.tiers.find(t=>String(t.id)===String(targetBinId)); if(tier) tier.images.push(...newIds); else state.pool.push(...newIds); }
+      render(); save();
+    })();
+  }
+});
+
+// Keep bins synced with textarea height on resize
+window.addEventListener('resize', ()=>{
+  document.querySelectorAll('.row').forEach(row=>{
+    const ta = row.querySelector('textarea');
+    const bin = row.querySelector('.bin');
+    if(ta && bin){ autoResizeTextarea(ta); syncTierHeight(ta, bin); }
+  });
+});
+</script>
+</body>
+</html>

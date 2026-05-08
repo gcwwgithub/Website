@@ -1,0 +1,58 @@
+(async () => {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  // 1) Auto-scroll until no more new content is added (handles lazy loading)
+  let lastHeight = 0;
+  while (true) {
+    window.scrollTo(0, document.body.scrollHeight);
+    await sleep(1200);
+    const newHeight = document.body.scrollHeight;
+    if (newHeight === lastHeight) break;
+    lastHeight = newHeight;
+  }
+
+  // Helper to extract url("...") → ...
+  const unwrapUrl = s =>
+    s ? s.replace(/^url\(["']?/, "").replace(/["']?\)$/, "") : "";
+
+  // 2) Walk each entry card and grab image + title (+ link)
+  const cards = document.querySelectorAll(".entry-card, .entry-card.row");
+  const items = [...cards].map(card => {
+    const imgEl = card.querySelector(".image");
+    const titleA = card.querySelector(".title a");
+
+    const image = unwrapUrl(getComputedStyle(imgEl).backgroundImage);
+    const title = titleA ? titleA.textContent.trim() : "";
+    const link = titleA ? titleA.href : "";
+
+    return { title, image, link };
+  }).filter(x => x.image && x.title);
+
+  // 3) De-duplicate by AniList link (most stable key)
+  const seen = new Set();
+  const unique = [];
+  for (const it of items) {
+    const key = it.link || it.image || it.title;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(it);
+  }
+
+  console.log(`Found ${unique.length} entries`);
+
+  // 4) Save as CSV (title, image, anilist_url)
+  const header = ["title", "image", "anilist_url"];
+  const esc = v => `"${String(v).replace(/"/g, '""')}"`;
+  const csv = [header, ...unique.map(i => [i.title, i.image, i.link])]
+    .map(row => row.map(esc).join(","))
+    .join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "anilist_animelist_images_with_titles.csv";
+  document.body.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(a.href);
+  a.remove();
+})();

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+    <a class="main-page-link" href="../index.html">Main Page</a>
 
     <div class="card">
         <div class="toolbar">
@@ -34,13 +35,13 @@
                 <div class="control-block">
                     <label for="rate">Rate</label>
                     <input id="rate" type="range" min="0.5" max="2" step="0.05" value="1.0" />
-                    <span id="rateVal" class="knob-val">1.00×</span>
+                    <span id="rateVal" class="knob-val">1.00x</span>
                 </div>
 
                 <div class="control-block">
                     <label for="pitch">Pitch</label>
                     <input id="pitch" type="range" min="0.8" max="1.2" step="0.01" value="1.0" />
-                    <span id="pitchVal" class="knob-val">1.00×</span>
+                    <span id="pitchVal" class="knob-val">1.00x</span>
                 </div>
 
                 <div class="control-block">
@@ -54,12 +55,18 @@
                     <input id="sentenceDelay" type="range" min="0" max="300" step="10" value="80" />
                     <span id="pauseVal" class="knob-val">80 ms</span>
                 </div>
+
+                <button id="resetSettingsBtn" type="button">Restore Defaults</button>
             </div>
         </div>
 
         <!-- Input -->
         <div class="card-body">
-            <textarea id="txt" placeholder="Paste your mixed Chinese/English text here…"></textarea>
+            <textarea id="txt" placeholder="Paste your mixed Chinese/English text here..."></textarea>
+            <div id="pinyinPane" class="pinyin-pane" aria-live="polite">
+                <span class="pinyin-label">Pinyin</span>
+                <strong id="currentPinyin">-</strong>
+            </div>
             <div id="readPane" class="read-pane" aria-live="polite" aria-label="Reading highlight view"></div>
         </div>
     </div>

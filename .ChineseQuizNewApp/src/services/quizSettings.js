@@ -5,18 +5,25 @@ export const HSK_BANDS = ["Band1", "Band2", "Band3", "Band4", "Band5", "Band6", 
 
 export const DEFAULT_CHINESE_TO_ENGLISH_SETTINGS = {
   questionCount: "20",
+  filterType: "hsk",
+  filterValues: ["all"],
   hskBands: ["all"],
   rangeStart: "1",
   rangeEnd: "",
   orderMode: "random",
+  timerSeconds: "0",
   showPinyin: true,
   showChineseUsage: true,
 };
 
 export const DEFAULT_ENGLISH_TO_CHINESE_SETTINGS = {
   questionCount: "20",
+  filterType: "hsk",
+  filterValues: ["all"],
   rangeStart: "1",
   rangeEnd: "",
+  orderMode: "random",
+  timerSeconds: "0",
   showChineseSentence: true,
 };
 
@@ -69,29 +76,40 @@ export function saveEnglishToChineseSettings(settings) {
 }
 
 export function parseBandsParam(value) {
+  return parseFilterValuesParam(value);
+}
+
+export function parseFilterValuesParam(value) {
   if (!value || value === "all") {
     return ["all"];
   }
 
-  const bands = value
+  const values = value
     .split(",")
     .map((band) => band.trim())
-    .filter((band) => HSK_BANDS.includes(band));
+    .filter(Boolean);
 
-  return bands.length ? bands : ["all"];
+  return values.length ? values : ["all"];
 }
 
 export function formatBandsParam(bands) {
-  const normalizedBands = normalizeBands(bands);
-  return normalizedBands.includes("all") ? "all" : normalizedBands.join(",");
+  return formatFilterValuesParam(bands);
+}
+
+export function formatFilterValuesParam(values) {
+  const normalizedValues = normalizeFilterValues(values);
+  return normalizedValues.includes("all") ? "all" : normalizedValues.join(",");
 }
 
 function normalizeSettings(settings = {}) {
   return {
     ...DEFAULT_CHINESE_TO_ENGLISH_SETTINGS,
     ...settings,
-    hskBands: normalizeBands(settings.hskBands),
-    orderMode: settings.orderMode === "weighted" ? "weighted" : "random",
+    filterType: normalizeFilterType(settings.filterType),
+    filterValues: normalizeFilterValues(settings.filterValues || settings.hskBands),
+    hskBands: normalizeFilterValues(settings.hskBands),
+    orderMode: normalizeOrderMode(settings.orderMode),
+    timerSeconds: normalizeTimerSeconds(settings.timerSeconds),
     showPinyin: settings.showPinyin !== false,
     showChineseUsage: settings.showChineseUsage !== false,
   };
@@ -101,15 +119,36 @@ function normalizeEnglishSettings(settings = {}) {
   return {
     ...DEFAULT_ENGLISH_TO_CHINESE_SETTINGS,
     ...settings,
+    filterType: normalizeFilterType(settings.filterType),
+    filterValues: normalizeFilterValues(settings.filterValues),
+    orderMode: normalizeOrderMode(settings.orderMode),
+    timerSeconds: normalizeTimerSeconds(settings.timerSeconds),
     showChineseSentence: settings.showChineseSentence !== false,
   };
 }
 
-function normalizeBands(bands) {
-  if (!Array.isArray(bands) || bands.includes("all")) {
+function normalizeOrderMode(orderMode) {
+  return ["random", "weighted", "in-order"].includes(orderMode) ? orderMode : "random";
+}
+
+function normalizeTimerSeconds(timerSeconds) {
+  const parsed = Number.parseInt(timerSeconds, 10);
+  if (!parsed || parsed < 0) {
+    return "0";
+  }
+
+  return String(Math.min(600, parsed));
+}
+
+function normalizeFilterType(filterType) {
+  return filterType === "dao" ? "dao" : "hsk";
+}
+
+function normalizeFilterValues(values) {
+  if (!Array.isArray(values) || values.includes("all")) {
     return ["all"];
   }
 
-  const normalizedBands = bands.filter((band) => HSK_BANDS.includes(band));
-  return normalizedBands.length ? normalizedBands : ["all"];
+  const normalizedValues = values.filter(Boolean);
+  return normalizedValues.length ? normalizedValues : ["all"];
 }

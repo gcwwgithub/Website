@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { filterCsvRowsByBand, loadCsvWords, loadEnglishToChineseRows } from "../services/csvWords.js";
+import { filterCsvRows, getCsvFilterValues, loadCsvWords, loadEnglishToChineseRows } from "../services/csvWords.js";
 import {
-  formatBandsParam,
-  HSK_BANDS,
+  formatFilterValuesParam,
   readChineseToEnglishSettings,
   readEnglishToChineseSettings,
   saveChineseToEnglishSettings,
@@ -15,15 +14,21 @@ export default function PlayMode() {
   const savedEnglishSettings = useMemo(() => readEnglishToChineseSettings(), []);
   const [selectedMode, setSelectedMode] = useState("");
   const [questionCount, setQuestionCount] = useState(savedSettings.questionCount);
-  const [hskBands, setHskBands] = useState(savedSettings.hskBands);
+  const [filterType, setFilterType] = useState(savedSettings.filterType);
+  const [filterValues, setFilterValues] = useState(savedSettings.filterValues);
   const [rangeStart, setRangeStart] = useState(savedSettings.rangeStart);
   const [rangeEnd, setRangeEnd] = useState(savedSettings.rangeEnd);
   const [orderMode, setOrderMode] = useState(savedSettings.orderMode);
+  const [timerSeconds, setTimerSeconds] = useState(savedSettings.timerSeconds);
   const [showPinyin, setShowPinyin] = useState(savedSettings.showPinyin);
   const [showChineseUsage, setShowChineseUsage] = useState(savedSettings.showChineseUsage);
   const [englishQuestionCount, setEnglishQuestionCount] = useState(savedEnglishSettings.questionCount);
+  const [englishFilterType, setEnglishFilterType] = useState(savedEnglishSettings.filterType);
+  const [englishFilterValues, setEnglishFilterValues] = useState(savedEnglishSettings.filterValues);
   const [englishRangeStart, setEnglishRangeStart] = useState(savedEnglishSettings.rangeStart);
   const [englishRangeEnd, setEnglishRangeEnd] = useState(savedEnglishSettings.rangeEnd);
+  const [englishOrderMode, setEnglishOrderMode] = useState(savedEnglishSettings.orderMode);
+  const [englishTimerSeconds, setEnglishTimerSeconds] = useState(savedEnglishSettings.timerSeconds);
   const [showEnglishChineseSentence, setShowEnglishChineseSentence] = useState(savedEnglishSettings.showChineseSentence);
   const [englishRows, setEnglishRows] = useState([]);
   const [csvRows, setCsvRows] = useState([]);
@@ -33,21 +38,36 @@ export default function PlayMode() {
   const safeQuestionCount = Math.max(1, Math.min(100, parsedQuestionCount || 20));
   const parsedEnglishQuestionCount = Number.parseInt(englishQuestionCount, 10);
   const safeEnglishQuestionCount = Math.max(1, Math.min(100, parsedEnglishQuestionCount || 20));
-  const filteredRows = useMemo(() => filterCsvRowsByBand(csvRows, hskBands), [csvRows, hskBands]);
-  const hskBandsKey = formatBandsParam(hskBands);
-  const previousHskBandsKey = useRef(hskBandsKey);
-  const englishRangeMax = Math.max(1, englishRows.length);
+  const safeTimerSeconds = clampNumber(timerSeconds, 0, 600);
+  const safeEnglishTimerSeconds = clampNumber(englishTimerSeconds, 0, 600);
+  const filteredRows = useMemo(() => filterCsvRows(csvRows, filterType, filterValues), [csvRows, filterType, filterValues]);
+  const englishFilteredRows = useMemo(
+    () => filterCsvRows(englishRows, englishFilterType, englishFilterValues),
+    [englishRows, englishFilterType, englishFilterValues]
+  );
+  const filterValuesKey = `${filterType}:${formatFilterValuesParam(filterValues)}`;
+  const englishFilterValuesKey = `${englishFilterType}:${formatFilterValuesParam(englishFilterValues)}`;
+  const previousFilterValuesKey = useRef(filterValuesKey);
+  const previousEnglishFilterValuesKey = useRef(englishFilterValuesKey);
+  const availableFilterValues = useMemo(() => getCsvFilterValues(csvRows, filterType), [csvRows, filterType]);
+  const availableEnglishFilterValues = useMemo(
+    () => getCsvFilterValues(englishRows, englishFilterType),
+    [englishRows, englishFilterType]
+  );
+  const englishRangeMax = Math.max(1, englishFilteredRows.length);
+  const rangeMax = Math.max(1, filteredRows.length);
   const safeEnglishRangeStart = clampNumber(englishRangeStart, 1, englishRangeMax);
   const safeEnglishRangeEnd = clampNumber(englishRangeEnd || englishRangeMax, safeEnglishRangeStart, englishRangeMax);
-  const rangeMax = Math.max(1, filteredRows.length);
   const safeRangeStart = clampNumber(rangeStart, 1, rangeMax);
   const safeRangeEnd = clampNumber(rangeEnd || rangeMax, safeRangeStart, rangeMax);
-  const englishQuizOptions = `count=${safeEnglishQuestionCount}&start=${safeEnglishRangeStart}&end=${safeEnglishRangeEnd}&sentence=${
+  const englishQuizOptions = `count=${safeEnglishQuestionCount}&filter=${englishFilterType}&values=${encodeURIComponent(
+    formatFilterValuesParam(englishFilterValues)
+  )}&start=${safeEnglishRangeStart}&end=${safeEnglishRangeEnd}&order=${englishOrderMode}&timer=${safeEnglishTimerSeconds}&sentence=${
     showEnglishChineseSentence ? "1" : "0"
   }`;
-  const quizOptions = `count=${safeQuestionCount}&band=${encodeURIComponent(
-    hskBandsKey
-  )}&start=${safeRangeStart}&end=${safeRangeEnd}&order=${orderMode}&pinyin=${showPinyin ? "1" : "0"}&usage=${
+  const quizOptions = `count=${safeQuestionCount}&filter=${filterType}&values=${encodeURIComponent(
+    formatFilterValuesParam(filterValues)
+  )}&start=${safeRangeStart}&end=${safeRangeEnd}&order=${orderMode}&timer=${safeTimerSeconds}&pinyin=${showPinyin ? "1" : "0"}&usage=${
     showChineseUsage ? "1" : "0"
   }`;
 
@@ -104,35 +124,51 @@ export default function PlayMode() {
   }, [rangeEnd, rangeMax]);
 
   useEffect(() => {
-    if (previousHskBandsKey.current === hskBandsKey) {
+    if (previousFilterValuesKey.current === filterValuesKey) {
       return;
     }
 
-    previousHskBandsKey.current = hskBandsKey;
+    previousFilterValuesKey.current = filterValuesKey;
     setRangeStart("1");
     setRangeEnd(String(rangeMax));
-  }, [hskBandsKey, rangeMax]);
+  }, [filterValuesKey, rangeMax]);
+
+  useEffect(() => {
+    if (previousEnglishFilterValuesKey.current === englishFilterValuesKey) {
+      return;
+    }
+
+    previousEnglishFilterValuesKey.current = englishFilterValuesKey;
+    setEnglishRangeStart("1");
+    setEnglishRangeEnd(String(englishRangeMax));
+  }, [englishFilterValuesKey, englishRangeMax]);
 
   useEffect(() => {
     saveChineseToEnglishSettings({
       questionCount,
-      hskBands,
+      filterType,
+      filterValues,
       rangeStart,
       rangeEnd,
       orderMode,
+      timerSeconds,
       showPinyin,
       showChineseUsage,
     });
-  }, [hskBands, orderMode, questionCount, rangeEnd, rangeStart, showChineseUsage, showPinyin]);
+  }, [filterType, filterValues, orderMode, questionCount, rangeEnd, rangeStart, showChineseUsage, showPinyin, timerSeconds]);
 
   useEffect(() => {
     saveEnglishToChineseSettings({
       questionCount: englishQuestionCount,
+      filterType: englishFilterType,
+      filterValues: englishFilterValues,
       rangeStart: englishRangeStart,
       rangeEnd: englishRangeEnd,
+      orderMode: englishOrderMode,
+      timerSeconds: englishTimerSeconds,
       showChineseSentence: showEnglishChineseSentence,
     });
-  }, [englishQuestionCount, englishRangeEnd, englishRangeStart, showEnglishChineseSentence]);
+  }, [englishFilterType, englishFilterValues, englishOrderMode, englishQuestionCount, englishRangeEnd, englishRangeStart, englishTimerSeconds, showEnglishChineseSentence]);
 
   function handleQuestionCountChange(event) {
     setQuestionCount(event.target.value.replace(/\D/g, ""));
@@ -140,6 +176,14 @@ export default function PlayMode() {
 
   function handleEnglishQuestionCountChange(event) {
     setEnglishQuestionCount(event.target.value.replace(/\D/g, ""));
+  }
+
+  function handleTimerSecondsChange(event) {
+    setTimerSeconds(event.target.value.replace(/\D/g, ""));
+  }
+
+  function handleEnglishTimerSecondsChange(event) {
+    setEnglishTimerSeconds(event.target.value.replace(/\D/g, ""));
   }
 
   function handleEnglishRangeStartChange(event) {
@@ -158,19 +202,93 @@ export default function PlayMode() {
     setRangeEnd(event.target.value.replace(/\D/g, ""));
   }
 
-  function toggleHskBand(band) {
-    setHskBands((currentBands) => {
-      if (band === "all") {
-        return ["all"];
-      }
+  function toggleFilterValue(value) {
+    setFilterValues((currentValues) => toggleValue(currentValues, value));
+  }
 
-      const activeBands = currentBands.includes("all") ? [] : currentBands;
-      const nextBands = activeBands.includes(band)
-        ? activeBands.filter((currentBand) => currentBand !== band)
-        : [...activeBands, band];
+  function toggleEnglishFilterValue(value) {
+    setEnglishFilterValues((currentValues) => toggleValue(currentValues, value));
+  }
 
-      return nextBands.length ? nextBands : ["all"];
-    });
+  function handleFilterTypeChange(event) {
+    setFilterType(event.target.value);
+    setFilterValues(["all"]);
+  }
+
+  function handleEnglishFilterTypeChange(event) {
+    setEnglishFilterType(event.target.value);
+    setEnglishFilterValues(["all"]);
+  }
+
+  function toggleValue(currentValues, value) {
+    if (value === "all") {
+      return ["all"];
+    }
+
+    const activeValues = currentValues.includes("all") ? [] : currentValues;
+    const nextValues = activeValues.includes(value)
+      ? activeValues.filter((currentValue) => currentValue !== value)
+      : [...activeValues, value];
+
+    return nextValues.length ? nextValues : ["all"];
+  }
+
+  function renderFilterOptions({ type, values, availableValues, onTypeChange, onToggle }) {
+    return (
+      <>
+        <label className="question-count">
+          Filter by
+          <select value={type} onChange={onTypeChange}>
+            <option value="hsk">HSK</option>
+            <option value="dao">Dao</option>
+          </select>
+        </label>
+        <fieldset className="band-options">
+          <legend>{type === "dao" ? "Dao sets" : "HSK bands"}</legend>
+          <label>
+            <input type="checkbox" checked={values.includes("all")} onChange={() => onToggle("all")} />
+            All {type === "dao" ? "Dao sets" : "bands"}
+          </label>
+          {availableValues.map((value) => (
+            <label key={value}>
+              <input type="checkbox" checked={values.includes(value)} onChange={() => onToggle(value)} />
+              {formatFilterLabel(value)}
+            </label>
+          ))}
+        </fieldset>
+      </>
+    );
+  }
+
+  function formatFilterLabel(value) {
+    return /^Band/i.test(value) ? value.replace("Band", "Band ") : value;
+  }
+
+  function renderRangeOptions({ start, end, onStartChange, onEndChange }) {
+    return (
+      <div className="range-grid">
+        <label>
+          Question range start
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={start}
+            onChange={onStartChange}
+          />
+        </label>
+        <label>
+          Question range end
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={end}
+            onChange={onEndChange}
+          />
+        </label>
+      </div>
+    );
   }
 
   return (
@@ -214,13 +332,39 @@ export default function PlayMode() {
                 placeholder="20"
               />
             </label>
-            <RangeSelector
-              max={englishRangeMax}
-              start={safeEnglishRangeStart}
-              end={safeEnglishRangeEnd}
-              onStartChange={handleEnglishRangeStartChange}
-              onEndChange={handleEnglishRangeEndChange}
-            />
+            {renderFilterOptions({
+              type: englishFilterType,
+              values: englishFilterValues,
+              availableValues: availableEnglishFilterValues,
+              onTypeChange: handleEnglishFilterTypeChange,
+              onToggle: toggleEnglishFilterValue,
+            })}
+            {renderRangeOptions({
+              start: englishRangeStart,
+              end: englishRangeEnd,
+              onStartChange: handleEnglishRangeStartChange,
+              onEndChange: handleEnglishRangeEndChange,
+            })}
+            <label className="question-count">
+              Question order
+              <select value={englishOrderMode} onChange={(event) => setEnglishOrderMode(event.target.value)}>
+                <option value="random">Random</option>
+                <option value="weighted">Weighted random</option>
+                <option value="in-order">In order</option>
+              </select>
+            </label>
+            <label className="question-count">
+              Auto-flip timer
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={englishTimerSeconds}
+                onChange={handleEnglishTimerSecondsChange}
+                placeholder="0"
+              />
+              <span className="field-hint">Seconds. Use 0 to turn off.</span>
+            </label>
             <div className="setup-checks">
               <label>
                 <input
@@ -254,55 +398,38 @@ export default function PlayMode() {
                 placeholder="20"
               />
             </label>
-            <fieldset className="band-options">
-              <legend>HSK bands</legend>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={hskBands.includes("all")}
-                  onChange={() => toggleHskBand("all")}
-                />
-                All bands
-              </label>
-              {HSK_BANDS.map((band) => (
-                <label key={band}>
-                  <input
-                    type="checkbox"
-                    checked={hskBands.includes(band)}
-                    onChange={() => toggleHskBand(band)}
-                  />
-                  {band.replace("Band", "Band ")}
-                </label>
-              ))}
-            </fieldset>
-            <div className="range-grid">
-              <label>
-                Question range start
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={rangeStart}
-                  onChange={handleRangeStartChange}
-                />
-              </label>
-              <label>
-                Question range end
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={rangeEnd}
-                  onChange={handleRangeEndChange}
-                />
-              </label>
-            </div>
+            {renderFilterOptions({
+              type: filterType,
+              values: filterValues,
+              availableValues: availableFilterValues,
+              onTypeChange: handleFilterTypeChange,
+              onToggle: toggleFilterValue,
+            })}
+            {renderRangeOptions({
+              start: rangeStart,
+              end: rangeEnd,
+              onStartChange: handleRangeStartChange,
+              onEndChange: handleRangeEndChange,
+            })}
             <label className="question-count">
               Question order
               <select value={orderMode} onChange={(event) => setOrderMode(event.target.value)}>
                 <option value="random">Random</option>
-                <option value="weighted">Weighted by color</option>
+                <option value="weighted">Weighted random</option>
+                <option value="in-order">In order</option>
               </select>
+            </label>
+            <label className="question-count">
+              Auto-flip timer
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={timerSeconds}
+                onChange={handleTimerSecondsChange}
+                placeholder="0"
+              />
+              <span className="field-hint">Seconds. Use 0 to turn off.</span>
             </label>
             <div className="setup-checks">
               <label>
