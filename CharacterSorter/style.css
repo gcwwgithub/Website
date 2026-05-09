@@ -3,8 +3,8 @@
   --bg: #0b0f14;
   --panel: #111827;
   --line: #243044;
-  --text: #eef2f8;
-  --muted: #9aa8bc;
+  --text: #ffffff;
+  --muted: #ffffff;
   --accent: #2dd4bf;
 }
 
@@ -26,7 +26,7 @@ button {
   border: 0;
   border-radius: 8px;
   background: var(--accent);
-  color: #041312;
+  color: #ffffff;
   cursor: pointer;
   font: inherit;
   font-weight: 850;
@@ -54,7 +54,7 @@ button:disabled {
   gap: 1rem;
   width: min(980px, 100%);
   margin: 0 auto;
-  padding: 1rem;
+  padding: 4.75rem 1rem 1rem;
 }
 
 .top-bar {
@@ -67,6 +67,10 @@ button:disabled {
 }
 
 .home-link {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 100;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(17, 24, 39, 0.88);
@@ -84,7 +88,7 @@ button:disabled {
 
 .top-bar p {
   margin: 0;
-  color: var(--accent);
+  color: var(--text);
   font-weight: 850;
 }
 
@@ -109,7 +113,7 @@ button:disabled {
 
 .eyebrow {
   margin: 0;
-  color: var(--accent);
+  color: var(--text);
   font-size: 0.78rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -166,12 +170,17 @@ h2 {
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  color: #dbe6f3;
+  color: var(--text);
   font-weight: 750;
 }
 
 input {
   accent-color: var(--accent);
+}
+
+::placeholder {
+  color: var(--text);
+  opacity: 1;
 }
 
 select {
@@ -196,12 +205,19 @@ select {
 }
 
 .import-panel label {
-  color: #dbe6f3;
+  color: var(--text);
   font-weight: 850;
 }
 
 .import-panel input {
   width: 100%;
+}
+
+.import-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
 }
 
 .saved-list-row {
@@ -250,7 +266,7 @@ select {
   background:
     radial-gradient(circle at 50% 32%, rgba(45, 212, 191, 0.22), transparent 7rem),
     #0f172a;
-  color: var(--accent);
+  color: var(--text);
   font-size: 4rem;
   font-weight: 950;
 }
@@ -258,6 +274,10 @@ select {
 .image-avatar {
   object-fit: cover;
   padding: 0;
+}
+
+.fallback-avatar[hidden] {
+  display: none;
 }
 
 .character-name {
@@ -285,27 +305,104 @@ select {
 
 #resultsList {
   display: grid;
-  gap: 0.55rem;
-  max-width: 34rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.9rem;
+  max-width: 58rem;
   margin: 0 auto;
-  padding-left: 1.75rem;
-  text-align: left;
+  padding: 0;
+  list-style: none;
+  text-align: center;
 }
 
-#resultsList li {
+#resultsList .result-row {
+  position: relative;
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  gap: 0.45rem;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(15, 23, 42, 0.76);
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 0.55rem 0.7rem;
+}
+
+#resultsList .top-result {
+  border-color: rgba(45, 212, 191, 0.55);
+  background:
+    radial-gradient(circle at 50% 24%, rgba(45, 212, 191, 0.16), transparent 9rem),
+    rgba(15, 23, 42, 0.9);
+}
+
+.result-avatar {
+  display: grid;
+  width: min(8rem, 100%);
+  aspect-ratio: 1;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(45, 212, 191, 0.22), transparent 5rem),
+    #0f172a;
+  color: var(--text);
+  font-size: 2.2rem;
+  font-weight: 950;
+}
+
+.top-result .result-avatar {
+  font-size: 3.2rem;
+}
+
+.rank-number {
+  position: absolute;
+  top: 0.55rem;
+  left: 0.55rem;
+  z-index: 1;
+  display: grid;
+  width: 2.55rem;
+  height: 2.55rem;
+  place-items: center;
+  border-radius: 999px;
+  background: #c69a5f;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 950;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+}
+
+.top-result .rank-number {
+  font-size: 1rem;
+}
+
+.result-name {
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.top-result .result-name {
+  font-size: 1.15rem;
 }
 
 .hidden {
   display: none;
 }
 
+@media (max-width: 920px) {
+  #resultsList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 720px) {
+  #resultsList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .choice-grid,
   #categoryOptions,
+  .import-actions,
   .saved-list-row {
     grid-template-columns: 1fr;
   }

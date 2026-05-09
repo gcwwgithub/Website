@@ -366,6 +366,9 @@ export default function DailyQuiz() {
           </button>
           <div className="drawer-content">
             <p className="eyebrow">Options</p>
+            <Link className="drawer-link" to="/">
+              Quiz Home
+            </Link>
             <label>
               <input
                 type="checkbox"
@@ -583,6 +586,9 @@ export default function DailyQuiz() {
           </button>
           <div className="drawer-content">
             <p className="eyebrow">Options</p>
+            <Link className="drawer-link" to="/">
+              Quiz Home
+            </Link>
             <label>
               <input
                 type="checkbox"

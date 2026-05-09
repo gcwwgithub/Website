@@ -193,6 +193,25 @@ h1 {
   font-size: 1.2rem;
 }
 
+.gridmaker-preview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  min-height: 15rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 50% 40%, rgba(56, 189, 248, 0.16), transparent 20rem),
+    #101010;
+  padding: 1rem;
+}
+
+.gridmaker-preview span {
+  border: 1px solid #111827;
+  border-radius: 5px;
+  background:
+    linear-gradient(180deg, #3b444f 0 72%, #1c1c1c 72% 100%);
+}
+
 .featured-card {
   grid-column: 1 / -1;
   grid-template-columns: minmax(0, 1.35fr) minmax(20rem, 0.65fr);

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Maker</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <header class="top-bar">
+      <a class="home-link" href="../index.html">WebPlayground</a>
+    </header>
+
+    <main class="workspace">
+      <aside class="side-panel">
+        <nav class="tabs" aria-label="Grid tools">
+          <button class="active" type="button" data-tab="items">Items</button>
+          <button type="button" data-tab="settings">Settings</button>
+        </nav>
+
+        <div class="tab-panel active" data-panel="items">
+        <section class="panel-section">
+          <h2>Import Items</h2>
+          <label class="import-button">
+            Import Items CSV/JSON
+            <input id="itemImportInput" type="file" accept=".csv,text/csv,.json,application/json" multiple>
+          </label>
+          <p id="itemImportStatus" class="status-text">Import a batch with name and optional image fields.</p>
+          <div id="importedBatchList" class="batch-list"></div>
+        </section>
+
+        <section class="panel-section">
+          <label>
+            Search items
+            <input id="itemSearch" type="search" placeholder="Search...">
+          </label>
+          <div id="itemList" class="item-list"></div>
+        </section>
+
+        <section class="panel-section">
+          <h2>Add Item</h2>
+          <form id="itemForm">
+            <label>
+              Name
+              <input id="itemName" type="text" placeholder="Item name">
+            </label>
+            <label>
+              Image URL
+              <input id="itemImage" type="url" placeholder="Optional">
+            </label>
+            <button type="submit">Add Item</button>
+          </form>
+        </section>
+        </div>
+
+        <div class="tab-panel" data-panel="settings">
+        <section class="panel-section grid-controls">
+          <h2>Grid Size</h2>
+          <label>
+            Rows
+            <input id="rowCount" type="number" min="1" max="10" value="5">
+          </label>
+          <label>
+            Columns
+            <input id="columnCount" type="number" min="1" max="10" value="6">
+          </label>
+          <button id="resizeGridButton" type="button">Resize Grid</button>
+        </section>
+
+        <section class="panel-section grid-file-controls">
+          <h2>Grid File</h2>
+          <div class="grid-file-actions">
+            <button id="exportButton" type="button">Export Grid JSON</button>
+            <label class="import-button">
+              Import Grid JSON
+              <input id="gridImportInput" type="file" accept=".json,application/json">
+            </label>
+            <button id="downloadTemplateButton" type="button">Download Template</button>
+          </div>
+          <p id="gridFileStatus" class="status-text">Save or restore the whole grid layout.</p>
+        </section>
+        </div>
+      </aside>
+
+      <section class="grid-stage">
+        <input id="gridTitle" class="grid-title" placeholder="Click to Edit" aria-label="Grid title">
+        <div id="gridBoard" class="grid-board"></div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

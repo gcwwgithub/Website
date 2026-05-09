@@ -1,0 +1,12 @@
+[
+  {
+    "id": "example-character",
+    "name": "Example Character",
+    "image": "https://example.com/example-character.png"
+  },
+  {
+    "id": "another-character",
+    "name": "Another Character",
+    "image": ""
+  }
+]

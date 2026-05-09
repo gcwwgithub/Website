@@ -1,13 +1,15 @@
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 export default function AppShell() {
   return (
     <>
       <header className="top-bar">
         <div className="top-bar-inner">
-          <Link className="home-title" to="/">
-            <h1>Chinese Quiz</h1>
-          </Link>
+          <div className="top-bar-left">
+            <a className="site-home-link" href="../index.html">
+              WebPlayground
+            </a>
+          </div>
         </div>
       </header>
       <div className="app-shell">

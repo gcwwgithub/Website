@@ -1,0 +1,20 @@
+[
+  {
+    "id": "aino",
+    "name": "Aino",
+    "attributes": [
+      "Playable Character",
+      "Nod-Krai"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Aino/Gallery?file=Aino_Icon.png"
+  },
+  {
+    "id": "albedo",
+    "name": "Albedo",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Albedo/Gallery?file=Albedo_Icon.png"
+  }
+]

@@ -9,7 +9,7 @@
   <body>
     <main class="app-shell">
       <header class="top-bar">
-        <a href="../index.html" class="home-link">Main Page</a>
+        <a href="../index.html" class="home-link">WebPlayground</a>
         <p id="progressText">0% sorted</p>
       </header>
 
@@ -22,8 +22,11 @@
 
         <div class="import-panel">
           <label for="importFile">Import characters</label>
-          <input id="importFile" type="file" accept=".csv,.json,application/json,text/csv">
-          <label for="savedListSelect">Load saved list</label>
+          <div class="import-actions">
+            <input id="importFile" type="file" accept=".csv,.json,application/json,text/csv">
+            <button id="downloadTemplateButton" type="button" class="secondary-button">Download Template</button>
+          </div>
+          <label for="savedListSelect">Load character list</label>
           <div class="saved-list-row">
             <select id="savedListSelect"></select>
             <button id="deleteSavedListButton" type="button" class="secondary-button">Delete</button>
@@ -32,7 +35,7 @@
         </div>
 
         <fieldset class="category-panel">
-          <legend>Categories</legend>
+          <legend>Attributes</legend>
           <div id="categoryOptions"></div>
         </fieldset>
 

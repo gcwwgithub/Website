@@ -28,8 +28,10 @@ body{
 }
 
 .main-page-link {
-  align-self:flex-start;
-  margin:16px 0 0 16px;
+  position:fixed;
+  top:16px;
+  left:16px;
+  z-index:100;
   border:1px solid var(--border);
   border-radius:10px;
   background:#202632;
@@ -45,7 +47,7 @@ body{
 }
 
 /* Layout containers */
-#app{ max-width:980px; margin:32px auto; padding:0 16px; width:100% }
+#app{ max-width:980px; margin:74px auto 32px; padding:0 16px; width:100% }
 
 header, footer{
   padding:12px 0;

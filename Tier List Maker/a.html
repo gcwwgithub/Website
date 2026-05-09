@@ -12,9 +12,10 @@
     *{box-sizing:border-box}
     html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+    .app{padding-top:58px}
     header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--panel),#121621);border-bottom:1px solid var(--muted);padding:10px 12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap}
     header h1{font-size:16px;margin:0 10px 0 0;opacity:.9}
-    .main-page-link{color:var(--text);text-decoration:none;border:1px solid var(--tile-br);background:var(--tile);padding:8px 10px;border-radius:10px;font-weight:700}
+    .main-page-link{position:fixed;top:12px;left:12px;z-index:100;color:var(--text);text-decoration:none;border:1px solid var(--tile-br);background:var(--tile);padding:8px 10px;border-radius:10px;font-weight:700}
     .main-page-link:hover{filter:brightness(1.1)}
     button{background:var(--tile);color:var(--text);border:1px solid var(--tile-br);padding:8px 10px;border-radius:10px;cursor:pointer}
     button:hover{filter:brightness(1.1)}
@@ -40,17 +41,15 @@
     .row-head{display:flex;align-items:center; gap:8px}
     .hint{color:var(--sub);font-size:12px}
     .muted{opacity:.7}
-    footer{padding:10px 12px;color:var(--sub);font-size:12px;border-top:1px solid var(--muted);background:#0f131d}
     .spacer{flex:1}
     .pill{padding:6px 9px;border-radius:999px;background:#11182b;border:1px solid var(--muted)}
     .kbd{font-size:11px;border:1px solid var(--muted);padding:2px 6px;border-radius:6px;background:#0b1020;color:#cfe}
   </style>
 </head>
 <body>
+<a class="main-page-link" href="../index.html">WebPlayground</a>
 <div class="app">
   <header>
-    <a class="main-page-link" href="../index.html">Main Page</a>
-    <h1>Local Tierlist</h1>
     <input id="fileInput" type="file" accept="image/*" multiple style="display:none" />
     <button id="loadBtn">Load Images</button>
     <button id="addTierBtn">Add Tier</button>
@@ -87,9 +86,6 @@
     </main>
   </div>
 
-  <footer>
-    Copyright © 2025 Gabriel Chiok.
-  </footer>
 </div>
 
 <script>

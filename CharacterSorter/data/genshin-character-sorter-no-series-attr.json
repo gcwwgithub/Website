@@ -1,0 +1,1028 @@
+[
+  {
+    "id": "aino",
+    "name": "Aino",
+    "attributes": [
+      "Playable Character",
+      "Nod-Krai"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Aino/Gallery?file=Aino_Icon.png"
+  },
+  {
+    "id": "albedo",
+    "name": "Albedo",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Albedo/Gallery?file=Albedo_Icon.png"
+  },
+  {
+    "id": "alhaitham",
+    "name": "Alhaitham",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Alhaitham/Gallery?file=Alhaitham_Icon.png"
+  },
+  {
+    "id": "aloy",
+    "name": "Aloy",
+    "attributes": [
+      "Playable Character",
+      "No Region"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Aloy/Gallery?file=Aloy_Icon.png"
+  },
+  {
+    "id": "amber",
+    "name": "Amber",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Amber/Gallery?file=Amber_Icon.png"
+  },
+  {
+    "id": "arataki-itto",
+    "name": "Arataki Itto",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Arataki_Itto/Gallery?file=Arataki_Itto_Icon.png"
+  },
+  {
+    "id": "arlecchino",
+    "name": "Arlecchino",
+    "attributes": [
+      "Playable Character",
+      "Snezhnaya"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Arlecchino/Gallery?file=Arlecchino_Icon.png"
+  },
+  {
+    "id": "baizhu",
+    "name": "Baizhu",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Baizhu/Gallery?file=Baizhu_Icon.png"
+  },
+  {
+    "id": "barbara",
+    "name": "Barbara",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Barbara/Gallery?file=Barbara_Icon.png"
+  },
+  {
+    "id": "beidou",
+    "name": "Beidou",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Beidou/Gallery?file=Beidou_Icon.png"
+  },
+  {
+    "id": "bennett",
+    "name": "Bennett",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Bennett/Gallery?file=Bennett_Icon.png"
+  },
+  {
+    "id": "candace",
+    "name": "Candace",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Candace/Gallery?file=Candace_Icon.png"
+  },
+  {
+    "id": "charlotte",
+    "name": "Charlotte",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Charlotte/Gallery?file=Charlotte_Icon.png"
+  },
+  {
+    "id": "chasca",
+    "name": "Chasca",
+    "attributes": [
+      "Playable Character",
+      "Natlan"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Chasca/Gallery?file=Chasca_Icon.png"
+  },
+  {
+    "id": "chevreuse",
+    "name": "Chevreuse",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Chevreuse/Gallery?file=Chevreuse_Icon.png"
+  },
+  {
+    "id": "chiori",
+    "name": "Chiori",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Chiori/Gallery?file=Chiori_Icon.png"
+  },
+  {
+    "id": "chongyun",
+    "name": "Chongyun",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Chongyun/Gallery?file=Chongyun_Icon.png"
+  },
+  {
+    "id": "citlali",
+    "name": "Citlali",
+    "attributes": [
+      "Playable Character",
+      "Natlan"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Citlali/Gallery?file=Citlali_Icon.png"
+  },
+  {
+    "id": "clorinde",
+    "name": "Clorinde",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Clorinde/Gallery?file=Clorinde_Icon.png"
+  },
+  {
+    "id": "collei",
+    "name": "Collei",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Collei/Gallery?file=Collei_Icon.png"
+  },
+  {
+    "id": "columbina",
+    "name": "Columbina",
+    "attributes": [
+      "Playable Character",
+      "Nod-Krai"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Columbina/Gallery?file=Columbina_Icon.png"
+  },
+  {
+    "id": "cyno",
+    "name": "Cyno",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Cyno/Gallery?file=Cyno_Icon.png"
+  },
+  {
+    "id": "dahlia",
+    "name": "Dahlia",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Dahlia/Gallery?file=Dahlia_Icon.png"
+  },
+  {
+    "id": "dehya",
+    "name": "Dehya",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Dehya/Gallery?file=Dehya_Icon.png"
+  },
+  {
+    "id": "diluc",
+    "name": "Diluc",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Diluc/Gallery?file=Diluc_Icon.png"
+  },
+  {
+    "id": "diona",
+    "name": "Diona",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Diona/Gallery?file=Diona_Icon.png"
+  },
+  {
+    "id": "dori",
+    "name": "Dori",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Dori/Gallery?file=Dori_Icon.png"
+  },
+  {
+    "id": "durin",
+    "name": "Durin",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Durin/Gallery?file=Durin_Icon.png"
+  },
+  {
+    "id": "emilie",
+    "name": "Emilie",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Emilie/Gallery?file=Emilie_Icon.png"
+  },
+  {
+    "id": "escoffier",
+    "name": "Escoffier",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Escoffier/Gallery?file=Escoffier_Icon.png"
+  },
+  {
+    "id": "eula",
+    "name": "Eula",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Eula/Gallery?file=Eula_Icon.png"
+  },
+  {
+    "id": "faruzan",
+    "name": "Faruzan",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Faruzan/Gallery?file=Faruzan_Icon.png"
+  },
+  {
+    "id": "fischl",
+    "name": "Fischl",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Fischl/Gallery?file=Fischl_Icon.png"
+  },
+  {
+    "id": "flins",
+    "name": "Flins",
+    "attributes": [
+      "Playable Character",
+      "Nod-Krai"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Flins/Gallery?file=Flins_Icon.png"
+  },
+  {
+    "id": "freminet",
+    "name": "Freminet",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Freminet/Gallery?file=Freminet_Icon.png"
+  },
+  {
+    "id": "furina",
+    "name": "Furina",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Furina/Gallery?file=Furina_Icon.png"
+  },
+  {
+    "id": "gaming",
+    "name": "Gaming",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Gaming/Gallery?file=Gaming_Icon.png"
+  },
+  {
+    "id": "ganyu",
+    "name": "Ganyu",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Ganyu/Gallery?file=Ganyu_Icon.png"
+  },
+  {
+    "id": "gorou",
+    "name": "Gorou",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Gorou/Gallery?file=Gorou_Icon.png"
+  },
+  {
+    "id": "hu-tao",
+    "name": "Hu Tao",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Hu_Tao/Gallery?file=Hu_Tao_Icon.png"
+  },
+  {
+    "id": "iansan",
+    "name": "Iansan",
+    "attributes": [
+      "Playable Character",
+      "Natlan"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Iansan/Gallery?file=Iansan_Icon.png"
+  },
+  {
+    "id": "ifa",
+    "name": "Ifa",
+    "attributes": [
+      "Playable Character",
+      "Natlan"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Ifa/Gallery?file=Ifa_Icon.png"
+  },
+  {
+    "id": "illuga",
+    "name": "Illuga",
+    "attributes": [
+      "Playable Character",
+      "Nod-Krai"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Illuga/Gallery?file=Illuga_Icon.png"
+  },
+  {
+    "id": "ineffa",
+    "name": "Ineffa",
+    "attributes": [
+      "Playable Character",
+      "Nod-Krai"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Ineffa/Gallery?file=Ineffa_Icon.png"
+  },
+  {
+    "id": "jahoda",
+    "name": "Jahoda",
+    "attributes": [
+      "Playable Character",
+      "Nod-Krai"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Jahoda/Gallery?file=Jahoda_Icon.png"
+  },
+  {
+    "id": "jean",
+    "name": "Jean",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Jean/Gallery?file=Jean_Icon.png"
+  },
+  {
+    "id": "kachina",
+    "name": "Kachina",
+    "attributes": [
+      "Playable Character",
+      "Natlan"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Kachina/Gallery?file=Kachina_Icon.png"
+  },
+  {
+    "id": "kaedehara-kazuha",
+    "name": "Kaedehara Kazuha",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Kaedehara_Kazuha/Gallery?file=Kaedehara_Kazuha_Icon.png"
+  },
+  {
+    "id": "kaeya",
+    "name": "Kaeya",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Kaeya/Gallery?file=Kaeya_Icon.png"
+  },
+  {
+    "id": "kamisato-ayaka",
+    "name": "Kamisato Ayaka",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Kamisato_Ayaka/Gallery?file=Kamisato_Ayaka_Icon.png"
+  },
+  {
+    "id": "kamisato-ayato",
+    "name": "Kamisato Ayato",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Kamisato_Ayato/Gallery?file=Kamisato_Ayato_Icon.png"
+  },
+  {
+    "id": "kaveh",
+    "name": "Kaveh",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Kaveh/Gallery?file=Kaveh_Icon.png"
+  },
+  {
+    "id": "keqing",
+    "name": "Keqing",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Keqing/Gallery?file=Keqing_Icon.png"
+  },
+  {
+    "id": "kinich",
+    "name": "Kinich",
+    "attributes": [
+      "Playable Character",
+      "Natlan"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Kinich/Gallery?file=Kinich_Icon.png"
+  },
+  {
+    "id": "kirara",
+    "name": "Kirara",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Kirara/Gallery?file=Kirara_Icon.png"
+  },
+  {
+    "id": "klee",
+    "name": "Klee",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Klee/Gallery?file=Klee_Icon.png"
+  },
+  {
+    "id": "kujou-sara",
+    "name": "Kujou Sara",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Kujou_Sara/Gallery?file=Kujou_Sara_Icon.png"
+  },
+  {
+    "id": "kuki-shinobu",
+    "name": "Kuki Shinobu",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Kuki_Shinobu/Gallery?file=Kuki_Shinobu_Icon.png"
+  },
+  {
+    "id": "lan-yan",
+    "name": "Lan Yan",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Lan_Yan/Gallery?file=Lan_Yan_Icon.png"
+  },
+  {
+    "id": "lauma",
+    "name": "Lauma",
+    "attributes": [
+      "Playable Character",
+      "Nod-Krai"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Lauma/Gallery?file=Lauma_Icon.png"
+  },
+  {
+    "id": "layla",
+    "name": "Layla",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Layla/Gallery?file=Layla_Icon.png"
+  },
+  {
+    "id": "linnea",
+    "name": "Linnea",
+    "attributes": [
+      "Playable Character",
+      "Nod-Krai"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Linnea/Gallery?file=Linnea_Icon.png"
+  },
+  {
+    "id": "lisa",
+    "name": "Lisa",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Lisa/Gallery?file=Lisa_Icon.png"
+  },
+  {
+    "id": "lynette",
+    "name": "Lynette",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Lynette/Gallery?file=Lynette_Icon.png"
+  },
+  {
+    "id": "lyney",
+    "name": "Lyney",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Lyney/Gallery?file=Lyney_Icon.png"
+  },
+  {
+    "id": "mavuika",
+    "name": "Mavuika",
+    "attributes": [
+      "Playable Character",
+      "Natlan"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Mavuika/Gallery?file=Mavuika_Icon.png"
+  },
+  {
+    "id": "mika",
+    "name": "Mika",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Mika/Gallery?file=Mika_Icon.png"
+  },
+  {
+    "id": "mona",
+    "name": "Mona",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Mona/Gallery?file=Mona_Icon.png"
+  },
+  {
+    "id": "mualani",
+    "name": "Mualani",
+    "attributes": [
+      "Playable Character",
+      "Natlan"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Mualani/Gallery?file=Mualani_Icon.png"
+  },
+  {
+    "id": "nahida",
+    "name": "Nahida",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Nahida/Gallery?file=Nahida_Icon.png"
+  },
+  {
+    "id": "navia",
+    "name": "Navia",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Navia/Gallery?file=Navia_Icon.png"
+  },
+  {
+    "id": "nefer",
+    "name": "Nefer",
+    "attributes": [
+      "Playable Character",
+      "Nod-Krai"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Nefer/Gallery?file=Nefer_Icon.png"
+  },
+  {
+    "id": "neuvillette",
+    "name": "Neuvillette",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Neuvillette/Gallery?file=Neuvillette_Icon.png"
+  },
+  {
+    "id": "nilou",
+    "name": "Nilou",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Nilou/Gallery?file=Nilou_Icon.png"
+  },
+  {
+    "id": "ningguang",
+    "name": "Ningguang",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Ningguang/Gallery?file=Ningguang_Icon.png"
+  },
+  {
+    "id": "noelle",
+    "name": "Noelle",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Noelle/Gallery?file=Noelle_Icon.png"
+  },
+  {
+    "id": "ororon",
+    "name": "Ororon",
+    "attributes": [
+      "Playable Character",
+      "Natlan"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Ororon/Gallery?file=Ororon_Icon.png"
+  },
+  {
+    "id": "qiqi",
+    "name": "Qiqi",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Qiqi/Gallery?file=Qiqi_Icon.png"
+  },
+  {
+    "id": "raiden-shogun",
+    "name": "Raiden Shogun",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Raiden_Shogun/Gallery?file=Raiden_Shogun_Icon.png"
+  },
+  {
+    "id": "razor",
+    "name": "Razor",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Razor/Gallery?file=Razor_Icon.png"
+  },
+  {
+    "id": "rosaria",
+    "name": "Rosaria",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Rosaria/Gallery?file=Rosaria_Icon.png"
+  },
+  {
+    "id": "sangonomiya-kokomi",
+    "name": "Sangonomiya Kokomi",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Sangonomiya_Kokomi/Gallery?file=Sangonomiya_Kokomi_Icon.png"
+  },
+  {
+    "id": "sayu",
+    "name": "Sayu",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Sayu/Gallery?file=Sayu_Icon.png"
+  },
+  {
+    "id": "sethos",
+    "name": "Sethos",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Sethos/Gallery?file=Sethos_Icon.png"
+  },
+  {
+    "id": "shenhe",
+    "name": "Shenhe",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Shenhe/Gallery?file=Shenhe_Icon.png"
+  },
+  {
+    "id": "shikanoin-heizou",
+    "name": "Shikanoin Heizou",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Shikanoin_Heizou/Gallery?file=Shikanoin_Heizou_Icon.png"
+  },
+  {
+    "id": "sigewinne",
+    "name": "Sigewinne",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Sigewinne/Gallery?file=Sigewinne_Icon.png"
+  },
+  {
+    "id": "skirk",
+    "name": "Skirk",
+    "attributes": [
+      "Playable Character",
+      "No Region"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Skirk/Gallery?file=Skirk_Icon.png"
+  },
+  {
+    "id": "sucrose",
+    "name": "Sucrose",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Sucrose/Gallery?file=Sucrose_Icon.png"
+  },
+  {
+    "id": "tartaglia",
+    "name": "Tartaglia",
+    "attributes": [
+      "Playable Character",
+      "Snezhnaya"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Tartaglia/Gallery?file=Tartaglia_Icon.png"
+  },
+  {
+    "id": "thoma",
+    "name": "Thoma",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Thoma/Gallery?file=Thoma_Icon.png"
+  },
+  {
+    "id": "tighnari",
+    "name": "Tighnari",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Tighnari/Gallery?file=Tighnari_Icon.png"
+  },
+  {
+    "id": "traveler",
+    "name": "Traveler",
+    "attributes": [
+      "Playable Character",
+      "No Region"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Traveler/Gallery?file=Traveler_Icon.png"
+  },
+  {
+    "id": "varesa",
+    "name": "Varesa",
+    "attributes": [
+      "Playable Character",
+      "Natlan"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Varesa/Gallery?file=Varesa_Icon.png"
+  },
+  {
+    "id": "varka",
+    "name": "Varka",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Varka/Gallery?file=Varka_Icon.png"
+  },
+  {
+    "id": "venti",
+    "name": "Venti",
+    "attributes": [
+      "Playable Character",
+      "Mondstadt"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Venti/Gallery?file=Venti_Icon.png"
+  },
+  {
+    "id": "wanderer",
+    "name": "Wanderer",
+    "attributes": [
+      "Playable Character",
+      "Sumeru"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Wanderer/Gallery?file=Wanderer_Icon.png"
+  },
+  {
+    "id": "wonderland-manekin",
+    "name": "Wonderland Manekin",
+    "attributes": [
+      "Playable Character",
+      "No Region"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Wonderland_Manekin/Gallery?file=Wonderland_Manekin_Icon.png"
+  },
+  {
+    "id": "wriothesley",
+    "name": "Wriothesley",
+    "attributes": [
+      "Playable Character",
+      "Fontaine"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Wriothesley/Gallery?file=Wriothesley_Icon.png"
+  },
+  {
+    "id": "xiangling",
+    "name": "Xiangling",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Xiangling/Gallery?file=Xiangling_Icon.png"
+  },
+  {
+    "id": "xianyun",
+    "name": "Xianyun",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Xianyun/Gallery?file=Xianyun_Icon.png"
+  },
+  {
+    "id": "xiao",
+    "name": "Xiao",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Xiao/Gallery?file=Xiao_Icon.png"
+  },
+  {
+    "id": "xilonen",
+    "name": "Xilonen",
+    "attributes": [
+      "Playable Character",
+      "Natlan"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Xilonen/Gallery?file=Xilonen_Icon.png"
+  },
+  {
+    "id": "xingqiu",
+    "name": "Xingqiu",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Xingqiu/Gallery?file=Xingqiu_Icon.png"
+  },
+  {
+    "id": "xinyan",
+    "name": "Xinyan",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Xinyan/Gallery?file=Xinyan_Icon.png"
+  },
+  {
+    "id": "yae-miko",
+    "name": "Yae Miko",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Yae_Miko/Gallery?file=Yae_Miko_Icon.png"
+  },
+  {
+    "id": "yanfei",
+    "name": "Yanfei",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Yanfei/Gallery?file=Yanfei_Icon.png"
+  },
+  {
+    "id": "yaoyao",
+    "name": "Yaoyao",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Yaoyao/Gallery?file=Yaoyao_Icon.png"
+  },
+  {
+    "id": "yelan",
+    "name": "Yelan",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Yelan/Gallery?file=Yelan_Icon.png"
+  },
+  {
+    "id": "yoimiya",
+    "name": "Yoimiya",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Yoimiya/Gallery?file=Yoimiya_Icon.png"
+  },
+  {
+    "id": "yumemizuki-mizuki",
+    "name": "Yumemizuki Mizuki",
+    "attributes": [
+      "Playable Character",
+      "Inazuma"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Yumemizuki_Mizuki/Gallery?file=Yumemizuki_Mizuki_Icon.png"
+  },
+  {
+    "id": "yun-jin",
+    "name": "Yun Jin",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Yun_Jin/Gallery?file=Yun_Jin_Icon.png"
+  },
+  {
+    "id": "zhongli",
+    "name": "Zhongli",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Zhongli/Gallery?file=Zhongli_Icon.png"
+  },
+  {
+    "id": "zibai",
+    "name": "Zibai",
+    "attributes": [
+      "Playable Character",
+      "Liyue"
+    ],
+    "image": "https://genshin-impact.fandom.com/wiki/Zibai/Gallery?file=Zibai_Icon.png"
+  }
+]

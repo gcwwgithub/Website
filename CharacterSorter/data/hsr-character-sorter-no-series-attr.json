@@ -1,0 +1,937 @@
+[
+  {
+    "id": "acheron",
+    "name": "Acheron",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Nihility",
+      "Lightning"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Acheron_Splash_Art.png"
+  },
+  {
+    "id": "aglaea",
+    "name": "Aglaea",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Remembrance",
+      "Lightning"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Aglaea_Splash_Art.png"
+  },
+  {
+    "id": "anaxa",
+    "name": "Anaxa",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Erudition",
+      "Wind"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Anaxa_Splash_Art.png"
+  },
+  {
+    "id": "archer",
+    "name": "Archer",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "The Hunt",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Archer_Splash_Art.png"
+  },
+  {
+    "id": "argenti",
+    "name": "Argenti",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Erudition",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Argenti_Splash_Art.png"
+  },
+  {
+    "id": "arlan",
+    "name": "Arlan",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Destruction",
+      "Lightning"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Arlan_Splash_Art.png"
+  },
+  {
+    "id": "ashveil",
+    "name": "Ashveil",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "The Hunt",
+      "Lightning"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Ashveil_Splash_Art.png"
+  },
+  {
+    "id": "asta",
+    "name": "Asta",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Harmony",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Asta_Splash_Art.png"
+  },
+  {
+    "id": "aventurine",
+    "name": "Aventurine",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Preservation",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Aventurine_Splash_Art.png"
+  },
+  {
+    "id": "bailu",
+    "name": "Bailu",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Abundance",
+      "Lightning"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Bailu_Splash_Art.png"
+  },
+  {
+    "id": "black-swan",
+    "name": "Black Swan",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Nihility",
+      "Wind"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Black_Swan_Splash_Art.png"
+  },
+  {
+    "id": "blade",
+    "name": "Blade",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Destruction",
+      "Wind"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Blade_Splash_Art.png"
+  },
+  {
+    "id": "boothill",
+    "name": "Boothill",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "The Hunt",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Boothill_Splash_Art.png"
+  },
+  {
+    "id": "bronya",
+    "name": "Bronya",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Harmony",
+      "Wind"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Bronya_Splash_Art.png"
+  },
+  {
+    "id": "castorice",
+    "name": "Castorice",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Remembrance",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Castorice_Splash_Art.png"
+  },
+  {
+    "id": "cerydra",
+    "name": "Cerydra",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Harmony",
+      "Wind"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Cerydra_Splash_Art.png"
+  },
+  {
+    "id": "cipher",
+    "name": "Cipher",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Nihility",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Cipher_Splash_Art.png"
+  },
+  {
+    "id": "clara",
+    "name": "Clara",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Destruction",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Clara_Splash_Art.png"
+  },
+  {
+    "id": "cyrene",
+    "name": "Cyrene",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Remembrance",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Cyrene_Splash_Art.png"
+  },
+  {
+    "id": "dan-heng",
+    "name": "Dan Heng",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "The Hunt",
+      "Wind"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Dan_Heng_Splash_Art.png"
+  },
+  {
+    "id": "dan-heng-imbibitor-lunae",
+    "name": "Dan Heng • Imbibitor Lunae",
+    "attributes": [
+      "Alt Character",
+      "5 Star",
+      "Destruction",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Dan_Heng_%E2%80%A2_Imbibitor_Lunae_Splash_Art.png"
+  },
+  {
+    "id": "dan-heng-permansor-terrae",
+    "name": "Dan Heng • Permansor Terrae",
+    "attributes": [
+      "Alt Character",
+      "5 Star",
+      "Preservation",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Dan_Heng_%E2%80%A2_Permansor_Terrae_Splash_Art.png"
+  },
+  {
+    "id": "dr-ratio",
+    "name": "Dr. Ratio",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "The Hunt",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Dr._Ratio_Splash_Art.png"
+  },
+  {
+    "id": "evernight",
+    "name": "Evernight",
+    "attributes": [
+      "Alt Character",
+      "5 Star",
+      "Remembrance",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Evernight_Splash_Art.png"
+  },
+  {
+    "id": "feixiao",
+    "name": "Feixiao",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "The Hunt",
+      "Wind"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Feixiao_Splash_Art.png"
+  },
+  {
+    "id": "firefly",
+    "name": "Firefly",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Destruction",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Firefly_Splash_Art.png"
+  },
+  {
+    "id": "fu-xuan",
+    "name": "Fu Xuan",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Preservation",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Fu_Xuan_Splash_Art.png"
+  },
+  {
+    "id": "fugue",
+    "name": "Fugue",
+    "attributes": [
+      "Alt Character",
+      "5 Star",
+      "Nihility",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Fugue_Splash_Art.png"
+  },
+  {
+    "id": "gallagher",
+    "name": "Gallagher",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Abundance",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Gallagher_Splash_Art.png"
+  },
+  {
+    "id": "gepard",
+    "name": "Gepard",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Preservation",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Gepard_Splash_Art.png"
+  },
+  {
+    "id": "guinaifen",
+    "name": "Guinaifen",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Nihility",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Guinaifen_Splash_Art.png"
+  },
+  {
+    "id": "hanya",
+    "name": "Hanya",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Harmony",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Hanya_Splash_Art.png"
+  },
+  {
+    "id": "herta",
+    "name": "Herta",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Erudition",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Herta_Splash_Art.png"
+  },
+  {
+    "id": "himeko",
+    "name": "Himeko",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Erudition",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Himeko_Splash_Art.png"
+  },
+  {
+    "id": "hook",
+    "name": "Hook",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Destruction",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Hook_Splash_Art.png"
+  },
+  {
+    "id": "huohuo",
+    "name": "Huohuo",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Abundance",
+      "Wind"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Huohuo_Splash_Art.png"
+  },
+  {
+    "id": "hyacine",
+    "name": "Hyacine",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Remembrance",
+      "Wind"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Hyacine_Splash_Art.png"
+  },
+  {
+    "id": "hysilens",
+    "name": "Hysilens",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Nihility",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Hysilens_Splash_Art.png"
+  },
+  {
+    "id": "jade",
+    "name": "Jade",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Erudition",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Jade_Splash_Art.png"
+  },
+  {
+    "id": "jiaoqiu",
+    "name": "Jiaoqiu",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Nihility",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Jiaoqiu_Splash_Art.png"
+  },
+  {
+    "id": "jing-yuan",
+    "name": "Jing Yuan",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Erudition",
+      "Lightning"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Jing_Yuan_Splash_Art.png"
+  },
+  {
+    "id": "jingliu",
+    "name": "Jingliu",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Destruction",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Jingliu_Splash_Art.png"
+  },
+  {
+    "id": "kafka",
+    "name": "Kafka",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Nihility",
+      "Lightning"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Kafka_Splash_Art.png"
+  },
+  {
+    "id": "lingsha",
+    "name": "Lingsha",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Abundance",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Lingsha_Splash_Art.png"
+  },
+  {
+    "id": "luka",
+    "name": "Luka",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Nihility",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Luka_Splash_Art.png"
+  },
+  {
+    "id": "luocha",
+    "name": "Luocha",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Abundance",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Luocha_Splash_Art.png"
+  },
+  {
+    "id": "lynx",
+    "name": "Lynx",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Abundance",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Lynx_Splash_Art.png"
+  },
+  {
+    "id": "march-7th-preservation",
+    "name": "March 7th (Preservation)",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Preservation",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_March_7th_(Preservation)_Splash_Art.png"
+  },
+  {
+    "id": "march-7th-the-hunt",
+    "name": "March 7th (The Hunt)",
+    "attributes": [
+      "Alt Character",
+      "4 Star",
+      "The Hunt",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_March_7th_(The_Hunt)_Splash_Art.png"
+  },
+  {
+    "id": "misha",
+    "name": "Misha",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Destruction",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Misha_Splash_Art.png"
+  },
+  {
+    "id": "moze",
+    "name": "Moze",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "The Hunt",
+      "Lightning"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Moze_Splash_Art.png"
+  },
+  {
+    "id": "mydei",
+    "name": "Mydei",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Destruction",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Mydei_Splash_Art.png"
+  },
+  {
+    "id": "natasha",
+    "name": "Natasha",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Abundance",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Natasha_Splash_Art.png"
+  },
+  {
+    "id": "pela",
+    "name": "Pela",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Nihility",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Pela_Splash_Art.png"
+  },
+  {
+    "id": "phainon",
+    "name": "Phainon",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Destruction",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Phainon_Splash_Art.png"
+  },
+  {
+    "id": "qingque",
+    "name": "Qingque",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Erudition",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Qingque_Splash_Art.png"
+  },
+  {
+    "id": "rappa",
+    "name": "Rappa",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Erudition",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Rappa_Splash_Art.png"
+  },
+  {
+    "id": "robin",
+    "name": "Robin",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Harmony",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Robin_Splash_Art.png"
+  },
+  {
+    "id": "ruan-mei",
+    "name": "Ruan Mei",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Harmony",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Ruan_Mei_Splash_Art.png"
+  },
+  {
+    "id": "saber",
+    "name": "Saber",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Destruction",
+      "Wind"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Saber_Splash_Art.png"
+  },
+  {
+    "id": "sampo",
+    "name": "Sampo",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Nihility",
+      "Wind"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Sampo_Splash_Art.png"
+  },
+  {
+    "id": "seele",
+    "name": "Seele",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "The Hunt",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Seele_Splash_Art.png"
+  },
+  {
+    "id": "serval",
+    "name": "Serval",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Erudition",
+      "Lightning"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Serval_Splash_Art.png"
+  },
+  {
+    "id": "silver-wolf",
+    "name": "Silver Wolf",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Nihility",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Silver_Wolf_Splash_Art.png"
+  },
+  {
+    "id": "silver-wolf-lv999",
+    "name": "Silver Wolf LV.999",
+    "attributes": [
+      "Alt Character",
+      "5 Star",
+      "Elation",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Silver_Wolf_LV.999_Splash_Art.png"
+  },
+  {
+    "id": "sparkle",
+    "name": "Sparkle",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Harmony",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Sparkle_Splash_Art.png"
+  },
+  {
+    "id": "sparxie",
+    "name": "Sparxie",
+    "attributes": [
+      "Alt Character",
+      "5 Star",
+      "Elation",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Sparxie_Splash_Art.png"
+  },
+  {
+    "id": "sunday",
+    "name": "Sunday",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Harmony",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Sunday_Splash_Art.png"
+  },
+  {
+    "id": "sushang",
+    "name": "Sushang",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "The Hunt",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Sushang_Splash_Art.png"
+  },
+  {
+    "id": "the-dahlia",
+    "name": "The Dahlia",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Nihility",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_The_Dahlia_Splash_Art.png"
+  },
+  {
+    "id": "the-herta",
+    "name": "The Herta",
+    "attributes": [
+      "Alt Character",
+      "5 Star",
+      "Erudition",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_The_Herta_Splash_Art.png"
+  },
+  {
+    "id": "tingyun",
+    "name": "Tingyun",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Harmony",
+      "Lightning"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Tingyun_Splash_Art.png"
+  },
+  {
+    "id": "topaz-and-numby",
+    "name": "Topaz & Numby",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "The Hunt",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Topaz_and_Numby_Splash_Art.png"
+  },
+  {
+    "id": "trailblazer-destruction",
+    "name": "Trailblazer (Destruction)",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Destruction",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Trailblazer_(F)_Destruction_Splash_Art.png"
+  },
+  {
+    "id": "trailblazer-preservation",
+    "name": "Trailblazer (Preservation)",
+    "attributes": [
+      "Alt Character",
+      "5 Star",
+      "Preservation",
+      "Fire"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Trailblazer_(F)_Preservation_Splash_Art.png"
+  },
+  {
+    "id": "trailblazer-harmony",
+    "name": "Trailblazer (Harmony)",
+    "attributes": [
+      "Alt Character",
+      "5 Star",
+      "Harmony",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Trailblazer_(F)_Harmony_Splash_Art.png"
+  },
+  {
+    "id": "trailblazer-remembrance",
+    "name": "Trailblazer (Remembrance)",
+    "attributes": [
+      "Alt Character",
+      "5 Star",
+      "Remembrance",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Trailblazer_(F)_Remembrance_Splash_Art_(Updated).png"
+  },
+  {
+    "id": "trailblazer-elation",
+    "name": "Trailblazer (Elation)",
+    "attributes": [
+      "Alt Character",
+      "5 Star",
+      "Elation",
+      "Lightning"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Trailblazer_(F)_Elation_Splash_Art.png"
+  },
+  {
+    "id": "tribbie",
+    "name": "Tribbie",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Harmony",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Tribbie_Splash_Art.png"
+  },
+  {
+    "id": "welt",
+    "name": "Welt",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Nihility",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Welt_Splash_Art.png"
+  },
+  {
+    "id": "xueyi",
+    "name": "Xueyi",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Destruction",
+      "Quantum"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Xueyi_Splash_Art.png"
+  },
+  {
+    "id": "yanqing",
+    "name": "Yanqing",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "The Hunt",
+      "Ice"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Yanqing_Splash_Art.png"
+  },
+  {
+    "id": "yao-guang",
+    "name": "Yao Guang",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Elation",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Yao_Guang_Splash_Art.png"
+  },
+  {
+    "id": "yukong",
+    "name": "Yukong",
+    "attributes": [
+      "Playable Character",
+      "4 Star",
+      "Harmony",
+      "Imaginary"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Yukong_Splash_Art.png"
+  },
+  {
+    "id": "yunli",
+    "name": "Yunli",
+    "attributes": [
+      "Playable Character",
+      "5 Star",
+      "Destruction",
+      "Physical"
+    ],
+    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Yunli_Splash_Art.png"
+  }
+]
