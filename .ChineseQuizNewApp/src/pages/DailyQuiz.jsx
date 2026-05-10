@@ -47,6 +47,9 @@ export default function DailyQuiz() {
   const [timerRemaining, setTimerRemaining] = useState(timerSeconds);
   const [showFrontPinyin, setShowFrontPinyin] = useState(savedSettings.showPinyin);
   const [showFrontUsage, setShowFrontUsage] = useState(savedSettings.showChineseUsage);
+  const [showMeaningCount, setShowMeaningCount] = useState(
+    searchParams.has("meaningCount") ? searchParams.get("meaningCount") !== "0" : savedSettings.showMeaningCount
+  );
   const [showEnglishChineseSentence, setShowEnglishChineseSentence] = useState(
     searchParams.has("sentence") ? searchParams.get("sentence") !== "0" : savedEnglishSettings.showChineseSentence
   );
@@ -148,8 +151,9 @@ export default function DailyQuiz() {
       timerSeconds: String(timerSeconds),
       showPinyin: showFrontPinyin,
       showChineseUsage: showFrontUsage,
+      showMeaningCount,
     });
-  }, [filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, selectedFilterValues, showFrontPinyin, showFrontUsage, timerSeconds]);
+  }, [filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, selectedFilterValues, showFrontPinyin, showFrontUsage, showMeaningCount, timerSeconds]);
 
   useEffect(() => {
     if (mode !== "english-to-chinese") {
@@ -410,7 +414,7 @@ export default function DailyQuiz() {
                 )}
               </div>
             ) : (
-              <p>No words were found in sheet2.csv.</p>
+              <p>No words were found in EN.csv.</p>
             )}
           </section>
         </div>
@@ -551,6 +555,7 @@ export default function DailyQuiz() {
               <Link className="play-button" to={`/quiz?${buildReplayParams(searchParams, {
                 showPinyin: showFrontPinyin,
                 showChineseUsage: showFrontUsage,
+                showMeaningCount,
               })}`}>
                 Play again
               </Link>
@@ -605,6 +610,14 @@ export default function DailyQuiz() {
               />
               Show Chinese usage
             </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={showMeaningCount}
+                onChange={(event) => setShowMeaningCount(event.target.checked)}
+              />
+              Show meaning count
+            </label>
           </div>
         </aside>
         <div className="quiz-main">
@@ -617,6 +630,7 @@ export default function DailyQuiz() {
                   progressText={csvRows.length ? `${csvIndex + 1} / ${csvRows.length}` : "CSV preview"}
                   showFrontPinyin={showFrontPinyin}
                   showFrontUsage={showFrontUsage}
+                  showMeaningCount={showMeaningCount}
                   timerSeconds={timerSeconds}
                   timerRemaining={timerRemaining}
                   wasAutoFlipped={wasAutoFlipped}
@@ -709,6 +723,7 @@ function CsvFlashcard({
   progressText,
   showFrontPinyin,
   showFrontUsage,
+  showMeaningCount,
   timerSeconds,
   timerRemaining,
   wasAutoFlipped,
@@ -722,6 +737,7 @@ function CsvFlashcard({
   const shouldShowMeta = showFrontPinyin || isFlipped;
   const shouldShowUsage = showFrontUsage || isFlipped;
   const shouldShowDivider = shouldShowMeta && shouldShowUsage;
+  const meaningCount = countMeaningForms(row["English Words"]);
 
   return (
     <article className="dictionary-card">
@@ -741,6 +757,11 @@ function CsvFlashcard({
 
       <h2>{row["Chinese Words"]}</h2>
       <ColorBadge colorValue={row.Color} />
+      {showMeaningCount && !isFlipped && (
+        <p className="meaning-count">
+          {meaningCount} {meaningCount === 1 ? "meaning/form" : "meanings/forms"}
+        </p>
+      )}
 
       <div className="dictionary-body-grid">
         <div>
@@ -925,6 +946,56 @@ function getEnglishPromptSizeClass(text = "") {
     return "long";
   }
   return "";
+}
+
+function countMeaningForms(text = "") {
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (!lines.length) {
+    return 1;
+  }
+
+  const count = lines.reduce((total, line) => total + countMeaningFormLine(line), 0);
+  return Math.max(1, count);
+}
+
+function countMeaningFormLine(line) {
+  if (/^pronounced as\b/i.test(line)) {
+    return 0;
+  }
+
+  const colonIndex = line.indexOf(":");
+  if (colonIndex === -1) {
+    return splitMeaningText(line).length;
+  }
+
+  const labelText = line.slice(0, colonIndex);
+  const definitionText = line.slice(colonIndex + 1);
+  const formCount = splitWordFormLabels(labelText).length;
+  const meaningCount = splitMeaningText(definitionText).length;
+
+  return Math.max(formCount, meaningCount, 1);
+}
+
+function splitWordFormLabels(text) {
+  const knownFormPattern = /\b(?:noun|verb|adjective|adverb|interjection|pronoun|preposition|conjunction|measure word|proper noun)\b/i;
+  if (!knownFormPattern.test(text)) {
+    return [];
+  }
+
+  return text.split("/").map((part) => part.trim()).filter(Boolean);
+}
+
+function splitMeaningText(text) {
+  const parts = text
+    .split(/\s+(?:\/|;)\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  return parts.length ? parts : [text.trim()].filter(Boolean);
 }
 
 function highlightBracketText(text) {
@@ -1152,6 +1223,9 @@ function buildReplayParams(searchParams, options = {}) {
   }
   if ("showChineseUsage" in options) {
     replayParams.set("usage", options.showChineseUsage ? "1" : "0");
+  }
+  if ("showMeaningCount" in options) {
+    replayParams.set("meaningCount", options.showMeaningCount ? "1" : "0");
   }
   if ("showChineseSentence" in options) {
     replayParams.set("sentence", options.showChineseSentence ? "1" : "0");

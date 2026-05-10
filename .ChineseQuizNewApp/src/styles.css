@@ -338,11 +338,18 @@ form {
 }
 
 .mode-panel {
+  display: grid;
+  justify-items: center;
   width: min(760px, 100%);
 }
 
 .mode-panel h2 {
-  margin-top: 0.35rem;
+  margin: 0;
+  text-align: center;
+}
+
+.mode-title {
+  width: 100%;
   text-align: center;
 }
 
@@ -350,19 +357,19 @@ form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+  width: min(680px, 100%);
   margin-top: 1.25rem;
 }
 
 .mode-button {
-  display: grid;
-  min-height: 9rem;
-  align-content: center;
-  gap: 0.65rem;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 1672 / 941;
+  min-height: 0;
   border: 1px solid rgba(94, 234, 212, 0.42);
   border-radius: 8px;
-  background: rgba(45, 212, 191, 0.1);
-  padding: 1.25rem;
-  text-align: center;
+  background: #0f172a;
+  padding: 0;
 }
 
 .mode-button:not(:disabled):hover {
@@ -372,18 +379,14 @@ form {
 
 .mode-button.selected {
   border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.22);
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.24);
 }
 
-.mode-button span {
-  color: #ffffff;
-  font-size: 1.25rem;
-  font-weight: 850;
-}
-
-.mode-button small {
-  color: #aeb9ca;
-  font-size: 0.95rem;
+.mode-button img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .question-count {
@@ -513,6 +516,101 @@ form {
   width: 1.05rem;
   height: 1.05rem;
   margin: 0;
+}
+
+.filter-bulk-actions {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.filter-bulk-actions button {
+  border: 1px solid rgba(94, 234, 212, 0.34);
+  background: #111827;
+  color: #eef2f8;
+  font-size: 0.9rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.filter-bulk-actions button:not(:disabled):hover {
+  border-color: rgba(94, 234, 212, 0.78);
+  background: #172033;
+}
+
+.dao-group-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  gap: 0.85rem;
+  width: min(460px, 100%);
+  margin: 0.25rem auto 0;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(94, 234, 212, 0.22);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.dao-group-options legend {
+  grid-column: 1 / -1;
+  padding: 0 0.35rem;
+  color: #cbd5e1;
+  font-weight: 850;
+}
+
+.dao-all-option {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #d8e2f0;
+  font-weight: 850;
+}
+
+.dao-all-option input,
+.dao-group-select input,
+.dao-group-values input {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+}
+
+.dao-group-card {
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+  min-height: 10.5rem;
+  border: 1px solid rgba(94, 234, 212, 0.28);
+  border-radius: 8px;
+  background: rgba(17, 24, 39, 0.72);
+  padding: 0.75rem;
+}
+
+.dao-group-select {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #eef2f8;
+  font-weight: 900;
+}
+
+.dao-group-card small {
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+.dao-group-values {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.dao-group-values label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #d8e2f0;
+  font-size: 0.92rem;
+  font-weight: 750;
 }
 
 .range-grid {
@@ -938,6 +1036,18 @@ form {
   font-size: 0.9rem;
 }
 
+.meaning-count {
+  width: fit-content;
+  margin: 0;
+  border: 1px solid rgba(94, 234, 212, 0.28);
+  border-radius: 999px;
+  background: rgba(45, 212, 191, 0.1);
+  color: #ccfbf1;
+  font-size: 0.82rem;
+  font-weight: 850;
+  padding: 0.35rem 0.65rem;
+}
+
 .quiz-layout {
   position: relative;
   align-items: start;
@@ -1116,10 +1226,47 @@ form {
   font-weight: 750;
 }
 
+.game-card-top {
+  margin-bottom: 0;
+}
+
+.game-name {
+  justify-self: end;
+  max-width: 12rem;
+  text-align: right;
+}
+
 .adverb-card h2 {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 7rem;
+  max-height: 7rem;
+  overflow: hidden;
   font-size: clamp(1.55rem, 4vw, 2.4rem);
   line-height: 1.25;
   text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.adverb-prompt-text {
+  display: block;
+  width: 100%;
+}
+
+.adverb-card h2.long-prompt {
+  font-size: clamp(1.35rem, 3.2vw, 2rem);
+  line-height: 1.22;
+}
+
+.adverb-card h2.very-long-prompt {
+  font-size: clamp(1.12rem, 2.7vw, 1.55rem);
+  line-height: 1.18;
+}
+
+.adverb-card h2.tiny-prompt {
+  font-size: clamp(0.95rem, 2.2vw, 1.22rem);
+  line-height: 1.15;
 }
 
 .adverb-card h2 mark {
@@ -1131,7 +1278,9 @@ form {
 
 .adverb-options {
   display: grid;
+  grid-template-rows: repeat(4, minmax(3.35rem, auto));
   gap: 0.75rem;
+  min-height: calc(4 * 3.35rem + 3 * 0.75rem);
 }
 
 .adverb-options button {
@@ -1193,7 +1342,7 @@ form {
   padding: 0.8rem;
 }
 
-.mandarin-answer span {
+.mandarin-answer > span {
   color: #5eead4;
   font-size: 0.78rem;
   font-weight: 850;
@@ -1203,6 +1352,58 @@ form {
 .mandarin-answer p {
   color: #f8fafc;
   font-size: 1.2rem;
+}
+
+.sentence-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.tile-zone {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 0.65rem;
+  min-height: 6.5rem;
+  border: 1px dashed rgba(94, 234, 212, 0.4);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.58);
+  padding: 0.85rem;
+}
+
+.tile-zone span {
+  align-self: center;
+  width: 100%;
+  color: #94a3b8;
+  font-weight: 750;
+  text-align: center;
+}
+
+.sentence-tile {
+  min-height: 2.85rem;
+  border: 1px solid rgba(94, 234, 212, 0.34);
+  background: #111827;
+  color: #eef2f8;
+  font-size: 1.15rem;
+  padding: 0.65rem 0.9rem;
+}
+
+.sentence-tile:not(:disabled):hover {
+  border-color: rgba(94, 234, 212, 0.78);
+  background: #172033;
+}
+
+.sentence-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.sentence-audio-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.85rem;
 }
 
 .result-card {
@@ -1295,6 +1496,14 @@ form {
   }
 
   .dictionary-details {
+    grid-template-columns: 1fr;
+  }
+
+  .dao-group-values {
+    grid-template-columns: 1fr;
+  }
+
+  .sentence-actions {
     grid-template-columns: 1fr;
   }
 }

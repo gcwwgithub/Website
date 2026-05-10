@@ -6,7 +6,9 @@ import DailyQuiz from "./pages/DailyQuiz.jsx";
 import MainMenu from "./pages/MainMenu.jsx";
 import PlayMode from "./pages/PlayMode.jsx";
 import ProgressStats from "./pages/ProgressStats.jsx";
+import SentenceBuilder from "./pages/SentenceBuilder.jsx";
 import Settings from "./pages/Settings.jsx";
+import SynonymSelection from "./pages/SynonymSelection.jsx";
 import WordList from "./pages/WordList.jsx";
 
 export default function App() {
@@ -16,6 +18,8 @@ export default function App() {
         <Route index element={<MainMenu />} />
         <Route path="play" element={<PlayMode />} />
         <Route path="adverbs" element={<AdverbGame />} />
+        <Route path="synonyms" element={<SynonymSelection />} />
+        <Route path="sentence-builder" element={<SentenceBuilder />} />
         <Route path="quiz" element={<DailyQuiz />} />
         <Route path="words" element={<WordList />} />
         <Route path="words/new" element={<AddEditWord />} />

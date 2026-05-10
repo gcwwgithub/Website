@@ -20,31 +20,43 @@
           Pick your favorite between two characters until the sorter builds your ranking.
         </p>
 
-        <div class="import-panel">
-          <label for="importFile">Import characters</label>
-          <div class="import-actions">
-            <input id="importFile" type="file" accept=".csv,.json,application/json,text/csv">
-            <button id="downloadTemplateButton" type="button" class="secondary-button">Download Template</button>
+        <nav class="start-tabs" aria-label="Character sorter tabs">
+          <button class="active" type="button" data-start-tab="setup">Setup</button>
+          <button type="button" data-start-tab="selected">Selected Characters</button>
+        </nav>
+
+        <div class="start-tab-panel active" data-start-panel="setup">
+          <div class="import-panel">
+            <label for="importFile">Import characters</label>
+            <div class="import-actions">
+              <input id="importFile" type="file" accept=".csv,.json,application/json,text/csv">
+              <button id="downloadTemplateButton" type="button" class="secondary-button">Download Template</button>
+            </div>
+            <label for="savedListSelect">Load character list</label>
+            <div class="saved-list-row">
+              <select id="savedListSelect"></select>
+              <button id="deleteSavedListButton" type="button" class="secondary-button">Delete</button>
+            </div>
+            <p id="importStatus">Using sample characters. Import CSV or JSON to replace them.</p>
           </div>
-          <label for="savedListSelect">Load character list</label>
-          <div class="saved-list-row">
-            <select id="savedListSelect"></select>
-            <button id="deleteSavedListButton" type="button" class="secondary-button">Delete</button>
-          </div>
-          <p id="importStatus">Using sample characters. Import CSV or JSON to replace them.</p>
+
+          <fieldset class="category-panel">
+            <legend>Attributes</legend>
+            <div id="categoryOptions"></div>
+          </fieldset>
+
+          <label class="toggle-row">
+            <input type="checkbox" id="disableTies">
+            Disable ties
+          </label>
+
+          <button id="startButton" type="button">Start Sorting</button>
         </div>
 
-        <fieldset class="category-panel">
-          <legend>Attributes</legend>
-          <div id="categoryOptions"></div>
-        </fieldset>
-
-        <label class="toggle-row">
-          <input type="checkbox" id="disableTies">
-          Disable ties
-        </label>
-
-        <button id="startButton" type="button">Start Sorting</button>
+        <div class="start-tab-panel" data-start-panel="selected">
+          <div class="selected-summary" id="selectedSummary">0 characters selected</div>
+          <div class="selected-character-list" id="selectedCharacterList"></div>
+        </div>
       </section>
 
       <section class="sort-panel hidden" id="sortPanel" aria-live="polite">

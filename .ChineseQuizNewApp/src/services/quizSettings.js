@@ -14,6 +14,7 @@ export const DEFAULT_CHINESE_TO_ENGLISH_SETTINGS = {
   timerSeconds: "0",
   showPinyin: true,
   showChineseUsage: true,
+  showMeaningCount: false,
 };
 
 export const DEFAULT_ENGLISH_TO_CHINESE_SETTINGS = {
@@ -83,13 +84,16 @@ export function parseFilterValuesParam(value) {
   if (!value || value === "all") {
     return ["all"];
   }
+  if (value === "none") {
+    return [];
+  }
 
   const values = value
     .split(",")
     .map((band) => band.trim())
     .filter(Boolean);
 
-  return values.length ? values : ["all"];
+  return values;
 }
 
 export function formatBandsParam(bands) {
@@ -98,6 +102,9 @@ export function formatBandsParam(bands) {
 
 export function formatFilterValuesParam(values) {
   const normalizedValues = normalizeFilterValues(values);
+  if (!normalizedValues.length) {
+    return "none";
+  }
   return normalizedValues.includes("all") ? "all" : normalizedValues.join(",");
 }
 
@@ -112,6 +119,7 @@ function normalizeSettings(settings = {}) {
     timerSeconds: normalizeTimerSeconds(settings.timerSeconds),
     showPinyin: settings.showPinyin !== false,
     showChineseUsage: settings.showChineseUsage !== false,
+    showMeaningCount: settings.showMeaningCount === true,
   };
 }
 
@@ -149,6 +157,5 @@ function normalizeFilterValues(values) {
     return ["all"];
   }
 
-  const normalizedValues = values.filter(Boolean);
-  return normalizedValues.length ? normalizedValues : ["all"];
+  return values.filter(Boolean);
 }

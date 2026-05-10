@@ -1,5 +1,5 @@
-const CSV_PATH = "data/sheet.csv";
-const ENGLISH_TO_CHINESE_CSV_PATH = "data/sheet2.csv";
+const CSV_PATH = "data/CN.csv";
+const ENGLISH_TO_CHINESE_CSV_PATH = "data/EN.csv";
 const VOCAB_REQUIRED_COLUMNS = [
   "Chinese Words",
   "pinyin",

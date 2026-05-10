@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import GameMenu from "../components/GameMenu.jsx";
-import { loadAdverbRows } from "../services/adverbCsv.js";
+import { loadSynonymRows } from "../services/adverbCsv.js";
 
-export default function AdverbGame() {
+export default function SynonymSelection() {
   const [searchParams] = useSearchParams();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const sessionRun = searchParams.get("run") || "";
@@ -24,7 +24,7 @@ export default function AdverbGame() {
   useEffect(() => {
     async function loadGame() {
       try {
-        const loadedRows = await loadAdverbRows();
+        const loadedRows = await loadSynonymRows();
         const loadedSessionRows = buildSessionRows(loadedRows, requestedCount);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
@@ -33,7 +33,7 @@ export default function AdverbGame() {
         setSelected("");
         setMistakes([]);
         setSkippedRows([]);
-        setQuestion(loadedSessionRows[0], loadedRows, setCurrentRow, setOptions);
+        setQuestion(loadedSessionRows[0], setCurrentRow, setOptions);
       } catch (loadError) {
         setError(loadError.message);
       } finally {
@@ -49,7 +49,7 @@ export default function AdverbGame() {
       return;
     }
 
-    const wasCorrect = option === currentRow.item;
+    const wasCorrect = option === currentRow["Chinese Word"];
     setSelected(option);
     setScore((current) => ({
       correct: current.correct + (wasCorrect ? 1 : 0),
@@ -65,7 +65,7 @@ export default function AdverbGame() {
     setSelected("");
     const nextIndex = questionIndex + 1;
     setQuestionIndex(nextIndex);
-    setQuestion(sessionRows[nextIndex], rows, setCurrentRow, setOptions);
+    setQuestion(sessionRows[nextIndex], setCurrentRow, setOptions);
   }
 
   function skipQuestion() {
@@ -76,14 +76,14 @@ export default function AdverbGame() {
   }
 
   if (loading) {
-    return <main className="page narrow-page">Loading adverb game...</main>;
+    return <main className="page narrow-page">Loading synonym selection...</main>;
   }
 
   if (error) {
     return (
       <main className="page narrow-page">
         <section className="panel empty-state">
-          <h2>Could not load adverb game</h2>
+          <h2>Could not load synonym selection</h2>
           <p className="error">{error}</p>
         </section>
       </main>
@@ -116,9 +116,9 @@ export default function AdverbGame() {
               <h3>Items to review</h3>
               {mistakes.map((mistake, index) => (
                 <article className="wrong-row" key={`${mistake.__rowNumber}-${index}`}>
-                  <strong>{mistake.item}</strong>
-                  <span>{mistake.chinesePrompt}</span>
-                  <span>{mistake.prompt}</span>
+                  <strong>{mistake["Chinese Word"]}</strong>
+                  <span>{fillBlank(mistake["Chinese Sentence"], mistake["Chinese Word"])}</span>
+                  <span>{mistake["Chinese Sentence"]}</span>
                 </article>
               ))}
             </section>
@@ -128,15 +128,15 @@ export default function AdverbGame() {
               <h3>Skipped items</h3>
               {skippedRows.map((row, index) => (
                 <article className="wrong-row" key={`${row.__rowNumber}-skipped-${index}`}>
-                  <strong>{row.item}</strong>
-                  <span>{row.chinesePrompt}</span>
-                  <span>{row.prompt}</span>
+                  <strong>{row["Chinese Word"]}</strong>
+                  <span>{fillBlank(row["Chinese Sentence"], row["Chinese Word"])}</span>
+                  <span>{row["Chinese Sentence"]}</span>
                 </article>
               ))}
             </section>
           )}
           <div className="result-actions">
-            <Link className="play-button" to={`/adverbs?count=${requestedCount}&run=${Date.now()}`}>
+            <Link className="play-button" to={`/synonyms?count=${requestedCount}&run=${Date.now()}`}>
               Play again
             </Link>
             <Link className="secondary-button settings-link" to="/">
@@ -152,8 +152,8 @@ export default function AdverbGame() {
     return (
       <main className="page narrow-page">
         <section className="panel empty-state">
-          <h2>No adverb questions found</h2>
-          <p>Add adverb rows to the grammar CSV to play this mode.</p>
+          <h2>No synonym questions found</h2>
+          <p>Add grammar rows to the grammar CSV to play this mode.</p>
         </section>
       </main>
     );
@@ -166,17 +166,15 @@ export default function AdverbGame() {
         <div className="dictionary-card-top game-card-top">
           <p className="eyebrow">{questionIndex + 1} / {sessionRows.length}</p>
           <p className="question-id">{currentRow.__rowNumber || "?"}</p>
-          <p className="eyebrow game-name">Adverb Game</p>
+          <p className="eyebrow game-name">Chinese Synonym Selection</p>
         </div>
-        <h2 className={getPromptSizeClass(currentRow.prompt)}>
-          <span className="adverb-prompt-text">
-            <HighlightedPrompt text={currentRow.prompt} highlight={currentRow.highlight} />
-          </span>
+        <h2 className={getPromptSizeClass(currentRow["Chinese Sentence"])}>
+          <span className="adverb-prompt-text">{currentRow["Chinese Sentence"]}</span>
         </h2>
         <div className="adverb-options">
           {options.map((option) => (
             <button
-              className={getOptionClass(option, currentRow.item, selected)}
+              className={getOptionClass(option, currentRow["Chinese Word"], selected)}
               disabled={isAnswered}
               key={option}
               onClick={() => answer(option)}
@@ -186,20 +184,19 @@ export default function AdverbGame() {
           ))}
         </div>
         {isAnswered && (
-          <div className={`adverb-feedback ${selected === currentRow.item ? "correct" : "wrong"}`}>
-            <strong>{selected === currentRow.item ? "Correct" : "Wrong"}</strong>
-            <p>Focus adverb: {currentRow.item}</p>
+          <div className={`adverb-feedback ${selected === currentRow["Chinese Word"] ? "correct" : "wrong"}`}>
+            <strong>{selected === currentRow["Chinese Word"] ? "Correct" : "Wrong"}</strong>
+            <p>Target word: {currentRow["Chinese Word"]}</p>
             <div className="mandarin-answer">
-              <span>Mandarin sentence</span>
+              <span>Completed sentence</span>
               <div className="sentence-audio-row">
-                <p>{currentRow.chinesePrompt}</p>
+                <p>{fillBlank(currentRow["Chinese Sentence"], currentRow["Chinese Word"])}</p>
                 <IconAudioButton
                   label="Read Chinese sentence"
-                  onClick={() => speakText(currentRow.chinesePrompt, "zh-CN")}
+                  onClick={() => speakText(fillBlank(currentRow["Chinese Sentence"], currentRow["Chinese Word"]), "zh-CN")}
                 />
               </div>
             </div>
-            <p>Category: {currentRow.category.replaceAll("_", " ")}</p>
             <button onClick={nextQuestion}>Next</button>
           </div>
         )}
@@ -211,28 +208,19 @@ export default function AdverbGame() {
   );
 }
 
-function setQuestion(sourceRow, allRows, setCurrentRow, setOptions) {
-  if (!sourceRow || !allRows.length) {
+function setQuestion(nextRow, setCurrentRow, setOptions) {
+  if (!nextRow) {
     setCurrentRow(null);
     setOptions([]);
     return;
   }
 
-  const example = pickExampleSentence(sourceRow);
-  const nextRow = {
-    ...sourceRow,
-    prompt: example.text,
-    chinesePrompt: example.chinesePrompt,
-    highlight: example.highlight,
-  };
-  const distractors = allRows
-    .filter((row) => row.item !== nextRow.item)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3)
-    .map((row) => row.item);
+  const distractors = ["Wrong Answer 1", "Wrong Answer 2", "Wrong Answer 3"]
+    .map((key) => nextRow[key])
+    .filter((answer) => answer && answer !== nextRow["Chinese Word"]);
 
   setCurrentRow(nextRow);
-  setOptions([nextRow.item, ...distractors].sort(() => Math.random() - 0.5));
+  setOptions([nextRow["Chinese Word"], ...distractors].sort(() => Math.random() - 0.5));
 }
 
 function buildSessionRows(rows, count) {
@@ -240,137 +228,20 @@ function buildSessionRows(rows, count) {
 }
 
 function getPromptSizeClass(text = "") {
-  if (text.length > 150) {
+  if (text.length > 48) {
     return "tiny-prompt";
   }
-  if (text.length > 100) {
+  if (text.length > 34) {
     return "very-long-prompt";
   }
-  if (text.length > 70) {
+  if (text.length > 24) {
     return "long-prompt";
   }
   return "";
 }
 
-function pickExampleSentence(row) {
-  const examples = [
-    {
-      text: row["example sentence 1"],
-      chinesePrompt: row["chinese sentence 1"],
-      highlight: inferHighlight(row.item, row["example sentence 1"]),
-    },
-    {
-      text: row["example sentence 2"],
-      chinesePrompt: row["chinese sentence 2"],
-      highlight: inferHighlight(row.item, row["example sentence 2"]),
-    },
-    {
-      text: row["example sentence 3"],
-      chinesePrompt: row["chinese sentence 3"],
-      highlight: inferHighlight(row.item, row["example sentence 3"]),
-    },
-    {
-      text: row["example sentence 4"],
-      chinesePrompt: row["chinese sentence 4"],
-      highlight: inferHighlight(row.item, row["example sentence 4"]),
-    },
-  ].filter((example) => example.text);
-
-  return examples[Math.floor(Math.random() * examples.length)] || {
-    text: row["example sentence 1"],
-    chinesePrompt: row["chinese sentence 1"],
-    highlight: "",
-  };
-}
-
-function HighlightedPrompt({ text, highlight }) {
-  if (!highlight || !text.toLowerCase().includes(highlight.toLowerCase())) {
-    return text;
-  }
-
-  const startIndex = text.toLowerCase().indexOf(highlight.toLowerCase());
-  const endIndex = startIndex + highlight.length;
-
-  return (
-    <>
-      {text.slice(0, startIndex)}
-      <mark>{text.slice(startIndex, endIndex)}</mark>
-      {text.slice(endIndex)}
-    </>
-  );
-}
-
-function inferHighlight(item, sentence) {
-  const highlightByItem = {
-    才: ["Only after", "until", "Only when"],
-    不由得: ["could not help"],
-    说不定: ["Maybe", "Perhaps"],
-    有点: ["a little", "a bit"],
-    也只是: ["only"],
-    那就是: ["problem is that", "suggestion is that", "reason is that"],
-    突然出现了: ["suddenly appeared"],
-    似乎: ["seems"],
-    好像: ["looks as if", "seems like", "looks like"],
-    看起来: ["looks"],
-    试图: ["tried", "attempted"],
-    想要: ["want", "wants"],
-    总之: ["In short", "All in all", "In conclusion"],
-    果然: ["As expected", "Sure enough"],
-    只好: ["no choice but", "had to"],
-    只能: ["can only"],
-    一定: ["definitely", "must", "certain"],
-    由于: ["Due to", "Because of"],
-    因为: ["Because"],
-    首先: ["First", "First of all"],
-    最重要的是: ["Most importantly", "most important"],
-    是否: ["whether"],
-    大约: ["about"],
-    尽情地: ["as much as they liked", "freely"],
-    已经: ["already"],
-    正在: ["currently", "now"],
-    刚刚: ["just"],
-    马上: ["right away", "soon", "immediately"],
-    立刻: ["immediately"],
-    曾经: ["once"],
-    暂时: ["temporarily", "for now"],
-    最近: ["Recently", "lately"],
-    终于: ["finally"],
-    一直: ["always", "kept", "have been"],
-    经常: ["often"],
-    常常: ["frequently", "often"],
-    偶尔: ["occasionally", "sometimes"],
-    很少: ["rarely", "seldom"],
-    从不: ["never"],
-    往往: ["often"],
-    再三: ["repeatedly", "again and again"],
-    大概: ["probably"],
-    可能: ["may", "might"],
-    也许: ["Maybe", "Perhaps"],
-    未必: ["not necessarily", "may not"],
-    居然: ["actually", "unexpectedly"],
-    偏偏: ["Of all", "just had to"],
-    幸好: ["Fortunately", "Luckily"],
-    差点: ["almost", "nearly"],
-    完全: ["completely"],
-    相当: ["quite", "rather"],
-    十分: ["very", "extremely"],
-    极其: ["extremely"],
-    格外: ["especially", "particularly"],
-    颇: ["rather", "quite"],
-    略微: ["slightly", "a little"],
-    因此: ["therefore", "so"],
-    所以: ["so"],
-    于是: ["so"],
-    因而: ["therefore", "as a result"],
-    然而: ["however"],
-    不过: ["but"],
-    而且: ["also", "and"],
-    再说: ["Besides", "Moreover"],
-    同时: ["At the same time", "at the same time"],
-  };
-
-  const candidates = highlightByItem[item] || [];
-  return candidates.find((candidate) => sentence.toLowerCase().includes(candidate.toLowerCase())) || "";
+function fillBlank(sentence, answer) {
+  return sentence.replace("____", answer);
 }
 
 function getOptionClass(option, correct, selected) {

@@ -22,6 +22,7 @@ export default function PlayMode() {
   const [timerSeconds, setTimerSeconds] = useState(savedSettings.timerSeconds);
   const [showPinyin, setShowPinyin] = useState(savedSettings.showPinyin);
   const [showChineseUsage, setShowChineseUsage] = useState(savedSettings.showChineseUsage);
+  const [showMeaningCount, setShowMeaningCount] = useState(savedSettings.showMeaningCount);
   const [englishQuestionCount, setEnglishQuestionCount] = useState(savedEnglishSettings.questionCount);
   const [englishFilterType, setEnglishFilterType] = useState(savedEnglishSettings.filterType);
   const [englishFilterValues, setEnglishFilterValues] = useState(savedEnglishSettings.filterValues);
@@ -30,6 +31,7 @@ export default function PlayMode() {
   const [englishOrderMode, setEnglishOrderMode] = useState(savedEnglishSettings.orderMode);
   const [englishTimerSeconds, setEnglishTimerSeconds] = useState(savedEnglishSettings.timerSeconds);
   const [showEnglishChineseSentence, setShowEnglishChineseSentence] = useState(savedEnglishSettings.showChineseSentence);
+  const [practiceQuestionCount, setPracticeQuestionCount] = useState("20");
   const [englishRows, setEnglishRows] = useState([]);
   const [csvRows, setCsvRows] = useState([]);
   const [loadingCsv, setLoadingCsv] = useState(false);
@@ -40,6 +42,7 @@ export default function PlayMode() {
   const safeEnglishQuestionCount = Math.max(1, Math.min(100, parsedEnglishQuestionCount || 20));
   const safeTimerSeconds = clampNumber(timerSeconds, 0, 600);
   const safeEnglishTimerSeconds = clampNumber(englishTimerSeconds, 0, 600);
+  const safePracticeQuestionCount = clampNumber(practiceQuestionCount, 1, 100);
   const filteredRows = useMemo(() => filterCsvRows(csvRows, filterType, filterValues), [csvRows, filterType, filterValues]);
   const englishFilteredRows = useMemo(
     () => filterCsvRows(englishRows, englishFilterType, englishFilterValues),
@@ -69,6 +72,8 @@ export default function PlayMode() {
     formatFilterValuesParam(filterValues)
   )}&start=${safeRangeStart}&end=${safeRangeEnd}&order=${orderMode}&timer=${safeTimerSeconds}&pinyin=${showPinyin ? "1" : "0"}&usage=${
     showChineseUsage ? "1" : "0"
+  }&meaningCount=${
+    showMeaningCount ? "1" : "0"
   }`;
 
   useEffect(() => {
@@ -154,8 +159,9 @@ export default function PlayMode() {
       timerSeconds,
       showPinyin,
       showChineseUsage,
+      showMeaningCount,
     });
-  }, [filterType, filterValues, orderMode, questionCount, rangeEnd, rangeStart, showChineseUsage, showPinyin, timerSeconds]);
+  }, [filterType, filterValues, orderMode, questionCount, rangeEnd, rangeStart, showChineseUsage, showMeaningCount, showPinyin, timerSeconds]);
 
   useEffect(() => {
     saveEnglishToChineseSettings({
@@ -176,6 +182,10 @@ export default function PlayMode() {
 
   function handleEnglishQuestionCountChange(event) {
     setEnglishQuestionCount(event.target.value.replace(/\D/g, ""));
+  }
+
+  function handlePracticeQuestionCountChange(event) {
+    setPracticeQuestionCount(event.target.value.replace(/\D/g, ""));
   }
 
   function handleTimerSecondsChange(event) {
@@ -203,11 +213,11 @@ export default function PlayMode() {
   }
 
   function toggleFilterValue(value) {
-    setFilterValues((currentValues) => toggleValue(currentValues, value));
+    setFilterValues((currentValues) => toggleValue(currentValues, value, availableFilterValues));
   }
 
   function toggleEnglishFilterValue(value) {
-    setEnglishFilterValues((currentValues) => toggleValue(currentValues, value));
+    setEnglishFilterValues((currentValues) => toggleValue(currentValues, value, availableEnglishFilterValues));
   }
 
   function handleFilterTypeChange(event) {
@@ -220,20 +230,22 @@ export default function PlayMode() {
     setEnglishFilterValues(["all"]);
   }
 
-  function toggleValue(currentValues, value) {
+  function toggleValue(currentValues, value, availableValues = []) {
     if (value === "all") {
       return ["all"];
     }
 
-    const activeValues = currentValues.includes("all") ? [] : currentValues;
+    const activeValues = currentValues.includes("all") ? availableValues : currentValues;
     const nextValues = activeValues.includes(value)
       ? activeValues.filter((currentValue) => currentValue !== value)
       : [...activeValues, value];
 
-    return nextValues.length ? nextValues : ["all"];
+    return nextValues;
   }
 
-  function renderFilterOptions({ type, values, availableValues, onTypeChange, onToggle }) {
+  function renderFilterOptions({ type, values, availableValues, onTypeChange, onToggle, onSetValues }) {
+    const daoGroups = type === "dao" ? groupDaoValues(availableValues) : [];
+
     return (
       <>
         <label className="question-count">
@@ -243,19 +255,61 @@ export default function PlayMode() {
             <option value="dao">Dao</option>
           </select>
         </label>
-        <fieldset className="band-options">
+        {type === "dao" && daoGroups.length > 0 ? (
+          <fieldset className="dao-group-options">
+            <legend>Dao sets</legend>
+            <div className="filter-bulk-actions">
+              <button type="button" onClick={() => onSetValues(["all"])}>Select all</button>
+              <button type="button" onClick={() => onSetValues([])}>Deselect all</button>
+            </div>
+            {daoGroups.map((group) => {
+              const selectedCount = values.includes("all")
+                ? group.values.length
+                : group.values.filter((value) => values.includes(value)).length;
+              const isSelected = selectedCount === group.values.length;
+
+              return (
+                <section className="dao-group-card" key={group.label}>
+                  <label className="dao-group-select">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => onSetValues(toggleDaoGroup(values, group.values, availableValues))}
+                    />
+                    <span>{group.label}</span>
+                  </label>
+                  <small>{selectedCount}/{group.values.length}</small>
+                  <div className="dao-group-values">
+                    {group.values.map((value) => (
+                      <label key={value}>
+                        <input
+                          type="checkbox"
+                          checked={values.includes("all") || values.includes(value)}
+                          onChange={() => onToggle(value)}
+                        />
+                        {formatFilterLabel(value)}
+                      </label>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </fieldset>
+        ) : (
+          <fieldset className="band-options">
           <legend>{type === "dao" ? "Dao sets" : "HSK bands"}</legend>
-          <label>
-            <input type="checkbox" checked={values.includes("all")} onChange={() => onToggle("all")} />
-            All {type === "dao" ? "Dao sets" : "bands"}
-          </label>
+          <div className="filter-bulk-actions">
+            <button type="button" onClick={() => onSetValues(["all"])}>Select all</button>
+            <button type="button" onClick={() => onSetValues([])}>Deselect all</button>
+          </div>
           {availableValues.map((value) => (
             <label key={value}>
-              <input type="checkbox" checked={values.includes(value)} onChange={() => onToggle(value)} />
+              <input type="checkbox" checked={values.includes("all") || values.includes(value)} onChange={() => onToggle(value)} />
               {formatFilterLabel(value)}
             </label>
           ))}
-        </fieldset>
+          </fieldset>
+        )}
       </>
     );
   }
@@ -294,29 +348,42 @@ export default function PlayMode() {
   return (
     <main className="page home-page">
       <section className="hero-panel mode-panel">
-        <p className="eyebrow">Choose mode</p>
-        <h2>Play Chinese Quiz</h2>
+        <h2 className="mode-title">Choose mode</h2>
         <div className="mode-grid">
           <button
             className={`mode-button ${selectedMode === "english-to-chinese" ? "selected" : ""}`}
             onClick={() => setSelectedMode("english-to-chinese")}
+            aria-label="English to Chinese"
           >
-            <span>English to Chinese</span>
-            <small>See English, answer in Chinese.</small>
+            <img src="data/en.png" alt="" aria-hidden="true" />
           </button>
           <button
             className={`mode-button ${selectedMode === "chinese-to-english" ? "selected" : ""}`}
             onClick={() => setSelectedMode("chinese-to-english")}
+            aria-label="Chinese to English"
           >
-            <span>Chinese to English</span>
-            <small>See Chinese, answer in English or pinyin.</small>
+            <img src="data/cn.png" alt="" aria-hidden="true" />
           </button>
           <button
             className={`mode-button ${selectedMode === "adverb-game" ? "selected" : ""}`}
             onClick={() => setSelectedMode("adverb-game")}
+            aria-label="Adverb Game"
           >
-            <span>Adverb Game</span>
-            <small>See an English sentence, choose the Mandarin adverb.</small>
+            <img src="data/adverb.png" alt="" aria-hidden="true" />
+          </button>
+          <button
+            className={`mode-button ${selectedMode === "synonym-selection" ? "selected" : ""}`}
+            onClick={() => setSelectedMode("synonym-selection")}
+            aria-label="Chinese Synonym Selection"
+          >
+            <img src="data/synonym.png" alt="" aria-hidden="true" />
+          </button>
+          <button
+            className={`mode-button ${selectedMode === "sentence-builder" ? "selected" : ""}`}
+            onClick={() => setSelectedMode("sentence-builder")}
+            aria-label="Sentence Builder"
+          >
+            <img src="data/sentence.png" alt="" aria-hidden="true" />
           </button>
         </div>
         {selectedMode === "english-to-chinese" && (
@@ -338,6 +405,7 @@ export default function PlayMode() {
               availableValues: availableEnglishFilterValues,
               onTypeChange: handleEnglishFilterTypeChange,
               onToggle: toggleEnglishFilterValue,
+              onSetValues: setEnglishFilterValues,
             })}
             {renderRangeOptions({
               start: englishRangeStart,
@@ -404,6 +472,7 @@ export default function PlayMode() {
               availableValues: availableFilterValues,
               onTypeChange: handleFilterTypeChange,
               onToggle: toggleFilterValue,
+              onSetValues: setFilterValues,
             })}
             {renderRangeOptions({
               start: rangeStart,
@@ -448,6 +517,14 @@ export default function PlayMode() {
                 />
                 Show Chinese usage
               </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showMeaningCount}
+                  onChange={(event) => setShowMeaningCount(event.target.checked)}
+                />
+                Show meaning count
+              </label>
             </div>
             <p className="muted">
               Available range for this band: 1 to {rangeMax}
@@ -460,12 +537,37 @@ export default function PlayMode() {
           </div>
         )}
         {selectedMode === "adverb-game" && (
-          <Link className="play-button setup-start" to="/adverbs">
-            Start
-          </Link>
+          <PracticeModeStart count={practiceQuestionCount} onCountChange={handlePracticeQuestionCountChange} to={`/adverbs?count=${safePracticeQuestionCount}`} />
+        )}
+        {selectedMode === "synonym-selection" && (
+          <PracticeModeStart count={practiceQuestionCount} onCountChange={handlePracticeQuestionCountChange} to={`/synonyms?count=${safePracticeQuestionCount}`} />
+        )}
+        {selectedMode === "sentence-builder" && (
+          <PracticeModeStart count={practiceQuestionCount} onCountChange={handlePracticeQuestionCountChange} to={`/sentence-builder?count=${safePracticeQuestionCount}`} />
         )}
       </section>
     </main>
+  );
+}
+
+function PracticeModeStart({ count, onCountChange, to }) {
+  return (
+    <div className="setup-options">
+      <label className="question-count">
+        Number of questions
+        <input
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          value={count}
+          onChange={onCountChange}
+          placeholder="20"
+        />
+      </label>
+      <Link className="play-button setup-start" to={to}>
+        Start
+      </Link>
+    </div>
   );
 }
 
@@ -526,4 +628,36 @@ function clampNumber(value, min, max) {
     return min;
   }
   return Math.max(min, Math.min(max, parsed));
+}
+
+function groupDaoValues(values) {
+  const groups = values.reduce((result, value) => {
+    const match = String(value).match(/^(\d+)\./);
+    const groupKey = match ? match[1] : "Other";
+    if (!result.has(groupKey)) {
+      result.set(groupKey, []);
+    }
+    result.get(groupKey).push(value);
+    return result;
+  }, new Map());
+
+  return [...groups.entries()]
+    .map(([key, groupValues]) => ({
+      label: key === "Other" ? "Other" : `${key}.x`,
+      sortValue: key === "Other" ? Number.MAX_SAFE_INTEGER : Number(key),
+      values: groupValues,
+    }))
+    .sort((firstGroup, secondGroup) => firstGroup.sortValue - secondGroup.sortValue);
+}
+
+function toggleDaoGroup(currentValues, groupValues, availableValues = []) {
+  const activeValues = currentValues.includes("all") ? availableValues : currentValues;
+  const isWholeGroupSelected = groupValues.every((value) => activeValues.includes(value));
+
+  if (isWholeGroupSelected) {
+    const nextValues = activeValues.filter((value) => !groupValues.includes(value));
+    return nextValues;
+  }
+
+  return [...new Set([...activeValues, ...groupValues])];
 }

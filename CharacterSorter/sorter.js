@@ -32,6 +32,10 @@ const importStatus = document.querySelector("#importStatus");
 const categoryOptions = document.querySelector("#categoryOptions");
 const savedListSelect = document.querySelector("#savedListSelect");
 const deleteSavedListButton = document.querySelector("#deleteSavedListButton");
+const startTabButtons = document.querySelectorAll("[data-start-tab]");
+const startTabPanels = document.querySelectorAll("[data-start-panel]");
+const selectedSummary = document.querySelector("#selectedSummary");
+const selectedCharacterList = document.querySelector("#selectedCharacterList");
 
 let state = createEmptyState();
 
@@ -60,14 +64,7 @@ function createEmptyState() {
 }
 
 function startSorter() {
-  const selectedAttributes = [...document.querySelectorAll("#categoryOptions input:checked")].map(
-    (input) => input.value,
-  );
-  const selectedCharacters = dedupeCharacters(
-    characters.filter((character) =>
-      character.attributes.some((attribute) => selectedAttributes.includes(attribute)),
-    ),
-  );
+  const selectedCharacters = getSelectedCharacters();
 
   if (selectedCharacters.length < 2) {
     progressText.textContent = "Pick at least 2 characters";
@@ -328,8 +325,11 @@ function renderCategories() {
       document.querySelectorAll("#categoryOptions input:not(#selectAllAttributes)").forEach((input) => {
         input.checked = selectAll.checked;
       });
+      renderSelectedCharacters();
     });
   }
+
+  renderSelectedCharacters();
 }
 
 function getAttributeCounts(characterRows) {
@@ -367,7 +367,58 @@ categoryOptions.addEventListener("change", (event) => {
   if (event.target.id !== "selectAllAttributes") {
     syncSelectAllState();
   }
+  renderSelectedCharacters();
 });
+
+function getSelectedCharacters() {
+  const selectedAttributes = [...document.querySelectorAll("#categoryOptions input:checked")]
+    .filter((input) => input.id !== "selectAllAttributes")
+    .map((input) => input.value);
+
+  return dedupeCharacters(
+    characters.filter((character) =>
+      character.attributes.some((attribute) => selectedAttributes.includes(attribute)),
+    ),
+  );
+}
+
+function renderSelectedCharacters() {
+  const selectedCharacters = getSelectedCharacters();
+  selectedSummary.textContent = `${selectedCharacters.length} character${selectedCharacters.length === 1 ? "" : "s"} selected`;
+  selectedCharacterList.innerHTML = selectedCharacters.length
+    ? selectedCharacters.map(renderSelectedCharacter).join("")
+    : `<p class="empty-selected">No characters selected.</p>`;
+  selectedCharacterList.querySelectorAll(".selected-character").forEach(attachImageFallback);
+}
+
+function renderSelectedCharacter(character) {
+  const fallbackInitial = escapeHtml(character.name.slice(0, 1));
+  const imageMarkup = character.image
+    ? `
+      <img class="selected-avatar image-avatar" src="${escapeHtml(character.image)}" alt="">
+      <span class="selected-avatar fallback-avatar" hidden>${fallbackInitial}</span>
+    `
+    : `<span class="selected-avatar">${fallbackInitial}</span>`;
+
+  return `
+    <article class="selected-character">
+      ${imageMarkup}
+      <div>
+        <strong>${escapeHtml(character.name)}</strong>
+        <span>${escapeHtml(character.attributes.join(", "))}</span>
+      </div>
+    </article>
+  `;
+}
+
+function switchStartTab(tabName) {
+  startTabButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.startTab === tabName);
+  });
+  startTabPanels.forEach((panel) => {
+    panel.classList.toggle("active", panel.dataset.startPanel === tabName);
+  });
+}
 
 function importCharacters(event) {
   const file = event.target.files[0];
@@ -691,6 +742,9 @@ savedListSelect.addEventListener("change", () => {
   deleteSavedListButton.disabled = !savedListSelect.value || savedListSelect.value.startsWith("default:");
 });
 deleteSavedListButton.addEventListener("click", deleteSavedList);
+startTabButtons.forEach((button) => {
+  button.addEventListener("click", () => switchStartTab(button.dataset.startTab));
+});
 undoButton.disabled = true;
 deleteSavedListButton.disabled = true;
 
