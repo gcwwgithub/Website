@@ -11,7 +11,7 @@ export async function loadAdverbRows() {
   }
 
   const csvText = await response.text();
-  return parseCsv(csvText).filter((row) => row.type === "adverb" && row.item && row["example sentence 1"]);
+  return parseCsv(csvText, []).filter(hasAdverbQuestion);
 }
 
 export async function loadGrammarRows() {
@@ -41,11 +41,40 @@ export async function loadSentenceRows() {
   }
 
   const csvText = await response.text();
-  return parseCsvRows(csvText)
-    .map((columns, index) => ({
-      __rowNumber: index + 1,
-      parts: columns.map((column) => column.trim()).filter(Boolean),
-    }))
+  const rows = parseCsvRows(csvText);
+  const hasHeader = rows[0]?.some((column) => column.trim().toLowerCase() === "color");
+  const headers = hasHeader ? rows[0].map((column) => column.trim()) : [];
+  const dataRows = hasHeader ? rows.slice(1) : rows;
+
+  return dataRows
+    .map((columns, index) => {
+      const colorIndex = headers.findIndex((header) => header.toLowerCase() === "color");
+      const alternateIndexes = headers
+        .map((header, headerIndex) => ({ header: header.toLowerCase(), headerIndex }))
+        .filter(({ header }) => header.startsWith("alt") || header.startsWith("alternate accepted answer"))
+        .map(({ headerIndex }) => headerIndex);
+      const parts = columns
+        .map((column, columnIndex) => ({ column: column.trim(), columnIndex }))
+        .filter(({ column, columnIndex }) => {
+          if (!column) {
+            return false;
+          }
+          if (!hasHeader) {
+            return true;
+          }
+          return columnIndex !== colorIndex && !alternateIndexes.includes(columnIndex);
+        })
+        .map(({ column }) => column);
+
+      return {
+        __rowNumber: index + (hasHeader ? 2 : 1),
+        Color: colorIndex >= 0 ? columns[colorIndex]?.trim() || "1" : "1",
+        alternateAnswers: alternateIndexes
+          .map((columnIndex) => columns[columnIndex]?.trim())
+          .filter(Boolean),
+        parts,
+      };
+    })
     .filter((row) => row.parts.length > 1);
 }
 
@@ -102,6 +131,12 @@ function parseCsv(csvText, requiredColumns = REQUIRED_COLUMNS) {
       return word;
     }, {})
   );
+}
+
+function hasAdverbQuestion(row) {
+  const hasNewShape = row._Chinese && row.English && row._EN1 && row._CN1;
+  const hasOldShape = row.type === "adverb" && row.item && row["example sentence 1"];
+  return hasNewShape || hasOldShape;
 }
 
 function parseCsvRows(csvText) {

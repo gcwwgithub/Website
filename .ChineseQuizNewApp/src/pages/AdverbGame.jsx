@@ -1,11 +1,23 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import GameMenu from "../components/GameMenu.jsx";
+import ColorBadge from "../components/ColorBadge.jsx";
 import { loadAdverbRows } from "../services/adverbCsv.js";
+import {
+  applySavedColorProgress,
+  buildPracticeSession,
+  normalizeOrderMode,
+  saveColorProgress,
+  shuffleRows,
+  updateColorValue,
+} from "../utils/practiceProgress.js";
+
+const ADVERB_COLOR_PROGRESS_KEY = "chineseQuizNew.adverbColorProgress.v1";
 
 export default function AdverbGame() {
   const [searchParams] = useSearchParams();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
+  const orderMode = normalizeOrderMode(searchParams.get("order"));
   const sessionRun = searchParams.get("run") || "";
   const [rows, setRows] = useState([]);
   const [sessionRows, setSessionRows] = useState([]);
@@ -24,8 +36,8 @@ export default function AdverbGame() {
   useEffect(() => {
     async function loadGame() {
       try {
-        const loadedRows = await loadAdverbRows();
-        const loadedSessionRows = buildSessionRows(loadedRows, requestedCount);
+        const loadedRows = applySavedColorProgress(await loadAdverbRows(), ADVERB_COLOR_PROGRESS_KEY);
+        const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
         setQuestionIndex(0);
@@ -42,37 +54,54 @@ export default function AdverbGame() {
     }
 
     loadGame();
-  }, [requestedCount, sessionRun]);
+  }, [orderMode, requestedCount, sessionRun]);
 
   function answer(option) {
     if (!currentRow || selected) {
       return;
     }
 
-    const wasCorrect = option === currentRow.item;
     setSelected(option);
-    setScore((current) => ({
-      correct: current.correct + (wasCorrect ? 1 : 0),
-      wrong: current.wrong + (wasCorrect ? 0 : 1),
-    }));
-
-    if (!wasCorrect) {
-      setMistakes((current) => [...current, currentRow]);
-    }
   }
 
   function nextQuestion() {
+    let nextRows = rows;
+    let nextSessionRows = sessionRows;
+
+    if (currentRow && selected) {
+      const wasCorrect = selected === currentRow.item;
+      const nextColor = updateColorValue(currentRow.Color, wasCorrect);
+      const answeredRow = { ...currentRow, Color: nextColor };
+      saveColorProgress(currentRow.__rowNumber, nextColor, ADVERB_COLOR_PROGRESS_KEY);
+      nextRows = replaceRowColor(rows, currentRow.__rowNumber, nextColor);
+      nextSessionRows = replaceRowColor(sessionRows, currentRow.__rowNumber, nextColor);
+      setRows(nextRows);
+      setSessionRows(nextSessionRows);
+      setScore((current) => ({
+        correct: current.correct + (wasCorrect ? 1 : 0),
+        wrong: current.wrong + (wasCorrect ? 0 : 1),
+      }));
+
+      if (!wasCorrect) {
+        setMistakes((current) => [...current, answeredRow]);
+      }
+    }
+
+    advanceQuestion(nextRows, nextSessionRows);
+  }
+
+  function advanceQuestion(nextRows = rows, nextSessionRows = sessionRows) {
     setSelected("");
     const nextIndex = questionIndex + 1;
     setQuestionIndex(nextIndex);
-    setQuestion(sessionRows[nextIndex], rows, setCurrentRow, setOptions);
+    setQuestion(nextSessionRows[nextIndex], nextRows, setCurrentRow, setOptions);
   }
 
   function skipQuestion() {
     if (currentRow) {
       setSkippedRows((current) => [...current, currentRow]);
     }
-    nextQuestion();
+    advanceQuestion();
   }
 
   if (loading) {
@@ -117,8 +146,9 @@ export default function AdverbGame() {
               {mistakes.map((mistake, index) => (
                 <article className="wrong-row" key={`${mistake.__rowNumber}-${index}`}>
                   <strong>{mistake.item}</strong>
+                  <span>{mistake.meaning}</span>
+                  <span>{mistake.englishPrompt}</span>
                   <span>{mistake.chinesePrompt}</span>
-                  <span>{mistake.prompt}</span>
                 </article>
               ))}
             </section>
@@ -129,14 +159,15 @@ export default function AdverbGame() {
               {skippedRows.map((row, index) => (
                 <article className="wrong-row" key={`${row.__rowNumber}-skipped-${index}`}>
                   <strong>{row.item}</strong>
+                  <span>{row.meaning}</span>
+                  <span>{row.englishPrompt}</span>
                   <span>{row.chinesePrompt}</span>
-                  <span>{row.prompt}</span>
                 </article>
               ))}
             </section>
           )}
           <div className="result-actions">
-            <Link className="play-button" to={`/adverbs?count=${requestedCount}&run=${Date.now()}`}>
+            <Link className="play-button" to={`/adverbs?count=${requestedCount}&order=${orderMode}&run=${Date.now()}`}>
               Play again
             </Link>
             <Link className="secondary-button settings-link" to="/">
@@ -165,14 +196,19 @@ export default function AdverbGame() {
       <section className="quiz-card adverb-card">
         <div className="dictionary-card-top game-card-top">
           <p className="eyebrow">{questionIndex + 1} / {sessionRows.length}</p>
-          <p className="question-id">{currentRow.__rowNumber || "?"}</p>
+          <p className="question-id">{getQuestionId(currentRow)}</p>
           <p className="eyebrow game-name">Adverb Game</p>
         </div>
         <h2 className={getPromptSizeClass(currentRow.prompt)}>
           <span className="adverb-prompt-text">
-            <HighlightedPrompt text={currentRow.prompt} highlight={currentRow.highlight} />
+            {currentRow.promptMode === "english" ? (
+              <EmphasizedText text={currentRow.prompt} target={currentRow.highlight} />
+            ) : (
+              currentRow.prompt
+            )}
           </span>
         </h2>
+        <ColorBadge colorValue={currentRow.Color} />
         <div className="adverb-options">
           {options.map((option) => (
             <button
@@ -188,19 +224,31 @@ export default function AdverbGame() {
         {isAnswered && (
           <div className={`adverb-feedback ${selected === currentRow.item ? "correct" : "wrong"}`}>
             <strong>{selected === currentRow.item ? "Correct" : "Wrong"}</strong>
-            <p>Focus adverb: {currentRow.item}</p>
-            <div className="mandarin-answer">
-              <span>Mandarin sentence</span>
-              <div className="sentence-audio-row">
-                <p>{currentRow.chinesePrompt}</p>
-                <IconAudioButton
-                  label="Read Chinese sentence"
-                  onClick={() => speakText(currentRow.chinesePrompt, "zh-CN")}
-                />
+            <div className="answer-sentences">
+              <div className="mandarin-answer">
+                <span>English sentence</span>
+                <p>
+                  <EmphasizedText text={currentRow.englishPrompt} target={currentRow.highlight} />
+                </p>
+              </div>
+              <div className="mandarin-answer">
+                <span>Chinese sentence</span>
+                <div className="sentence-audio-row">
+                  <p>
+                    <EmphasizedText text={currentRow.chinesePrompt} target={currentRow.item} />
+                  </p>
+                  <IconAudioButton
+                    label="Read Chinese sentence"
+                    onClick={() => speakText(currentRow.chinesePrompt, "zh-CN")}
+                  />
+                </div>
               </div>
             </div>
-            <p>Category: {currentRow.category.replaceAll("_", " ")}</p>
-            <button onClick={nextQuestion}>Next</button>
+            {currentRow.category && <p>Category: {currentRow.category.replaceAll("_", " ")}</p>}
+            <div className="sentence-actions two-actions">
+              <button onClick={nextQuestion}>Next</button>
+              <button className="secondary-action" onClick={skipQuestion}>Skip</button>
+            </div>
           </div>
         )}
         {!isAnswered && (
@@ -219,24 +267,45 @@ function setQuestion(sourceRow, allRows, setCurrentRow, setOptions) {
   }
 
   const example = pickExampleSentence(sourceRow);
+  const promptMode = Math.random() < 0.5 ? "english" : "chinese";
+  const item = getItem(sourceRow);
   const nextRow = {
     ...sourceRow,
-    prompt: example.text,
+    item,
+    meaning: getMeaning(sourceRow),
+    prompt: promptMode === "english" ? example.englishPrompt : blankChineseWord(example.chinesePrompt, item),
+    promptMode,
+    englishPrompt: example.englishPrompt,
     chinesePrompt: example.chinesePrompt,
     highlight: example.highlight,
+    sentenceNumber: example.sentenceNumber,
+    category: sourceRow.category || "",
   };
-  const distractors = allRows
-    .filter((row) => row.item !== nextRow.item)
+  const usedMeanings = new Set([normalizeMeaning(nextRow.meaning)]);
+  const uniqueMeaningDistractors = shuffleRows(allRows)
+    .filter((row) => getItem(row) && getItem(row) !== nextRow.item)
+    .filter((row) => {
+      const meaning = normalizeMeaning(getMeaning(row));
+      if (meaning && usedMeanings.has(meaning)) {
+        return false;
+      }
+      if (meaning) {
+        usedMeanings.add(meaning);
+      }
+      return true;
+    })
+    .slice(0, 3);
+  const fallbackDistractors = shuffleRows(allRows)
+    .filter((row) => getItem(row) && getItem(row) !== nextRow.item)
+    .filter((row) => !uniqueMeaningDistractors.some((distractor) => getItem(distractor) === getItem(row)))
+    .slice(0, Math.max(0, 3 - uniqueMeaningDistractors.length));
+  const distractors = [...uniqueMeaningDistractors, ...fallbackDistractors]
     .sort(() => Math.random() - 0.5)
     .slice(0, 3)
-    .map((row) => row.item);
+    .map((row) => getItem(row));
 
   setCurrentRow(nextRow);
   setOptions([nextRow.item, ...distractors].sort(() => Math.random() - 0.5));
-}
-
-function buildSessionRows(rows, count) {
-  return [...rows].sort(() => Math.random() - 0.5).slice(0, Math.min(count, rows.length));
 }
 
 function getPromptSizeClass(text = "") {
@@ -255,46 +324,85 @@ function getPromptSizeClass(text = "") {
 function pickExampleSentence(row) {
   const examples = [
     {
-      text: row["example sentence 1"],
-      chinesePrompt: row["chinese sentence 1"],
-      highlight: inferHighlight(row.item, row["example sentence 1"]),
+      sentenceNumber: 1,
+      englishPrompt: row._EN1 || row["example sentence 1"],
+      chinesePrompt: row._CN1 || row["chinese sentence 1"],
+      targetEnglish: row["_EN1 Target"],
     },
     {
-      text: row["example sentence 2"],
-      chinesePrompt: row["chinese sentence 2"],
-      highlight: inferHighlight(row.item, row["example sentence 2"]),
+      sentenceNumber: 2,
+      englishPrompt: row._EN2 || row["example sentence 2"],
+      chinesePrompt: row._CN2 || row["chinese sentence 2"],
+      targetEnglish: row["_EN2 Target"] || row["_EN2 Targe"],
     },
     {
-      text: row["example sentence 3"],
-      chinesePrompt: row["chinese sentence 3"],
-      highlight: inferHighlight(row.item, row["example sentence 3"]),
+      sentenceNumber: 3,
+      englishPrompt: row._EN3 || row["example sentence 3"],
+      chinesePrompt: row._CN3 || row["chinese sentence 3"],
+      targetEnglish: row["_EN3 Target"],
     },
     {
-      text: row["example sentence 4"],
-      chinesePrompt: row["chinese sentence 4"],
-      highlight: inferHighlight(row.item, row["example sentence 4"]),
+      sentenceNumber: 4,
+      englishPrompt: row._EN4 || row["example sentence 4"],
+      chinesePrompt: row._CN4 || row["chinese sentence 4"],
+      targetEnglish: row["_EN4 Target"],
     },
-  ].filter((example) => example.text);
+  ]
+    .filter((example) => example.englishPrompt && example.chinesePrompt)
+    .map((example) => ({
+      ...example,
+      highlight: example.targetEnglish || inferHighlight(getItem(row), example.englishPrompt),
+    }));
 
   return examples[Math.floor(Math.random() * examples.length)] || {
-    text: row["example sentence 1"],
-    chinesePrompt: row["chinese sentence 1"],
+    sentenceNumber: 1,
+    englishPrompt: row._EN1 || row["example sentence 1"],
+    chinesePrompt: row._CN1 || row["chinese sentence 1"],
     highlight: "",
   };
 }
 
-function HighlightedPrompt({ text, highlight }) {
-  if (!highlight || !text.toLowerCase().includes(highlight.toLowerCase())) {
+function getQuestionId(row) {
+  const rowNumber = row.__rowNumber || "?";
+  return row.sentenceNumber ? `${rowNumber}_${row.sentenceNumber}` : rowNumber;
+}
+
+function getItem(row) {
+  return row._Chinese || row.item || "";
+}
+
+function getMeaning(row) {
+  return row.English || row.english || "";
+}
+
+function normalizeMeaning(meaning) {
+  return meaning.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function blankChineseWord(sentence = "", item = "") {
+  if (!sentence || !item) {
+    return sentence;
+  }
+
+  return sentence.includes(item) ? sentence.replace(item, "____") : sentence;
+}
+
+function replaceRowColor(rows, rowNumber, colorValue) {
+  return rows.map((row) => (row.__rowNumber === rowNumber ? { ...row, Color: colorValue } : row));
+}
+
+function EmphasizedText({ text, target }) {
+  if (!target || !text.toLowerCase().includes(target.toLowerCase())) {
     return text;
   }
 
-  const startIndex = text.toLowerCase().indexOf(highlight.toLowerCase());
-  const endIndex = startIndex + highlight.length;
+  const startIndex = text.toLowerCase().indexOf(target.toLowerCase());
+  const endIndex = startIndex + target.length;
 
   return (
     <>
       {text.slice(0, startIndex)}
-      <mark>{text.slice(startIndex, endIndex)}</mark>
+      <span className="sentence-emphasis">{text.slice(startIndex, endIndex)}</span>
       {text.slice(endIndex)}
     </>
   );

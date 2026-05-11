@@ -32,6 +32,7 @@ export default function PlayMode() {
   const [englishTimerSeconds, setEnglishTimerSeconds] = useState(savedEnglishSettings.timerSeconds);
   const [showEnglishChineseSentence, setShowEnglishChineseSentence] = useState(savedEnglishSettings.showChineseSentence);
   const [practiceQuestionCount, setPracticeQuestionCount] = useState("20");
+  const [practiceOrderMode, setPracticeOrderMode] = useState("random");
   const [englishRows, setEnglishRows] = useState([]);
   const [csvRows, setCsvRows] = useState([]);
   const [loadingCsv, setLoadingCsv] = useState(false);
@@ -537,20 +538,38 @@ export default function PlayMode() {
           </div>
         )}
         {selectedMode === "adverb-game" && (
-          <PracticeModeStart count={practiceQuestionCount} onCountChange={handlePracticeQuestionCountChange} to={`/adverbs?count=${safePracticeQuestionCount}`} />
+          <PracticeModeStart
+            count={practiceQuestionCount}
+            onCountChange={handlePracticeQuestionCountChange}
+            orderMode={practiceOrderMode}
+            onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
+            to={`/adverbs?count=${safePracticeQuestionCount}&order=${practiceOrderMode}`}
+          />
         )}
         {selectedMode === "synonym-selection" && (
-          <PracticeModeStart count={practiceQuestionCount} onCountChange={handlePracticeQuestionCountChange} to={`/synonyms?count=${safePracticeQuestionCount}`} />
+          <PracticeModeStart
+            count={practiceQuestionCount}
+            onCountChange={handlePracticeQuestionCountChange}
+            orderMode={practiceOrderMode}
+            onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
+            to={`/synonyms?count=${safePracticeQuestionCount}&order=${practiceOrderMode}`}
+          />
         )}
         {selectedMode === "sentence-builder" && (
-          <PracticeModeStart count={practiceQuestionCount} onCountChange={handlePracticeQuestionCountChange} to={`/sentence-builder?count=${safePracticeQuestionCount}`} />
+          <PracticeModeStart
+            count={practiceQuestionCount}
+            onCountChange={handlePracticeQuestionCountChange}
+            orderMode={practiceOrderMode}
+            onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
+            to={`/sentence-builder?count=${safePracticeQuestionCount}&order=${practiceOrderMode}`}
+          />
         )}
       </section>
     </main>
   );
 }
 
-function PracticeModeStart({ count, onCountChange, to }) {
+function PracticeModeStart({ count, onCountChange, orderMode, onOrderModeChange, to }) {
   return (
     <div className="setup-options">
       <label className="question-count">
@@ -563,6 +582,14 @@ function PracticeModeStart({ count, onCountChange, to }) {
           onChange={onCountChange}
           placeholder="20"
         />
+      </label>
+      <label className="question-count">
+        Question order
+        <select value={orderMode} onChange={onOrderModeChange}>
+          <option value="random">Random</option>
+          <option value="weighted">Weighted random</option>
+          <option value="in-order">In order</option>
+        </select>
       </label>
       <Link className="play-button setup-start" to={to}>
         Start

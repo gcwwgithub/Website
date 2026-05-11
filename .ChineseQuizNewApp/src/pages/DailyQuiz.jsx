@@ -1063,11 +1063,12 @@ function hasBracketTarget(text) {
 
 function ColorBadge({ colorValue }) {
   const rawLevel = Number.parseInt(colorValue, 10);
-  const level = Math.max(1, Math.min(10, Number.isNaN(rawLevel) ? 1 : rawLevel));
+  const level = Math.max(1, Number.isNaN(rawLevel) ? 1 : rawLevel);
+  const barLevel = Math.min(10, level);
   return (
     <div className="severity-meter" aria-label={`Severity ${level} out of 10`}>
       <div className="severity-track">
-        <span style={{ width: `${level * 10}%` }} />
+        <span style={{ width: `${barLevel * 10}%` }} />
       </div>
       <strong>{level}/10</strong>
     </div>
@@ -1170,7 +1171,7 @@ function updateColorValue(colorValue, wasCorrect) {
   const currentColor = Number.isNaN(parsedColor) ? 1 : parsedColor;
 
   if (wasCorrect) {
-    return String(currentColor - 1);
+    return String(Math.max(1, currentColor - 1));
   }
 
   return String(currentColor < 5 ? 7 : currentColor + 2);

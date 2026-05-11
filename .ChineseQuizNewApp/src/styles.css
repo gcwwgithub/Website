@@ -1269,11 +1269,9 @@ form {
   line-height: 1.15;
 }
 
-.adverb-card h2 mark {
-  border-radius: 8px;
-  background: rgba(45, 212, 191, 0.18);
-  color: #99f6e4;
-  padding: 0.1rem 0.35rem;
+.sentence-emphasis {
+  color: #5eead4;
+  font-weight: 850;
 }
 
 .adverb-options {
@@ -1354,6 +1352,11 @@ form {
   font-size: 1.2rem;
 }
 
+.answer-sentences {
+  display: grid;
+  gap: 0.65rem;
+}
+
 .sentence-card {
   display: grid;
   gap: 1rem;
@@ -1397,6 +1400,10 @@ form {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
+}
+
+.sentence-actions.two-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .sentence-audio-row {

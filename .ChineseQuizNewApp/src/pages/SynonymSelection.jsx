@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import GameMenu from "../components/GameMenu.jsx";
+import ColorBadge from "../components/ColorBadge.jsx";
 import { loadSynonymRows } from "../services/adverbCsv.js";
+import {
+  applySavedColorProgress,
+  buildPracticeSession,
+  normalizeOrderMode,
+  saveColorProgress,
+  updateColorValue,
+} from "../utils/practiceProgress.js";
+
+const SYNONYM_COLOR_PROGRESS_KEY = "chineseQuizNew.synonymColorProgress.v1";
 
 export default function SynonymSelection() {
   const [searchParams] = useSearchParams();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
+  const orderMode = normalizeOrderMode(searchParams.get("order"));
   const sessionRun = searchParams.get("run") || "";
   const [rows, setRows] = useState([]);
   const [sessionRows, setSessionRows] = useState([]);
@@ -24,8 +35,8 @@ export default function SynonymSelection() {
   useEffect(() => {
     async function loadGame() {
       try {
-        const loadedRows = await loadSynonymRows();
-        const loadedSessionRows = buildSessionRows(loadedRows, requestedCount);
+        const loadedRows = applySavedColorProgress(await loadSynonymRows(), SYNONYM_COLOR_PROGRESS_KEY);
+        const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
         setQuestionIndex(0);
@@ -42,37 +53,54 @@ export default function SynonymSelection() {
     }
 
     loadGame();
-  }, [requestedCount, sessionRun]);
+  }, [orderMode, requestedCount, sessionRun]);
 
   function answer(option) {
     if (!currentRow || selected) {
       return;
     }
 
-    const wasCorrect = option === currentRow["Chinese Word"];
     setSelected(option);
-    setScore((current) => ({
-      correct: current.correct + (wasCorrect ? 1 : 0),
-      wrong: current.wrong + (wasCorrect ? 0 : 1),
-    }));
-
-    if (!wasCorrect) {
-      setMistakes((current) => [...current, currentRow]);
-    }
   }
 
   function nextQuestion() {
+    let nextRows = rows;
+    let nextSessionRows = sessionRows;
+
+    if (currentRow && selected) {
+      const wasCorrect = selected === currentRow["Chinese Word"];
+      const nextColor = updateColorValue(currentRow.Color, wasCorrect);
+      const answeredRow = { ...currentRow, Color: nextColor };
+      saveColorProgress(currentRow.__rowNumber, nextColor, SYNONYM_COLOR_PROGRESS_KEY);
+      nextRows = replaceRowColor(rows, currentRow.__rowNumber, nextColor);
+      nextSessionRows = replaceRowColor(sessionRows, currentRow.__rowNumber, nextColor);
+      setRows(nextRows);
+      setSessionRows(nextSessionRows);
+      setScore((current) => ({
+        correct: current.correct + (wasCorrect ? 1 : 0),
+        wrong: current.wrong + (wasCorrect ? 0 : 1),
+      }));
+
+      if (!wasCorrect) {
+        setMistakes((current) => [...current, answeredRow]);
+      }
+    }
+
+    advanceQuestion(nextSessionRows);
+  }
+
+  function advanceQuestion(nextSessionRows = sessionRows) {
     setSelected("");
     const nextIndex = questionIndex + 1;
     setQuestionIndex(nextIndex);
-    setQuestion(sessionRows[nextIndex], setCurrentRow, setOptions);
+    setQuestion(nextSessionRows[nextIndex], setCurrentRow, setOptions);
   }
 
   function skipQuestion() {
     if (currentRow) {
       setSkippedRows((current) => [...current, currentRow]);
     }
-    nextQuestion();
+    advanceQuestion();
   }
 
   if (loading) {
@@ -136,7 +164,7 @@ export default function SynonymSelection() {
             </section>
           )}
           <div className="result-actions">
-            <Link className="play-button" to={`/synonyms?count=${requestedCount}&run=${Date.now()}`}>
+            <Link className="play-button" to={`/synonyms?count=${requestedCount}&order=${orderMode}&run=${Date.now()}`}>
               Play again
             </Link>
             <Link className="secondary-button settings-link" to="/">
@@ -171,6 +199,7 @@ export default function SynonymSelection() {
         <h2 className={getPromptSizeClass(currentRow["Chinese Sentence"])}>
           <span className="adverb-prompt-text">{currentRow["Chinese Sentence"]}</span>
         </h2>
+        <ColorBadge colorValue={currentRow.Color} />
         <div className="adverb-options">
           {options.map((option) => (
             <button
@@ -186,18 +215,25 @@ export default function SynonymSelection() {
         {isAnswered && (
           <div className={`adverb-feedback ${selected === currentRow["Chinese Word"] ? "correct" : "wrong"}`}>
             <strong>{selected === currentRow["Chinese Word"] ? "Correct" : "Wrong"}</strong>
-            <p>Target word: {currentRow["Chinese Word"]}</p>
             <div className="mandarin-answer">
               <span>Completed sentence</span>
               <div className="sentence-audio-row">
-                <p>{fillBlank(currentRow["Chinese Sentence"], currentRow["Chinese Word"])}</p>
+                <p>
+                  <EmphasizedText
+                    text={fillBlank(currentRow["Chinese Sentence"], currentRow["Chinese Word"])}
+                    target={currentRow["Chinese Word"]}
+                  />
+                </p>
                 <IconAudioButton
                   label="Read Chinese sentence"
                   onClick={() => speakText(fillBlank(currentRow["Chinese Sentence"], currentRow["Chinese Word"]), "zh-CN")}
                 />
               </div>
             </div>
-            <button onClick={nextQuestion}>Next</button>
+            <div className="sentence-actions two-actions">
+              <button onClick={nextQuestion}>Next</button>
+              <button className="secondary-action" onClick={skipQuestion}>Skip</button>
+            </div>
           </div>
         )}
         {!isAnswered && (
@@ -223,10 +259,6 @@ function setQuestion(nextRow, setCurrentRow, setOptions) {
   setOptions([nextRow["Chinese Word"], ...distractors].sort(() => Math.random() - 0.5));
 }
 
-function buildSessionRows(rows, count) {
-  return [...rows].sort(() => Math.random() - 0.5).slice(0, Math.min(count, rows.length));
-}
-
 function getPromptSizeClass(text = "") {
   if (text.length > 48) {
     return "tiny-prompt";
@@ -242,6 +274,24 @@ function getPromptSizeClass(text = "") {
 
 function fillBlank(sentence, answer) {
   return sentence.replace("____", answer);
+}
+
+function replaceRowColor(rows, rowNumber, colorValue) {
+  return rows.map((row) => (row.__rowNumber === rowNumber ? { ...row, Color: colorValue } : row));
+}
+
+function EmphasizedText({ text, target }) {
+  if (!target || !text.includes(target)) {
+    return text;
+  }
+
+  const parts = text.split(target);
+  return parts.map((part, index) => (
+    <span key={`${part}-${index}`}>
+      {part}
+      {index < parts.length - 1 && <span className="sentence-emphasis">{target}</span>}
+    </span>
+  ));
 }
 
 function getOptionClass(option, correct, selected) {

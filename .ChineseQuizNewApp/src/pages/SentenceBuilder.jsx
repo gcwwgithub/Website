@@ -1,13 +1,25 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import GameMenu from "../components/GameMenu.jsx";
+import ColorBadge from "../components/ColorBadge.jsx";
 import { loadSentenceRows } from "../services/adverbCsv.js";
+import {
+  applySavedColorProgress,
+  buildPracticeSession,
+  normalizeOrderMode,
+  saveColorProgress,
+  updateColorValue,
+} from "../utils/practiceProgress.js";
+
+const SENTENCE_COLOR_PROGRESS_KEY = "chineseQuizNew.sentenceBuilderColorProgress.v1";
 
 export default function SentenceBuilder() {
   const [searchParams] = useSearchParams();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
+  const orderMode = normalizeOrderMode(searchParams.get("order"));
   const sessionRun = searchParams.get("run") || "";
   const [sessionRows, setSessionRows] = useState([]);
+  const [rows, setRows] = useState([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [availableTiles, setAvailableTiles] = useState([]);
@@ -15,6 +27,7 @@ export default function SentenceBuilder() {
   const [draggedTileId, setDraggedTileId] = useState("");
   const [score, setScore] = useState({ correct: 0, wrong: 0 });
   const [result, setResult] = useState(null);
+  const [submittedAnswer, setSubmittedAnswer] = useState("");
   const [mistakes, setMistakes] = useState([]);
   const [skippedRows, setSkippedRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,14 +38,15 @@ export default function SentenceBuilder() {
   useEffect(() => {
     async function loadGame() {
       try {
-        const loadedRows = await loadSentenceRows();
-        const loadedSessionRows = buildSessionRows(loadedRows, requestedCount);
+        const loadedRows = applySavedColorProgress(await loadSentenceRows(), SENTENCE_COLOR_PROGRESS_KEY);
+        const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode);
+        setRows(loadedRows);
         setSessionRows(loadedSessionRows);
         setQuestionIndex(0);
         setScore({ correct: 0, wrong: 0 });
         setMistakes([]);
         setSkippedRows([]);
-        setQuestion(loadedSessionRows[0], setCurrentQuestion, setAvailableTiles, setAnswerTiles, setResult);
+        setQuestion(loadedSessionRows[0], setCurrentQuestion, setAvailableTiles, setAnswerTiles, setResult, setSubmittedAnswer);
       } catch (loadError) {
         setError(loadError.message);
       } finally {
@@ -41,7 +55,7 @@ export default function SentenceBuilder() {
     }
 
     loadGame();
-  }, [requestedCount, sessionRun]);
+  }, [orderMode, requestedCount, sessionRun]);
 
   function moveTile(tileId, targetZone) {
     if (result) {
@@ -94,29 +108,45 @@ export default function SentenceBuilder() {
     }
 
     const submittedAnswer = answerTiles.map((tile) => tile.text).join("");
-    const wasCorrect = submittedAnswer === currentQuestion.sentence;
+    const wasCorrect = isAcceptedSentenceAnswer(submittedAnswer, currentQuestion);
+    setSubmittedAnswer(submittedAnswer);
     setResult(wasCorrect ? "correct" : "wrong");
-    setScore((current) => ({
-      correct: current.correct + (wasCorrect ? 1 : 0),
-      wrong: current.wrong + (wasCorrect ? 0 : 1),
-    }));
-
-    if (!wasCorrect) {
-      setMistakes((current) => [...current, { ...currentQuestion, submittedAnswer }]);
-    }
   }
 
   function nextQuestion() {
+    let nextSessionRows = sessionRows;
+
+    if (currentQuestion && result) {
+      const wasCorrect = result === "correct";
+      const nextColor = updateColorValue(currentQuestion.Color, wasCorrect);
+      saveColorProgress(currentQuestion.__rowNumber, nextColor, SENTENCE_COLOR_PROGRESS_KEY);
+      setRows((current) => replaceRowColor(current, currentQuestion.__rowNumber, nextColor));
+      nextSessionRows = replaceRowColor(sessionRows, currentQuestion.__rowNumber, nextColor);
+      setSessionRows(nextSessionRows);
+      setScore((current) => ({
+        correct: current.correct + (wasCorrect ? 1 : 0),
+        wrong: current.wrong + (wasCorrect ? 0 : 1),
+      }));
+
+      if (!wasCorrect) {
+        setMistakes((current) => [...current, { ...currentQuestion, Color: nextColor, submittedAnswer }]);
+      }
+    }
+
+    advanceQuestion(nextSessionRows);
+  }
+
+  function advanceQuestion(nextSessionRows = sessionRows) {
     const nextIndex = questionIndex + 1;
     setQuestionIndex(nextIndex);
-    setQuestion(sessionRows[nextIndex], setCurrentQuestion, setAvailableTiles, setAnswerTiles, setResult);
+    setQuestion(nextSessionRows[nextIndex], setCurrentQuestion, setAvailableTiles, setAnswerTiles, setResult, setSubmittedAnswer);
   }
 
   function skipQuestion() {
     if (currentQuestion) {
       setSkippedRows((current) => [...current, currentQuestion]);
     }
-    nextQuestion();
+    advanceQuestion();
   }
 
   if (loading) {
@@ -177,7 +207,7 @@ export default function SentenceBuilder() {
             </section>
           )}
           <div className="result-actions">
-            <Link className="play-button" to={`/sentence-builder?count=${requestedCount}&run=${Date.now()}`}>
+            <Link className="play-button" to={`/sentence-builder?count=${requestedCount}&order=${orderMode}&run=${Date.now()}`}>
               Play again
             </Link>
             <Link className="secondary-button settings-link" to="/">
@@ -209,6 +239,7 @@ export default function SentenceBuilder() {
           <p className="question-id">{currentQuestion.id || "?"}</p>
           <p className="eyebrow game-name">Sentence Builder</p>
         </div>
+        <ColorBadge colorValue={currentQuestion.Color} />
         <TileZone
           allowReorder
           draggedTileId={draggedTileId}
@@ -227,16 +258,18 @@ export default function SentenceBuilder() {
           onDragStart={setDraggedTileId}
           onTileClick={(tileId) => moveTile(tileId, "answer")}
         />
-        <div className="sentence-actions">
-          <button disabled={!canSubmitAnswer || Boolean(result)} onClick={submitAnswer}>Submit Answer</button>
-          <button className="secondary-action" disabled={Boolean(result)} onClick={() => {
-            setAvailableTiles((current) => shuffleTiles([...current, ...answerTiles]));
-            setAnswerTiles([]);
-          }}>
-            Clear
-          </button>
-          <button className="secondary-action" disabled={Boolean(result)} onClick={skipQuestion}>Skip</button>
-        </div>
+        {!result && (
+          <div className="sentence-actions">
+            <button disabled={!canSubmitAnswer} onClick={submitAnswer}>Submit Answer</button>
+            <button className="secondary-action" onClick={() => {
+              setAvailableTiles((current) => shuffleTiles([...current, ...answerTiles]));
+              setAnswerTiles([]);
+            }}>
+              Clear
+            </button>
+            <button className="secondary-action" onClick={skipQuestion}>Skip</button>
+          </div>
+        )}
         {result && (
           <div className={`adverb-feedback ${result}`}>
             <strong>{result === "correct" ? "Correct" : "Wrong"}</strong>
@@ -250,7 +283,10 @@ export default function SentenceBuilder() {
                 />
               </div>
             </div>
-            <button onClick={nextQuestion}>Next</button>
+            <div className="sentence-actions two-actions">
+              <button onClick={nextQuestion}>Next</button>
+              <button className="secondary-action" onClick={skipQuestion}>Skip</button>
+            </div>
           </div>
         )}
       </section>
@@ -293,12 +329,13 @@ function TileZone({ allowReorder = false, draggedTileId, emptyText, onDrop, onRe
   );
 }
 
-function setQuestion(sourceRow, setCurrentQuestion, setAvailableTiles, setAnswerTiles, setResult) {
+function setQuestion(sourceRow, setCurrentQuestion, setAvailableTiles, setAnswerTiles, setResult, setSubmittedAnswer) {
   if (!sourceRow) {
     setCurrentQuestion(null);
     setAvailableTiles([]);
     setAnswerTiles([]);
     setResult(null);
+    setSubmittedAnswer("");
     return;
   }
 
@@ -309,15 +346,15 @@ function setQuestion(sourceRow, setCurrentQuestion, setAvailableTiles, setAnswer
 
   setCurrentQuestion({
     id: sourceRow.__rowNumber,
+    __rowNumber: sourceRow.__rowNumber,
+    Color: sourceRow.Color,
+    alternateAnswers: sourceRow.alternateAnswers || [],
     sentence: sourceRow.parts.join(""),
   });
   setAvailableTiles(shuffleTiles(tiles));
   setAnswerTiles([]);
   setResult(null);
-}
-
-function buildSessionRows(rows, count) {
-  return [...rows].sort(() => Math.random() - 0.5).slice(0, Math.min(count, rows.length));
+  setSubmittedAnswer("");
 }
 
 function addUniqueTile(tiles, tile) {
@@ -330,6 +367,21 @@ function shuffleTiles(tiles) {
 
 function getTileById(tileId, availableTiles, answerTiles) {
   return availableTiles.find((tile) => tile.id === tileId) || answerTiles.find((tile) => tile.id === tileId);
+}
+
+function replaceRowColor(rows, rowNumber, colorValue) {
+  return rows.map((row) => (row.__rowNumber === rowNumber ? { ...row, Color: colorValue } : row));
+}
+
+function isAcceptedSentenceAnswer(answer, question) {
+  const normalizedAnswer = normalizeSentenceAnswer(answer);
+  return [question.sentence, ...(question.alternateAnswers || [])]
+    .map(normalizeSentenceAnswer)
+    .includes(normalizedAnswer);
+}
+
+function normalizeSentenceAnswer(answer = "") {
+  return answer.trim();
 }
 
 function IconAudioButton({ label, onClick }) {
