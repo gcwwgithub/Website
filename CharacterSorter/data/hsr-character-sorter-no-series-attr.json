@@ -33,17 +33,6 @@
     "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Anaxa_Splash_Art.png"
   },
   {
-    "id": "archer",
-    "name": "Archer",
-    "attributes": [
-      "Playable Character",
-      "5 Star",
-      "The Hunt",
-      "Quantum"
-    ],
-    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Archer_Splash_Art.png"
-  },
-  {
     "id": "argenti",
     "name": "Argenti",
     "attributes": [
@@ -647,17 +636,6 @@
       "Ice"
     ],
     "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Ruan_Mei_Splash_Art.png"
-  },
-  {
-    "id": "saber",
-    "name": "Saber",
-    "attributes": [
-      "Playable Character",
-      "5 Star",
-      "Destruction",
-      "Wind"
-    ],
-    "image": "https://honkai-star-rail.fandom.com/wiki/File:Character_Saber_Splash_Art.png"
   },
   {
     "id": "sampo",

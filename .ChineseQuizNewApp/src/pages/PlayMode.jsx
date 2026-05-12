@@ -33,6 +33,7 @@ export default function PlayMode() {
   const [showEnglishChineseSentence, setShowEnglishChineseSentence] = useState(savedEnglishSettings.showChineseSentence);
   const [practiceQuestionCount, setPracticeQuestionCount] = useState("20");
   const [practiceOrderMode, setPracticeOrderMode] = useState("random");
+  const [showAdverbChineseSentence, setShowAdverbChineseSentence] = useState(false);
   const [englishRows, setEnglishRows] = useState([]);
   const [csvRows, setCsvRows] = useState([]);
   const [loadingCsv, setLoadingCsv] = useState(false);
@@ -543,8 +544,21 @@ export default function PlayMode() {
             onCountChange={handlePracticeQuestionCountChange}
             orderMode={practiceOrderMode}
             onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
-            to={`/adverbs?count=${safePracticeQuestionCount}&order=${practiceOrderMode}`}
-          />
+            to={`/adverbs?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&sentence=${
+              showAdverbChineseSentence ? "1" : "0"
+            }`}
+          >
+            <div className="setup-checks">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showAdverbChineseSentence}
+                  onChange={(event) => setShowAdverbChineseSentence(event.target.checked)}
+                />
+                Show Chinese sentence
+              </label>
+            </div>
+          </PracticeModeStart>
         )}
         {selectedMode === "synonym-selection" && (
           <PracticeModeStart
@@ -569,7 +583,7 @@ export default function PlayMode() {
   );
 }
 
-function PracticeModeStart({ count, onCountChange, orderMode, onOrderModeChange, to }) {
+function PracticeModeStart({ children, count, onCountChange, orderMode, onOrderModeChange, to }) {
   return (
     <div className="setup-options">
       <label className="question-count">
@@ -591,6 +605,7 @@ function PracticeModeStart({ count, onCountChange, orderMode, onOrderModeChange,
           <option value="in-order">In order</option>
         </select>
       </label>
+      {children}
       <Link className="play-button setup-start" to={to}>
         Start
       </Link>

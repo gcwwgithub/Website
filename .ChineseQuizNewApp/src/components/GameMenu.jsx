@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function GameMenu() {
+export default function GameMenu({ children }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -30,6 +30,7 @@ export default function GameMenu() {
           <Link className="drawer-link" to="/">
             Quiz Home
           </Link>
+          {children}
         </div>
       </aside>
     </>

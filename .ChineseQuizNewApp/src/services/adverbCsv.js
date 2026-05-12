@@ -1,8 +1,10 @@
 const ADVERB_CSV_PATH = "data/ADVERB.csv";
 const SENTENCE_CSV_PATH = "data/SENTENCE.csv";
 const SYNONYM_CSV_PATH = "data/SYNONYM.csv";
+const SYNONYM_EN_CSV_PATH = "data/SYNONYM_EN.csv";
 const REQUIRED_COLUMNS = ["item", "type", "category", "example sentence 1", "chinese sentence 1"];
 const SYNONYM_REQUIRED_COLUMNS = ["Chinese Word", "Chinese Sentence", "Wrong Answer 1", "Wrong Answer 2", "Wrong Answer 3"];
+const SYNONYM_DETAIL_REQUIRED_COLUMNS = ["_Chinese Word", "_Pinyin", "_English"];
 
 export async function loadAdverbRows() {
   const response = await fetch(ADVERB_CSV_PATH);
@@ -32,6 +34,22 @@ export async function loadSynonymRows() {
 
   const csvText = await response.text();
   return parseCsv(csvText, SYNONYM_REQUIRED_COLUMNS).filter((row) => row["Chinese Word"] && row["Chinese Sentence"]);
+}
+
+export async function loadSynonymDetails() {
+  const response = await fetch(SYNONYM_EN_CSV_PATH);
+  if (!response.ok) {
+    throw new Error(`Could not load synonym detail CSV: ${response.status}`);
+  }
+
+  const csvText = await response.text();
+  return parseCsv(csvText, SYNONYM_DETAIL_REQUIRED_COLUMNS).reduce((detailsByWord, row) => {
+    detailsByWord[row["_Chinese Word"]] = {
+      pinyin: row["_Pinyin"],
+      meaning: row["_English"],
+    };
+    return detailsByWord;
+  }, {});
 }
 
 export async function loadSentenceRows() {

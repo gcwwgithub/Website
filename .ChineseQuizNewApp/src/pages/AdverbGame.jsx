@@ -19,6 +19,7 @@ export default function AdverbGame() {
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const sessionRun = searchParams.get("run") || "";
+  const initialShowChineseSentence = searchParams.get("sentence") === "1";
   const [rows, setRows] = useState([]);
   const [sessionRows, setSessionRows] = useState([]);
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -26,6 +27,7 @@ export default function AdverbGame() {
   const [options, setOptions] = useState([]);
   const [score, setScore] = useState({ correct: 0, wrong: 0 });
   const [selected, setSelected] = useState("");
+  const [showChineseSentence, setShowChineseSentence] = useState(initialShowChineseSentence);
   const [mistakes, setMistakes] = useState([]);
   const [skippedRows, setSkippedRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -122,7 +124,12 @@ export default function AdverbGame() {
   if (isComplete) {
     return (
       <main className="page narrow-page">
-        <GameMenu />
+        <GameMenu>
+          <AdverbMenuOptions
+            showChineseSentence={showChineseSentence}
+            onShowChineseSentenceChange={setShowChineseSentence}
+          />
+        </GameMenu>
         <section className="quiz-card result-card">
           <p className="eyebrow">Session complete</p>
           <h2>{score.correct} / {sessionRows.length}</h2>
@@ -167,7 +174,12 @@ export default function AdverbGame() {
             </section>
           )}
           <div className="result-actions">
-            <Link className="play-button" to={`/adverbs?count=${requestedCount}&order=${orderMode}&run=${Date.now()}`}>
+            <Link
+              className="play-button"
+              to={`/adverbs?count=${requestedCount}&order=${orderMode}&sentence=${
+                showChineseSentence ? "1" : "0"
+              }&run=${Date.now()}`}
+            >
               Play again
             </Link>
             <Link className="secondary-button settings-link" to="/">
@@ -192,7 +204,12 @@ export default function AdverbGame() {
 
   return (
     <main className="page narrow-page">
-      <GameMenu />
+      <GameMenu>
+        <AdverbMenuOptions
+          showChineseSentence={showChineseSentence}
+          onShowChineseSentenceChange={setShowChineseSentence}
+        />
+      </GameMenu>
       <section className="quiz-card adverb-card">
         <div className="dictionary-card-top game-card-top">
           <p className="eyebrow">{questionIndex + 1} / {sessionRows.length}</p>
@@ -208,6 +225,14 @@ export default function AdverbGame() {
             )}
           </span>
         </h2>
+        {showChineseSentence && currentRow.promptMode === "english" && (
+          <div className="adverb-translation-hint">
+            <span>Chinese sentence</span>
+            <p>
+              <EmphasizedText text={blankChineseWord(currentRow.chinesePrompt, currentRow.item)} target="____" />
+            </p>
+          </div>
+        )}
         <ColorBadge colorValue={currentRow.Color} />
         <div className="adverb-options">
           {options.map((option) => (
@@ -495,6 +520,19 @@ function getOptionClass(option, correct, selected) {
   }
 
   return "";
+}
+
+function AdverbMenuOptions({ showChineseSentence, onShowChineseSentenceChange }) {
+  return (
+    <label>
+      <input
+        type="checkbox"
+        checked={showChineseSentence}
+        onChange={(event) => onShowChineseSentenceChange(event.target.checked)}
+      />
+      Show Chinese sentence
+    </label>
+  );
 }
 
 function IconAudioButton({ label, onClick }) {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import GameMenu from "../components/GameMenu.jsx";
 import ColorBadge from "../components/ColorBadge.jsx";
-import { loadSynonymRows } from "../services/adverbCsv.js";
+import { loadSynonymDetails, loadSynonymRows } from "../services/adverbCsv.js";
 import {
   applySavedColorProgress,
   buildPracticeSession,
@@ -25,6 +25,7 @@ export default function SynonymSelection() {
   const [options, setOptions] = useState([]);
   const [score, setScore] = useState({ correct: 0, wrong: 0 });
   const [selected, setSelected] = useState("");
+  const [synonymDetails, setSynonymDetails] = useState({});
   const [mistakes, setMistakes] = useState([]);
   const [skippedRows, setSkippedRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,10 +36,12 @@ export default function SynonymSelection() {
   useEffect(() => {
     async function loadGame() {
       try {
-        const loadedRows = applySavedColorProgress(await loadSynonymRows(), SYNONYM_COLOR_PROGRESS_KEY);
+        const [synonymRows, loadedSynonymDetails] = await Promise.all([loadSynonymRows(), loadSynonymDetails()]);
+        const loadedRows = applySavedColorProgress(synonymRows, SYNONYM_COLOR_PROGRESS_KEY);
         const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
+        setSynonymDetails(loadedSynonymDetails);
         setQuestionIndex(0);
         setScore({ correct: 0, wrong: 0 });
         setSelected("");
@@ -201,16 +204,22 @@ export default function SynonymSelection() {
         </h2>
         <ColorBadge colorValue={currentRow.Color} />
         <div className="adverb-options">
-          {options.map((option) => (
-            <button
-              className={getOptionClass(option, currentRow["Chinese Word"], selected)}
-              disabled={isAnswered}
-              key={option}
-              onClick={() => answer(option)}
-            >
-              {option}
-            </button>
-          ))}
+          {options.map((optionWord) => {
+            const optionDetail = findSynonymDetail(synonymDetails, optionWord);
+
+            return (
+              <button
+                className={getOptionClass(optionWord, currentRow["Chinese Word"], selected)}
+                aria-disabled={isAnswered}
+                key={optionWord}
+                onClick={() => answer(optionWord)}
+                type="button"
+              >
+                <span>{optionWord}</span>
+                {isAnswered && <SynonymInfo detail={optionDetail} word={optionWord} />}
+              </button>
+            );
+          })}
         </div>
         {isAnswered && (
           <div className={`adverb-feedback ${selected === currentRow["Chinese Word"] ? "correct" : "wrong"}`}>
@@ -251,12 +260,14 @@ function setQuestion(nextRow, setCurrentRow, setOptions) {
     return;
   }
 
+  const correctWord = normalizeOptionWord(nextRow["Chinese Word"]);
   const distractors = ["Wrong Answer 1", "Wrong Answer 2", "Wrong Answer 3"]
     .map((key) => nextRow[key])
-    .filter((answer) => answer && answer !== nextRow["Chinese Word"]);
+    .map(normalizeOptionWord)
+    .filter((answer) => answer && answer !== correctWord);
 
   setCurrentRow(nextRow);
-  setOptions([nextRow["Chinese Word"], ...distractors].sort(() => Math.random() - 0.5));
+  setOptions([...new Set([correctWord, ...distractors])].sort(() => Math.random() - 0.5));
 }
 
 function getPromptSizeClass(text = "") {
@@ -295,19 +306,45 @@ function EmphasizedText({ text, target }) {
 }
 
 function getOptionClass(option, correct, selected) {
+  const classes = [];
   if (!selected) {
-    return "";
+    return classes.join(" ");
   }
 
   if (option === correct) {
-    return "correct-option";
+    classes.push("correct-option");
+  } else if (option === selected) {
+    classes.push("wrong-option");
   }
 
-  if (option === selected) {
-    return "wrong-option";
-  }
+  classes.push("revealed-option");
+  return classes.join(" ");
+}
 
-  return "";
+function SynonymInfo({ detail, word }) {
+  const pinyin = detail?.pinyin || "Pinyin not found";
+  const meaning = detail?.meaning || "Meaning not found";
+
+  return (
+    <span className="synonym-info-wrap">
+      <span className="synonym-info-button" aria-label={`Information for ${word}`} tabIndex={0}>
+        i
+      </span>
+      <span className="synonym-tooltip" role="tooltip">
+        <span>{word}</span>
+        <strong>{pinyin}</strong>
+        <span>{meaning}</span>
+      </span>
+    </span>
+  );
+}
+
+function findSynonymDetail(detailsByWord, word = "") {
+  return detailsByWord[normalizeOptionWord(word)];
+}
+
+function normalizeOptionWord(word = "") {
+  return String(word).trim();
 }
 
 function IconAudioButton({ label, onClick }) {

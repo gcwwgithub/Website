@@ -1282,6 +1282,11 @@ form {
 }
 
 .adverb-options button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
   border: 1px solid #243044;
   background: #111827;
   color: #eef2f8;
@@ -1306,6 +1311,75 @@ form {
 .adverb-options button.wrong-option {
   background: #ef4444;
   color: #190606;
+}
+
+.adverb-options button.revealed-option {
+  cursor: default;
+}
+
+.synonym-info-wrap {
+  position: relative;
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-left: auto;
+}
+
+.synonym-info-button {
+  display: inline-grid;
+  width: 1.45rem;
+  height: 1.45rem;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.24);
+  color: inherit;
+  font-size: 0.82rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.synonym-info-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 2px;
+}
+
+.synonym-tooltip {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.65rem);
+  z-index: 5;
+  display: grid;
+  width: min(17rem, 68vw);
+  gap: 0.25rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(148, 163, 184, 0.36);
+  border-radius: 8px;
+  background: #0b1120;
+  box-shadow: 0 18px 35px rgba(2, 6, 23, 0.38);
+  color: #eef2f8;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.25rem);
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.synonym-tooltip strong {
+  color: #5eead4;
+}
+
+.synonym-tooltip > span:first-child {
+  color: #f8fafc;
+  font-weight: 850;
+}
+
+.adverb-options button.revealed-option:hover .synonym-tooltip,
+.synonym-info-wrap:hover .synonym-tooltip,
+.synonym-info-button:focus-visible + .synonym-tooltip {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .adverb-feedback {
@@ -1355,6 +1429,29 @@ form {
 .answer-sentences {
   display: grid;
   gap: 0.65rem;
+}
+
+.adverb-translation-hint {
+  display: grid;
+  gap: 0.35rem;
+  border: 1px solid rgba(94, 234, 212, 0.28);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.7);
+  padding: 0.8rem 0.9rem;
+}
+
+.adverb-translation-hint span {
+  color: #5eead4;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.adverb-translation-hint p {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 1.08rem;
+  line-height: 1.45;
 }
 
 .sentence-card {
