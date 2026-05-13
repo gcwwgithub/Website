@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import GameMenu from "../components/GameMenu.jsx";
 import ColorBadge from "../components/ColorBadge.jsx";
+import TimerStatus from "../components/TimerStatus.jsx";
 import { loadAdverbRows } from "../services/adverbCsv.js";
 import {
   applySavedColorProgress,
@@ -18,6 +19,7 @@ export default function AdverbGame() {
   const [searchParams] = useSearchParams();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
+  const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
   const sessionRun = searchParams.get("run") || "";
   const initialShowChineseSentence = searchParams.get("sentence") === "1";
   const [rows, setRows] = useState([]);
@@ -27,12 +29,14 @@ export default function AdverbGame() {
   const [options, setOptions] = useState([]);
   const [score, setScore] = useState({ correct: 0, wrong: 0 });
   const [selected, setSelected] = useState("");
+  const [wasAutoRevealed, setWasAutoRevealed] = useState(false);
+  const [timerRemaining, setTimerRemaining] = useState(timerSeconds);
   const [showChineseSentence, setShowChineseSentence] = useState(initialShowChineseSentence);
   const [mistakes, setMistakes] = useState([]);
   const [skippedRows, setSkippedRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const isAnswered = Boolean(selected);
+  const isAnswered = Boolean(selected) || wasAutoRevealed;
   const isComplete = sessionRows.length > 0 && questionIndex >= sessionRows.length;
 
   useEffect(() => {
@@ -45,6 +49,8 @@ export default function AdverbGame() {
         setQuestionIndex(0);
         setScore({ correct: 0, wrong: 0 });
         setSelected("");
+        setWasAutoRevealed(false);
+        setTimerRemaining(timerSeconds);
         setMistakes([]);
         setSkippedRows([]);
         setQuestion(loadedSessionRows[0], loadedRows, setCurrentRow, setOptions);
@@ -56,10 +62,32 @@ export default function AdverbGame() {
     }
 
     loadGame();
-  }, [orderMode, requestedCount, sessionRun]);
+  }, [orderMode, requestedCount, sessionRun, timerSeconds]);
+
+  useEffect(() => {
+    if (loading || timerSeconds <= 0 || isAnswered || !currentRow || isComplete) {
+      setTimerRemaining(timerSeconds);
+      return undefined;
+    }
+
+    setTimerRemaining(timerSeconds);
+    const intervalId = window.setInterval(() => {
+      setTimerRemaining((current) => {
+        if (current <= 1) {
+          window.clearInterval(intervalId);
+          setWasAutoRevealed(true);
+          return 0;
+        }
+
+        return current - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [currentRow, isAnswered, isComplete, loading, questionIndex, timerSeconds]);
 
   function answer(option) {
-    if (!currentRow || selected) {
+    if (!currentRow || isAnswered) {
       return;
     }
 
@@ -70,7 +98,7 @@ export default function AdverbGame() {
     let nextRows = rows;
     let nextSessionRows = sessionRows;
 
-    if (currentRow && selected) {
+    if (currentRow && isAnswered) {
       const wasCorrect = selected === currentRow.item;
       const nextColor = updateColorValue(currentRow.Color, wasCorrect);
       const answeredRow = { ...currentRow, Color: nextColor };
@@ -94,6 +122,8 @@ export default function AdverbGame() {
 
   function advanceQuestion(nextRows = rows, nextSessionRows = sessionRows) {
     setSelected("");
+    setWasAutoRevealed(false);
+    setTimerRemaining(timerSeconds);
     const nextIndex = questionIndex + 1;
     setQuestionIndex(nextIndex);
     setQuestion(nextSessionRows[nextIndex], nextRows, setCurrentRow, setOptions);
@@ -178,7 +208,7 @@ export default function AdverbGame() {
               className="play-button"
               to={`/adverbs?count=${requestedCount}&order=${orderMode}&sentence=${
                 showChineseSentence ? "1" : "0"
-              }&run=${Date.now()}`}
+              }&timer=${timerSeconds}&run=${Date.now()}`}
             >
               Play again
             </Link>
@@ -234,17 +264,29 @@ export default function AdverbGame() {
           </div>
         )}
         <ColorBadge colorValue={currentRow.Color} />
+        <TimerStatus
+          isFlipped={isAnswered}
+          timerSeconds={timerSeconds}
+          timerRemaining={timerRemaining}
+          wasAutoFlipped={wasAutoRevealed}
+        />
         <div className="adverb-options">
-          {options.map((option) => (
-            <button
-              className={getOptionClass(option, currentRow.item, selected)}
-              disabled={isAnswered}
-              key={option}
-              onClick={() => answer(option)}
-            >
-              {option}
-            </button>
-          ))}
+          {options.map((option) => {
+            const optionDetail = findAdverbDetail(rows, option);
+
+            return (
+              <button
+                className={getOptionClass(option, currentRow.item, selected, isAnswered)}
+                aria-disabled={isAnswered}
+                key={option}
+                onClick={() => answer(option)}
+                type="button"
+              >
+                <span>{option}</span>
+                {isAnswered && <AdverbInfo detail={optionDetail} word={option} />}
+              </button>
+            );
+          })}
         </div>
         {isAnswered && (
           <div className={`adverb-feedback ${selected === currentRow.item ? "correct" : "wrong"}`}>
@@ -397,7 +439,11 @@ function getItem(row) {
 }
 
 function getMeaning(row) {
-  return row.English || row.english || "";
+  return row.English || row._English || row.english || row.Englsh || "";
+}
+
+function getPinyin(row) {
+  return row._Pinyin || row.pinyin || row.Pinyin || row.PINYIN || "";
 }
 
 function normalizeMeaning(meaning) {
@@ -506,20 +552,46 @@ function inferHighlight(item, sentence) {
   return candidates.find((candidate) => sentence.toLowerCase().includes(candidate.toLowerCase())) || "";
 }
 
-function getOptionClass(option, correct, selected) {
-  if (!selected) {
-    return "";
+function getOptionClass(option, correct, selected, isAnswered) {
+  const classes = [];
+  if (!isAnswered) {
+    return classes.join(" ");
   }
 
   if (option === correct) {
-    return "correct-option";
+    classes.push("correct-option");
+  } else if (option === selected) {
+    classes.push("wrong-option");
   }
 
-  if (option === selected) {
-    return "wrong-option";
-  }
+  classes.push("revealed-option");
+  return classes.join(" ");
+}
 
-  return "";
+function findAdverbDetail(rows, word) {
+  const row = rows.find((candidate) => getItem(candidate) === word);
+  return {
+    meaning: row ? getMeaning(row) : "",
+    pinyin: row ? getPinyin(row) : "",
+  };
+}
+
+function AdverbInfo({ detail, word }) {
+  const pinyin = detail?.pinyin || "Pinyin not found";
+  const meaning = detail?.meaning || "Meaning not found";
+
+  return (
+    <span className="synonym-info-wrap">
+      <span className="synonym-info-button" aria-label={`Information for ${word}`} tabIndex={0}>
+        i
+      </span>
+      <span className="synonym-tooltip" role="tooltip">
+        <span>{word}</span>
+        <strong>{pinyin}</strong>
+        <span>{meaning}</span>
+      </span>
+    </span>
+  );
 }
 
 function AdverbMenuOptions({ showChineseSentence, onShowChineseSentenceChange }) {

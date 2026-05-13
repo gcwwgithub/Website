@@ -33,6 +33,7 @@ export default function PlayMode() {
   const [showEnglishChineseSentence, setShowEnglishChineseSentence] = useState(savedEnglishSettings.showChineseSentence);
   const [practiceQuestionCount, setPracticeQuestionCount] = useState("20");
   const [practiceOrderMode, setPracticeOrderMode] = useState("random");
+  const [practiceTimerSeconds, setPracticeTimerSeconds] = useState("0");
   const [showAdverbChineseSentence, setShowAdverbChineseSentence] = useState(false);
   const [englishRows, setEnglishRows] = useState([]);
   const [csvRows, setCsvRows] = useState([]);
@@ -45,6 +46,7 @@ export default function PlayMode() {
   const safeTimerSeconds = clampNumber(timerSeconds, 0, 600);
   const safeEnglishTimerSeconds = clampNumber(englishTimerSeconds, 0, 600);
   const safePracticeQuestionCount = clampNumber(practiceQuestionCount, 1, 100);
+  const safePracticeTimerSeconds = clampNumber(practiceTimerSeconds, 0, 600);
   const filteredRows = useMemo(() => filterCsvRows(csvRows, filterType, filterValues), [csvRows, filterType, filterValues]);
   const englishFilteredRows = useMemo(
     () => filterCsvRows(englishRows, englishFilterType, englishFilterValues),
@@ -188,6 +190,10 @@ export default function PlayMode() {
 
   function handlePracticeQuestionCountChange(event) {
     setPracticeQuestionCount(event.target.value.replace(/\D/g, ""));
+  }
+
+  function handlePracticeTimerSecondsChange(event) {
+    setPracticeTimerSeconds(event.target.value.replace(/\D/g, ""));
   }
 
   function handleTimerSecondsChange(event) {
@@ -544,9 +550,11 @@ export default function PlayMode() {
             onCountChange={handlePracticeQuestionCountChange}
             orderMode={practiceOrderMode}
             onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
+            timerSeconds={practiceTimerSeconds}
+            onTimerSecondsChange={handlePracticeTimerSecondsChange}
             to={`/adverbs?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&sentence=${
               showAdverbChineseSentence ? "1" : "0"
-            }`}
+            }&timer=${safePracticeTimerSeconds}`}
           >
             <div className="setup-checks">
               <label>
@@ -566,7 +574,9 @@ export default function PlayMode() {
             onCountChange={handlePracticeQuestionCountChange}
             orderMode={practiceOrderMode}
             onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
-            to={`/synonyms?count=${safePracticeQuestionCount}&order=${practiceOrderMode}`}
+            timerSeconds={practiceTimerSeconds}
+            onTimerSecondsChange={handlePracticeTimerSecondsChange}
+            to={`/synonyms?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}`}
           />
         )}
         {selectedMode === "sentence-builder" && (
@@ -575,7 +585,9 @@ export default function PlayMode() {
             onCountChange={handlePracticeQuestionCountChange}
             orderMode={practiceOrderMode}
             onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
-            to={`/sentence-builder?count=${safePracticeQuestionCount}&order=${practiceOrderMode}`}
+            timerSeconds={practiceTimerSeconds}
+            onTimerSecondsChange={handlePracticeTimerSecondsChange}
+            to={`/sentence-builder?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}`}
           />
         )}
       </section>
@@ -583,7 +595,16 @@ export default function PlayMode() {
   );
 }
 
-function PracticeModeStart({ children, count, onCountChange, orderMode, onOrderModeChange, to }) {
+function PracticeModeStart({
+  children,
+  count,
+  onCountChange,
+  orderMode,
+  onOrderModeChange,
+  timerSeconds,
+  onTimerSecondsChange,
+  to,
+}) {
   return (
     <div className="setup-options">
       <label className="question-count">
@@ -604,6 +625,18 @@ function PracticeModeStart({ children, count, onCountChange, orderMode, onOrderM
           <option value="weighted">Weighted random</option>
           <option value="in-order">In order</option>
         </select>
+      </label>
+      <label className="question-count">
+        Auto-flip timer
+        <input
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          value={timerSeconds}
+          onChange={onTimerSecondsChange}
+          placeholder="0"
+        />
+        <span className="field-hint">Seconds. Use 0 to turn off.</span>
       </label>
       {children}
       <Link className="play-button setup-start" to={to}>

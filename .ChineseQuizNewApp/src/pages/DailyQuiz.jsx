@@ -768,7 +768,7 @@ function CsvFlashcard({
           {shouldShowMeta && (
             <div className="dictionary-meta">
               {(showFrontPinyin || isFlipped) && <em>{row.pinyin}</em>}
-              {isFlipped && <span>{row["English Words"]}</span>}
+              {isFlipped && <FormattedEnglishMeaning text={row["English Words"]} />}
             </div>
           )}
 
@@ -856,7 +856,9 @@ function EnglishToChineseFlashcard({
       />
 
       <div className={`english-prompt ${getEnglishPromptSizeClass(englishPrompt)}`}>
-        <span className="english-prompt-text">{highlightBracketText(englishPrompt)}</span>
+        <span className="english-prompt-text">
+          <FormattedEnglishMeaning text={englishPrompt} />
+        </span>
       </div>
       <ColorBadge colorValue={row.Color} />
 
@@ -946,6 +948,30 @@ function getEnglishPromptSizeClass(text = "") {
     return "long";
   }
   return "";
+}
+
+function FormattedEnglishMeaning({ text = "" }) {
+  const lines = formatEnglishMeaningLines(text);
+
+  if (lines.length <= 1) {
+    return highlightBracketText(lines[0] || text);
+  }
+
+  return (
+    <span className="formatted-english-meaning">
+      {lines.map((line, index) => (
+        <span key={`${line}-${index}`}>{highlightBracketText(line)}</span>
+      ))}
+    </span>
+  );
+}
+
+function formatEnglishMeaningLines(text = "") {
+  return text
+    .replace(/\s+(?=(?:noun|verb|adjective|adverb|interjection|pronoun|preposition|conjunction|measure word|proper noun)\s*:)/gi, "\n")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
 
 function countMeaningForms(text = "") {

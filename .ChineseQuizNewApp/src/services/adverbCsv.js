@@ -152,7 +152,7 @@ function parseCsv(csvText, requiredColumns = REQUIRED_COLUMNS) {
 }
 
 function hasAdverbQuestion(row) {
-  const hasNewShape = row._Chinese && row.English && row._EN1 && row._CN1;
+  const hasNewShape = row._Chinese && (row.English || row._English) && row._EN1 && row._CN1;
   const hasOldShape = row.type === "adverb" && row.item && row["example sentence 1"];
   return hasNewShape || hasOldShape;
 }

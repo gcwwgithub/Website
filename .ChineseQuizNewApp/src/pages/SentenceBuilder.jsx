@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import GameMenu from "../components/GameMenu.jsx";
 import ColorBadge from "../components/ColorBadge.jsx";
+import TimerStatus from "../components/TimerStatus.jsx";
 import { loadSentenceRows } from "../services/adverbCsv.js";
 import {
   applySavedColorProgress,
@@ -17,6 +18,7 @@ export default function SentenceBuilder() {
   const [searchParams] = useSearchParams();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
+  const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
   const sessionRun = searchParams.get("run") || "";
   const [sessionRows, setSessionRows] = useState([]);
   const [rows, setRows] = useState([]);
@@ -24,10 +26,14 @@ export default function SentenceBuilder() {
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [availableTiles, setAvailableTiles] = useState([]);
   const [answerTiles, setAnswerTiles] = useState([]);
-  const [draggedTileId, setDraggedTileId] = useState("");
+  const answerTilesRef = useRef([]);
+  const [heldTile, setHeldTile] = useState(null);
+  const pendingInsertRef = useRef({ index: -1, time: 0 });
   const [score, setScore] = useState({ correct: 0, wrong: 0 });
   const [result, setResult] = useState(null);
   const [submittedAnswer, setSubmittedAnswer] = useState("");
+  const [wasAutoRevealed, setWasAutoRevealed] = useState(false);
+  const [timerRemaining, setTimerRemaining] = useState(timerSeconds);
   const [mistakes, setMistakes] = useState([]);
   const [skippedRows, setSkippedRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +50,8 @@ export default function SentenceBuilder() {
         setSessionRows(loadedSessionRows);
         setQuestionIndex(0);
         setScore({ correct: 0, wrong: 0 });
+        setWasAutoRevealed(false);
+        setTimerRemaining(timerSeconds);
         setMistakes([]);
         setSkippedRows([]);
         setQuestion(loadedSessionRows[0], setCurrentQuestion, setAvailableTiles, setAnswerTiles, setResult, setSubmittedAnswer);
@@ -55,7 +63,35 @@ export default function SentenceBuilder() {
     }
 
     loadGame();
-  }, [orderMode, requestedCount, sessionRun]);
+  }, [orderMode, requestedCount, sessionRun, timerSeconds]);
+
+  useEffect(() => {
+    answerTilesRef.current = answerTiles;
+  }, [answerTiles]);
+
+  useEffect(() => {
+    if (loading || timerSeconds <= 0 || result || !currentQuestion || isComplete) {
+      setTimerRemaining(timerSeconds);
+      return undefined;
+    }
+
+    setTimerRemaining(timerSeconds);
+    const intervalId = window.setInterval(() => {
+      setTimerRemaining((current) => {
+        if (current <= 1) {
+          window.clearInterval(intervalId);
+          setWasAutoRevealed(true);
+          setSubmittedAnswer(answerTilesRef.current.map((tile) => tile.text).join(""));
+          setResult("wrong");
+          return 0;
+        }
+
+        return current - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [currentQuestion, isComplete, loading, questionIndex, result, timerSeconds]);
 
   function moveTile(tileId, targetZone) {
     if (result) {
@@ -75,9 +111,83 @@ export default function SentenceBuilder() {
     );
   }
 
-  function handleDrop(targetZone) {
-    moveTile(draggedTileId, targetZone);
-    setDraggedTileId("");
+  useEffect(() => {
+    if (!heldTile) {
+      return undefined;
+    }
+
+    function handlePointerMove(event) {
+      const dropZone = getDropZone(event.clientX, event.clientY);
+
+      if (dropZone === "answer") {
+        const nextIndex = getAnswerInsertIndex(event.clientX, event.clientY);
+        const now = window.performance.now();
+        const pending = pendingInsertRef.current;
+
+        if (pending.index !== nextIndex) {
+          pendingInsertRef.current = { index: nextIndex, time: now };
+        } else if (now - pending.time > 170) {
+          placeTileInAnswer(heldTile.tile.id, nextIndex);
+        }
+      } else if (dropZone === "available") {
+        pendingInsertRef.current = { index: -1, time: 0 };
+        moveTile(heldTile.tile.id, "available");
+      }
+
+      setHeldTile((current) =>
+        current
+          ? {
+              ...current,
+              x: event.clientX - current.offsetX,
+              y: event.clientY - current.offsetY,
+              pointerX: event.clientX,
+              pointerY: event.clientY,
+            }
+          : current
+      );
+    }
+
+    function handlePointerUp(event) {
+      const dropZone = getDropZone(event.clientX, event.clientY);
+
+      if (dropZone === "answer") {
+        placeTileInAnswer(heldTile.tile.id, getAnswerInsertIndex(event.clientX, event.clientY, heldTile.tile.id));
+      } else if (dropZone === "available") {
+        moveTile(heldTile.tile.id, "available");
+      }
+
+      pendingInsertRef.current = { index: -1, time: 0 };
+      setHeldTile(null);
+    }
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp, { once: true });
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [heldTile, answerTiles, availableTiles, result]);
+
+  function pickUpTile(event, tile, originZone) {
+    if (result) {
+      return;
+    }
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.preventDefault();
+    pendingInsertRef.current = { index: -1, time: 0 };
+    setHeldTile({
+      tile,
+      originZone,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
+      pointerX: event.clientX,
+      pointerY: event.clientY,
+      x: rect.left,
+      y: rect.top,
+      width: rect.width,
+    });
   }
 
   function placeTileInAnswer(tileId, targetIndex = answerTiles.length) {
@@ -137,6 +247,8 @@ export default function SentenceBuilder() {
   }
 
   function advanceQuestion(nextSessionRows = sessionRows) {
+    setWasAutoRevealed(false);
+    setTimerRemaining(timerSeconds);
     const nextIndex = questionIndex + 1;
     setQuestionIndex(nextIndex);
     setQuestion(nextSessionRows[nextIndex], setCurrentQuestion, setAvailableTiles, setAnswerTiles, setResult, setSubmittedAnswer);
@@ -207,7 +319,7 @@ export default function SentenceBuilder() {
             </section>
           )}
           <div className="result-actions">
-            <Link className="play-button" to={`/sentence-builder?count=${requestedCount}&order=${orderMode}&run=${Date.now()}`}>
+            <Link className="play-button" to={`/sentence-builder?count=${requestedCount}&order=${orderMode}&timer=${timerSeconds}&run=${Date.now()}`}>
               Play again
             </Link>
             <Link className="secondary-button settings-link" to="/">
@@ -240,24 +352,39 @@ export default function SentenceBuilder() {
           <p className="eyebrow game-name">Sentence Builder</p>
         </div>
         <ColorBadge colorValue={currentQuestion.Color} />
+        <TimerStatus
+          isFlipped={Boolean(result)}
+          timerSeconds={timerSeconds}
+          timerRemaining={timerRemaining}
+          wasAutoFlipped={wasAutoRevealed}
+        />
         <TileZone
           allowReorder
-          draggedTileId={draggedTileId}
           emptyText="Drop Chinese phrase tiles here"
-          onDrop={() => handleDrop("answer")}
-          onReorder={placeTileInAnswer}
+          heldTileId={heldTile?.tile.id || ""}
+          onTilePointerDown={pickUpTile}
+          zone="answer"
           tiles={answerTiles}
-          onDragStart={setDraggedTileId}
-          onTileClick={(tileId) => moveTile(tileId, "available")}
         />
         <TileZone
-          draggedTileId={draggedTileId}
           emptyText="No tiles left"
-          onDrop={() => handleDrop("available")}
+          heldTileId={heldTile?.tile.id || ""}
+          onTilePointerDown={pickUpTile}
+          zone="available"
           tiles={availableTiles}
-          onDragStart={setDraggedTileId}
-          onTileClick={(tileId) => moveTile(tileId, "answer")}
         />
+        {heldTile && (
+          <div
+            className="sentence-tile floating-sentence-tile"
+            style={{
+              left: `${heldTile.x}px`,
+              top: `${heldTile.y}px`,
+              width: `${heldTile.width}px`,
+            }}
+          >
+            {heldTile.tile.text}
+          </div>
+        )}
         {!result && (
           <div className="sentence-actions">
             <button disabled={!canSubmitAnswer} onClick={submitAnswer}>Submit Answer</button>
@@ -283,6 +410,14 @@ export default function SentenceBuilder() {
                 />
               </div>
             </div>
+            {currentQuestion.alternateAnswers.length > 0 && (
+              <div className="mandarin-answer alternate-answer-list">
+                <span>Alternate answers</span>
+                {currentQuestion.alternateAnswers.map((answer, index) => (
+                  <p key={`${answer}-${index}`}>{answer}</p>
+                ))}
+              </div>
+            )}
             <div className="sentence-actions two-actions">
               <button onClick={nextQuestion}>Next</button>
               <button className="secondary-action" onClick={skipQuestion}>Skip</button>
@@ -294,29 +429,22 @@ export default function SentenceBuilder() {
   );
 }
 
-function TileZone({ allowReorder = false, draggedTileId, emptyText, onDrop, onReorder, tiles, onDragStart, onTileClick }) {
+function TileZone({
+  emptyText,
+  heldTileId,
+  onTilePointerDown,
+  tiles,
+  zone,
+}) {
   return (
-    <div
-      className="tile-zone"
-      onDragOver={(event) => event.preventDefault()}
-      onDrop={onDrop}
-    >
+    <div className="tile-zone" data-zone={zone}>
       {tiles.length ? (
-        tiles.map((tile, index) => (
+        tiles.map((tile) => (
           <button
-            className="sentence-tile"
-            draggable
+            className={`sentence-tile ${heldTileId === tile.id ? "held-placeholder" : ""}`}
+            data-tile-id={tile.id}
             key={tile.id}
-            onClick={() => onTileClick(tile.id)}
-            onDragStart={() => onDragStart(tile.id)}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              if (!allowReorder) {
-                return;
-              }
-              event.stopPropagation();
-              onReorder(draggedTileId, index);
-            }}
+            onPointerDown={(event) => onTilePointerDown(event, tile, zone)}
             type="button"
           >
             {tile.text}
@@ -367,6 +495,48 @@ function shuffleTiles(tiles) {
 
 function getTileById(tileId, availableTiles, answerTiles) {
   return availableTiles.find((tile) => tile.id === tileId) || answerTiles.find((tile) => tile.id === tileId);
+}
+
+function getDropZone(x, y) {
+  const element = document.elementFromPoint(x, y);
+  return element?.closest(".tile-zone")?.dataset.zone || "";
+}
+
+function getAnswerInsertIndex(pointerX, pointerY, heldTileId = "") {
+  const answerZone = document.querySelector('.tile-zone[data-zone="answer"]');
+  if (!answerZone) {
+    return 0;
+  }
+
+  const hoveredTile = document.elementFromPoint(pointerX, pointerY)?.closest(".sentence-tile");
+  const tiles = [...answerZone.querySelectorAll(".sentence-tile")]
+    .filter((tile) => !tile.classList.contains("held-placeholder") && !tile.classList.contains("floating-sentence-tile"));
+  const hoveredIndex = tiles.indexOf(hoveredTile);
+
+  if (hoveredIndex >= 0 && hoveredTile.dataset.tileId !== heldTileId) {
+    const rect = hoveredTile.getBoundingClientRect();
+    return pointerX < rect.left + rect.width / 2 ? hoveredIndex : hoveredIndex + 1;
+  }
+
+  const tilePositions = tiles.map((tile, index) => {
+    const rect = tile.getBoundingClientRect();
+    return {
+      index,
+      centerX: rect.left + rect.width / 2,
+      centerY: rect.top + rect.height / 2,
+      rect,
+    };
+  });
+  const nearestTile = tilePositions.reduce((nearest, tile) => {
+    const distance = Math.hypot(pointerX - tile.centerX, pointerY - tile.centerY);
+    return !nearest || distance < nearest.distance ? { ...tile, distance } : nearest;
+  }, null);
+
+  if (!nearestTile) {
+    return 0;
+  }
+
+  return pointerX < nearestTile.centerX ? nearestTile.index : nearestTile.index + 1;
 }
 
 function replaceRowColor(rows, rowNumber, colorValue) {

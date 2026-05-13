@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import GameMenu from "../components/GameMenu.jsx";
 import ColorBadge from "../components/ColorBadge.jsx";
+import TimerStatus from "../components/TimerStatus.jsx";
 import { loadSynonymDetails, loadSynonymRows } from "../services/adverbCsv.js";
 import {
   applySavedColorProgress,
@@ -17,6 +18,7 @@ export default function SynonymSelection() {
   const [searchParams] = useSearchParams();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
+  const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
   const sessionRun = searchParams.get("run") || "";
   const [rows, setRows] = useState([]);
   const [sessionRows, setSessionRows] = useState([]);
@@ -25,12 +27,14 @@ export default function SynonymSelection() {
   const [options, setOptions] = useState([]);
   const [score, setScore] = useState({ correct: 0, wrong: 0 });
   const [selected, setSelected] = useState("");
+  const [wasAutoRevealed, setWasAutoRevealed] = useState(false);
+  const [timerRemaining, setTimerRemaining] = useState(timerSeconds);
   const [synonymDetails, setSynonymDetails] = useState({});
   const [mistakes, setMistakes] = useState([]);
   const [skippedRows, setSkippedRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const isAnswered = Boolean(selected);
+  const isAnswered = Boolean(selected) || wasAutoRevealed;
   const isComplete = sessionRows.length > 0 && questionIndex >= sessionRows.length;
 
   useEffect(() => {
@@ -45,6 +49,8 @@ export default function SynonymSelection() {
         setQuestionIndex(0);
         setScore({ correct: 0, wrong: 0 });
         setSelected("");
+        setWasAutoRevealed(false);
+        setTimerRemaining(timerSeconds);
         setMistakes([]);
         setSkippedRows([]);
         setQuestion(loadedSessionRows[0], setCurrentRow, setOptions);
@@ -56,10 +62,32 @@ export default function SynonymSelection() {
     }
 
     loadGame();
-  }, [orderMode, requestedCount, sessionRun]);
+  }, [orderMode, requestedCount, sessionRun, timerSeconds]);
+
+  useEffect(() => {
+    if (loading || timerSeconds <= 0 || isAnswered || !currentRow || isComplete) {
+      setTimerRemaining(timerSeconds);
+      return undefined;
+    }
+
+    setTimerRemaining(timerSeconds);
+    const intervalId = window.setInterval(() => {
+      setTimerRemaining((current) => {
+        if (current <= 1) {
+          window.clearInterval(intervalId);
+          setWasAutoRevealed(true);
+          return 0;
+        }
+
+        return current - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [currentRow, isAnswered, isComplete, loading, questionIndex, timerSeconds]);
 
   function answer(option) {
-    if (!currentRow || selected) {
+    if (!currentRow || isAnswered) {
       return;
     }
 
@@ -70,7 +98,7 @@ export default function SynonymSelection() {
     let nextRows = rows;
     let nextSessionRows = sessionRows;
 
-    if (currentRow && selected) {
+    if (currentRow && isAnswered) {
       const wasCorrect = selected === currentRow["Chinese Word"];
       const nextColor = updateColorValue(currentRow.Color, wasCorrect);
       const answeredRow = { ...currentRow, Color: nextColor };
@@ -94,6 +122,8 @@ export default function SynonymSelection() {
 
   function advanceQuestion(nextSessionRows = sessionRows) {
     setSelected("");
+    setWasAutoRevealed(false);
+    setTimerRemaining(timerSeconds);
     const nextIndex = questionIndex + 1;
     setQuestionIndex(nextIndex);
     setQuestion(nextSessionRows[nextIndex], setCurrentRow, setOptions);
@@ -167,7 +197,7 @@ export default function SynonymSelection() {
             </section>
           )}
           <div className="result-actions">
-            <Link className="play-button" to={`/synonyms?count=${requestedCount}&order=${orderMode}&run=${Date.now()}`}>
+            <Link className="play-button" to={`/synonyms?count=${requestedCount}&order=${orderMode}&timer=${timerSeconds}&run=${Date.now()}`}>
               Play again
             </Link>
             <Link className="secondary-button settings-link" to="/">
@@ -203,13 +233,19 @@ export default function SynonymSelection() {
           <span className="adverb-prompt-text">{currentRow["Chinese Sentence"]}</span>
         </h2>
         <ColorBadge colorValue={currentRow.Color} />
+        <TimerStatus
+          isFlipped={isAnswered}
+          timerSeconds={timerSeconds}
+          timerRemaining={timerRemaining}
+          wasAutoFlipped={wasAutoRevealed}
+        />
         <div className="adverb-options">
           {options.map((optionWord) => {
             const optionDetail = findSynonymDetail(synonymDetails, optionWord);
 
             return (
               <button
-                className={getOptionClass(optionWord, currentRow["Chinese Word"], selected)}
+                className={getOptionClass(optionWord, currentRow["Chinese Word"], selected, isAnswered)}
                 aria-disabled={isAnswered}
                 key={optionWord}
                 onClick={() => answer(optionWord)}
@@ -305,9 +341,9 @@ function EmphasizedText({ text, target }) {
   ));
 }
 
-function getOptionClass(option, correct, selected) {
+function getOptionClass(option, correct, selected, isAnswered) {
   const classes = [];
-  if (!selected) {
+  if (!isAnswered) {
     return classes.join(" ");
   }
 
