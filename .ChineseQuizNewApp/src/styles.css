@@ -1380,6 +1380,10 @@ form {
   font-weight: 850;
 }
 
+.synonym-usage {
+  color: #cbd5e1;
+}
+
 .adverb-options button.revealed-option:hover .synonym-tooltip,
 .synonym-info-wrap:hover .synonym-tooltip,
 .synonym-info-button:focus-visible + .synonym-tooltip {

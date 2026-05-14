@@ -360,6 +360,7 @@ function getOptionClass(option, correct, selected, isAnswered) {
 function SynonymInfo({ detail, word }) {
   const pinyin = detail?.pinyin || "Pinyin not found";
   const meaning = detail?.meaning || "Meaning not found";
+  const { definition, usage } = splitSynonymMeaning(meaning);
 
   return (
     <span className="synonym-info-wrap">
@@ -369,10 +370,23 @@ function SynonymInfo({ detail, word }) {
       <span className="synonym-tooltip" role="tooltip">
         <span>{word}</span>
         <strong>{pinyin}</strong>
-        <span>{meaning}</span>
+        <span>{definition}</span>
+        {usage && <span className="synonym-usage">{usage}</span>}
       </span>
     </span>
   );
+}
+
+function splitSynonymMeaning(meaning) {
+  const usageStart = meaning.indexOf("(Usage:");
+  if (usageStart < 0) {
+    return { definition: meaning, usage: "" };
+  }
+
+  return {
+    definition: meaning.slice(0, usageStart).trim(),
+    usage: meaning.slice(usageStart).trim(),
+  };
 }
 
 function findSynonymDetail(detailsByWord, word = "") {

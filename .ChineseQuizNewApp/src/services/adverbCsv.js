@@ -89,11 +89,19 @@ export async function loadSentenceRows() {
         Color: colorIndex >= 0 ? columns[colorIndex]?.trim() || "1" : "1",
         alternateAnswers: alternateIndexes
           .map((columnIndex) => columns[columnIndex]?.trim())
-          .filter(Boolean),
+          .filter(isUsableAlternateAnswer),
         parts,
       };
     })
     .filter((row) => row.parts.length > 1);
+}
+
+function isUsableAlternateAnswer(answer = "") {
+  if (!answer.trim()) {
+    return false;
+  }
+
+  return answer.trim().toLowerCase().replace(/[^a-z]/g, "") !== "empty";
 }
 
 function parseCsv(csvText, requiredColumns = REQUIRED_COLUMNS) {
