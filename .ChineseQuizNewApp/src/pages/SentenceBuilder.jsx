@@ -125,12 +125,13 @@ export default function SentenceBuilder() {
         const pending = pendingInsertRef.current;
 
         if (pending.index !== nextIndex) {
-          pendingInsertRef.current = { index: nextIndex, time: now };
+          pendingInsertRef.current = { index: nextIndex, time: now, isCommitted: false };
         } else if (now - pending.time > 170) {
           placeTileInAnswer(heldTile.tile.id, nextIndex);
+          pendingInsertRef.current = { index: nextIndex, time: now, isCommitted: true };
         }
       } else if (dropZone === "available") {
-        pendingInsertRef.current = { index: -1, time: 0 };
+        pendingInsertRef.current = { index: -1, time: 0, isCommitted: false };
         moveTile(heldTile.tile.id, "available");
       }
 
@@ -151,12 +152,17 @@ export default function SentenceBuilder() {
       const dropZone = getDropZone(event.clientX, event.clientY);
 
       if (dropZone === "answer") {
-        placeTileInAnswer(heldTile.tile.id, getAnswerInsertIndex(event.clientX, event.clientY, heldTile.tile.id));
+        const pending = pendingInsertRef.current;
+        if (!pending.isCommitted) {
+          const releaseIndex =
+            pending.index >= 0 ? pending.index : getAnswerInsertIndex(event.clientX, event.clientY, heldTile.tile.id);
+          placeTileInAnswer(heldTile.tile.id, releaseIndex);
+        }
       } else if (dropZone === "available") {
         moveTile(heldTile.tile.id, "available");
       }
 
-      pendingInsertRef.current = { index: -1, time: 0 };
+      pendingInsertRef.current = { index: -1, time: 0, isCommitted: false };
       setHeldTile(null);
     }
 
@@ -176,7 +182,7 @@ export default function SentenceBuilder() {
 
     const rect = event.currentTarget.getBoundingClientRect();
     event.preventDefault();
-    pendingInsertRef.current = { index: -1, time: 0 };
+    pendingInsertRef.current = { index: -1, time: 0, isCommitted: false };
     setHeldTile({
       tile,
       originZone,
@@ -229,7 +235,7 @@ export default function SentenceBuilder() {
     if (currentQuestion && result) {
       const wasCorrect = result === "correct";
       const nextColor = updateColorValue(currentQuestion.Color, wasCorrect);
-      saveColorProgress(currentQuestion.__rowNumber, nextColor, SENTENCE_COLOR_PROGRESS_KEY);
+      saveColorProgress(currentQuestion, nextColor, SENTENCE_COLOR_PROGRESS_KEY);
       setRows((current) => replaceRowColor(current, currentQuestion.__rowNumber, nextColor));
       nextSessionRows = replaceRowColor(sessionRows, currentQuestion.__rowNumber, nextColor);
       setSessionRows(nextSessionRows);
@@ -509,34 +515,117 @@ function getAnswerInsertIndex(pointerX, pointerY, heldTileId = "") {
   }
 
   const hoveredTile = document.elementFromPoint(pointerX, pointerY)?.closest(".sentence-tile");
-  const tiles = [...answerZone.querySelectorAll(".sentence-tile")]
-    .filter((tile) => !tile.classList.contains("held-placeholder") && !tile.classList.contains("floating-sentence-tile"));
-  const hoveredIndex = tiles.indexOf(hoveredTile);
+  const layoutTiles = [...answerZone.querySelectorAll(".sentence-tile")]
+    .filter((tile) => !tile.classList.contains("floating-sentence-tile"));
+  const insertableTiles = layoutTiles.filter((tile) => !tile.classList.contains("held-placeholder"));
+  const hoveredIndex = insertableTiles.indexOf(hoveredTile);
 
   if (hoveredIndex >= 0 && hoveredTile.dataset.tileId !== heldTileId) {
     const rect = hoveredTile.getBoundingClientRect();
-    return pointerX < rect.left + rect.width / 2 ? hoveredIndex : hoveredIndex + 1;
+    return getTileInsertIndex(pointerX, pointerY, rect, hoveredIndex);
   }
 
-  const tilePositions = tiles.map((tile, index) => {
+  return getRowAwareInsertIndex(pointerX, pointerY, layoutTiles);
+}
+
+function getTileInsertIndex(pointerX, pointerY, rect, tileIndex) {
+  const upperThreshold = rect.top + rect.height * 0.35;
+  const lowerThreshold = rect.bottom - rect.height * 0.35;
+
+  if (pointerY < upperThreshold) {
+    return tileIndex;
+  }
+
+  if (pointerY > lowerThreshold) {
+    return tileIndex + 1;
+  }
+
+  return pointerX < rect.left + rect.width / 2 ? tileIndex : tileIndex + 1;
+}
+
+function getRowAwareInsertIndex(pointerX, pointerY, tiles) {
+  const tilePositions = tiles.map((tile, layoutIndex) => {
     const rect = tile.getBoundingClientRect();
     return {
-      index,
+      insertIndex: getInsertableIndexBeforeTile(tiles, layoutIndex),
+      isHeldPlaceholder: tile.classList.contains("held-placeholder"),
+      layoutIndex,
       centerX: rect.left + rect.width / 2,
       centerY: rect.top + rect.height / 2,
       rect,
     };
   });
-  const nearestTile = tilePositions.reduce((nearest, tile) => {
-    const distance = Math.hypot(pointerX - tile.centerX, pointerY - tile.centerY);
-    return !nearest || distance < nearest.distance ? { ...tile, distance } : nearest;
-  }, null);
 
-  if (!nearestTile) {
+  if (!tilePositions.length) {
     return 0;
   }
 
-  return pointerX < nearestTile.centerX ? nearestTile.index : nearestTile.index + 1;
+  const rows = groupTilePositionsByRow(tilePositions);
+  const targetRow = findTargetTileRow(pointerY, rows);
+
+  if (!targetRow?.length) {
+    return tilePositions.length;
+  }
+
+  for (const tile of targetRow) {
+    if (tile.isHeldPlaceholder && pointerX < tile.centerX) {
+      return tile.insertIndex;
+    }
+
+    if (tile.isHeldPlaceholder) {
+      continue;
+    }
+
+    if (pointerX < tile.centerX) {
+      return tile.insertIndex;
+    }
+  }
+
+  return getInsertIndexAfterRow(targetRow);
+}
+
+function getInsertableIndexBeforeTile(tiles, layoutIndex) {
+  return tiles
+    .slice(0, layoutIndex)
+    .filter((tile) => !tile.classList.contains("held-placeholder")).length;
+}
+
+function getInsertIndexAfterRow(row) {
+  const lastInsertableTile = [...row].reverse().find((tile) => !tile.isHeldPlaceholder);
+  if (lastInsertableTile) {
+    return lastInsertableTile.insertIndex + 1;
+  }
+
+  return row[0]?.insertIndex || 0;
+}
+
+function groupTilePositionsByRow(tilePositions) {
+  return tilePositions.reduce((rows, tile) => {
+    const matchingRow = rows.find((row) => {
+      const rowTop = Math.min(...row.map((rowTile) => rowTile.rect.top));
+      const rowBottom = Math.max(...row.map((rowTile) => rowTile.rect.bottom));
+      return tile.centerY >= rowTop && tile.centerY <= rowBottom;
+    });
+
+    if (matchingRow) {
+      matchingRow.push(tile);
+    } else {
+      rows.push([tile]);
+    }
+
+    return rows;
+  }, []);
+}
+
+function findTargetTileRow(pointerY, rows) {
+  return rows.reduce((closestRow, row) => {
+    const rowTop = Math.min(...row.map((tile) => tile.rect.top));
+    const rowBottom = Math.max(...row.map((tile) => tile.rect.bottom));
+    const rowCenterY = (rowTop + rowBottom) / 2;
+    const distance = pointerY >= rowTop && pointerY <= rowBottom ? 0 : Math.abs(pointerY - rowCenterY);
+
+    return !closestRow || distance < closestRow.distance ? { row, distance } : closestRow;
+  }, null)?.row;
 }
 
 function replaceRowColor(rows, rowNumber, colorValue) {

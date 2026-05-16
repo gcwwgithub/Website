@@ -102,7 +102,7 @@ export default function SynonymSelection() {
       const wasCorrect = selected === currentRow["Chinese Word"];
       const nextColor = updateColorValue(currentRow.Color, wasCorrect);
       const answeredRow = { ...currentRow, Color: nextColor };
-      saveColorProgress(currentRow.__rowNumber, nextColor, SYNONYM_COLOR_PROGRESS_KEY);
+      saveColorProgress(currentRow, nextColor, SYNONYM_COLOR_PROGRESS_KEY);
       nextRows = replaceRowColor(rows, currentRow.__rowNumber, nextColor);
       nextSessionRows = replaceRowColor(sessionRows, currentRow.__rowNumber, nextColor);
       setRows(nextRows);
@@ -303,7 +303,18 @@ function setQuestion(nextRow, setCurrentRow, setOptions) {
     .filter((answer) => answer && answer !== correctWord);
 
   setCurrentRow(nextRow);
-  setOptions([...new Set([correctWord, ...distractors])].sort(() => Math.random() - 0.5));
+  setOptions(shuffleOptions([...new Set([correctWord, ...distractors])]));
+}
+
+function shuffleOptions(options) {
+  const shuffledOptions = [...options];
+
+  for (let index = shuffledOptions.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffledOptions[index], shuffledOptions[randomIndex]] = [shuffledOptions[randomIndex], shuffledOptions[index]];
+  }
+
+  return shuffledOptions;
 }
 
 function getPromptSizeClass(text = "") {

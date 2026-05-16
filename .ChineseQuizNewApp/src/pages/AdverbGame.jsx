@@ -102,7 +102,7 @@ export default function AdverbGame() {
       const wasCorrect = selected === currentRow.item;
       const nextColor = updateColorValue(currentRow.Color, wasCorrect);
       const answeredRow = { ...currentRow, Color: nextColor };
-      saveColorProgress(currentRow.__rowNumber, nextColor, ADVERB_COLOR_PROGRESS_KEY);
+      saveColorProgress(currentRow, nextColor, ADVERB_COLOR_PROGRESS_KEY);
       nextRows = replaceRowColor(rows, currentRow.__rowNumber, nextColor);
       nextSessionRows = replaceRowColor(sessionRows, currentRow.__rowNumber, nextColor);
       setRows(nextRows);

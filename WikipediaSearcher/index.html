@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Wikipedia Searcher</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="top-bar">
+      <div class="top-left">
+        <a class="home-link" href="../index.html">WebPlayground</a>
+        <div id="hintIndicator" class="hint-indicator is-disabled">Hints Disabled</div>
+      </div>
+      <div class="route-status" aria-label="Search status">
+        <strong id="startTitle">Loading...</strong>
+        <span class="route-arrow">=&gt;</span>
+        <strong id="targetTitle">Loading...</strong>
+      </div>
+      <div class="top-right">
+        <span id="timerValue" class="stat-pill">00:00</span>
+        <span class="stat-pill"><strong id="stepCount">0</strong> Steps</span>
+        <button id="newSearchButton" class="new-search-button" type="button">New Search</button>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="workspace">
+        <article class="article-panel" aria-labelledby="currentTitle">
+          <h1 id="currentTitle" class="current-title">Loading...</h1>
+          <div id="articleContent" class="wiki-article" aria-live="polite">
+            <p>Fetching a starting article from Wikipedia.</p>
+          </div>
+        </article>
+      </section>
+
+      <div id="messagePanel" class="message-panel" aria-live="polite"></div>
+    </main>
+
+    <section id="menuOverlay" class="menu-overlay" aria-labelledby="menuTitle">
+      <div class="menu-panel">
+        <p class="menu-eyebrow">Wikipedia Searcher</p>
+        <h1 id="menuTitle">Choose search settings</h1>
+        <fieldset class="search-mode-toggle" aria-label="Search type">
+          <label>
+            <input type="radio" name="searchMode" value="random" checked>
+            <span>Random Search</span>
+          </label>
+          <label>
+            <input type="radio" name="searchMode" value="predefined">
+            <span>Predefined Search</span>
+          </label>
+        </fieldset>
+        <label class="menu-control" for="pageFilterSelect">
+          <span>Page Type</span>
+          <select id="pageFilterSelect">
+            <option value="all">All Wikipedia pages</option>
+            <option value="filtered" selected>Filtered articles</option>
+          </select>
+        </label>
+        <p id="filterDescription" class="filter-description">
+          Filters out disambiguation pages, list pages, media-title pages, and titles that look like non-English terms.
+        </p>
+        <label class="menu-toggle" for="hintsToggle">
+          <input id="hintsToggle" type="checkbox">
+          <span>Show hints</span>
+        </label>
+        <section id="predefinedSearchControls" class="custom-pages" aria-label="Custom start and destination" hidden>
+          <label class="menu-control" for="customStartInput">
+            <span>Start Page</span>
+            <div class="input-action-row">
+              <input id="customStartInput" type="text" placeholder="Type a Wikipedia page">
+              <button id="randomStartButton" class="secondary-menu-button" type="button">Randomize</button>
+            </div>
+          </label>
+          <label class="menu-control" for="customTargetInput">
+            <span>Destination Page</span>
+            <div class="input-action-row">
+              <input id="customTargetInput" type="text" placeholder="Type a Wikipedia page">
+              <button id="randomTargetButton" class="secondary-menu-button" type="button">Randomize</button>
+            </div>
+          </label>
+          <button id="startCustomSearchButton" class="secondary-menu-button wide-button" type="button">Start Selected Search</button>
+        </section>
+        <section id="randomSearchControls" class="random-search-controls" aria-label="Random search">
+          <button id="startSearchButton" class="start-search-button" type="button">Start Random Search</button>
+        </section>
+      </div>
+    </section>
+
+    <section id="completionOverlay" class="completion-overlay" aria-labelledby="completionTitle" hidden>
+      <div class="completion-panel">
+        <p class="menu-eyebrow">Destination Reached</p>
+        <h1 id="completionTitle">Search complete</h1>
+        <div class="completion-stats">
+          <article>
+            <span>Route</span>
+            <strong id="completionRoute">-</strong>
+          </article>
+          <article>
+            <span>Time</span>
+            <strong id="completionTime">00:00</strong>
+          </article>
+          <article>
+            <span>Steps</span>
+            <strong id="completionSteps">0</strong>
+          </article>
+        </div>
+        <div class="completion-actions">
+          <button id="completionNewSearchButton" class="start-search-button" type="button">New Random Search</button>
+          <button id="completionMenuButton" class="secondary-menu-button" type="button">Settings Menu</button>
+        </div>
+      </div>
+    </section>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

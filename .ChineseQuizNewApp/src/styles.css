@@ -781,7 +781,7 @@ form {
 
 .dictionary-card-top {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto auto 1fr auto;
   align-items: center;
   gap: 1rem;
   border-bottom: 1px solid #243044;
@@ -1181,6 +1181,10 @@ form {
   gap: 0.75rem;
 }
 
+.card-actions.single-action {
+  grid-template-columns: 1fr;
+}
+
 .secondary-action {
   background: #1f2937;
   color: #e5e7eb;
@@ -1215,6 +1219,35 @@ form {
 .wrong-button {
   background: #ef4444;
   color: #190606;
+}
+
+.new-card-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.75rem;
+  border: 1px solid rgba(45, 212, 191, 0.58);
+  border-radius: 999px;
+  background: rgba(20, 184, 166, 0.16);
+  color: #99f6e4;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  padding: 0.2rem 0.7rem;
+}
+
+.reviewed-list {
+  max-height: 24rem;
+  overflow-y: auto;
+}
+
+.reviewed-row strong,
+.reviewed-row span {
+  overflow-wrap: anywhere;
+}
+
+.reviewed-list .reviewed-row {
+  background: rgba(45, 212, 191, 0.08);
 }
 
 .adverb-card {
@@ -1542,7 +1575,7 @@ form {
 }
 
 .sentence-actions.two-actions {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
 }
 
 .sentence-audio-row {
@@ -1550,6 +1583,42 @@ form {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.85rem;
+}
+
+.translate-card {
+  gap: 1.1rem;
+}
+
+.translate-prompt,
+.translate-answer {
+  display: grid;
+  gap: 0.5rem;
+  border: 1px solid #243044;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.58);
+  padding: 1rem;
+}
+
+.translate-prompt span,
+.translate-answer span {
+  color: #5eead4;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.translate-prompt p {
+  margin: 0;
+  color: #f8fafc;
+  font-size: clamp(1.35rem, 4vw, 2.15rem);
+  line-height: 1.25;
+}
+
+.translate-answer textarea {
+  min-height: 8.5rem;
+  resize: vertical;
+  font-size: 1.35rem;
+  line-height: 1.5;
 }
 
 .result-card {

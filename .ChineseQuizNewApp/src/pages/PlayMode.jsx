@@ -393,6 +393,13 @@ export default function PlayMode() {
           >
             <img src="data/sentence.png" alt="" aria-hidden="true" />
           </button>
+          <button
+            className={`mode-button ${selectedMode === "translate" ? "selected" : ""}`}
+            onClick={() => setSelectedMode("translate")}
+            aria-label="Translate"
+          >
+            <img src="data/translate.png" alt="" aria-hidden="true" />
+          </button>
         </div>
         {selectedMode === "english-to-chinese" && (
           <div className="setup-options">
@@ -427,6 +434,7 @@ export default function PlayMode() {
                 <option value="random">Random</option>
                 <option value="weighted">Weighted random</option>
                 <option value="in-order">In order</option>
+                <option value="daily-review">Daily Review</option>
               </select>
             </label>
             <label className="question-count">
@@ -494,6 +502,7 @@ export default function PlayMode() {
                 <option value="random">Random</option>
                 <option value="weighted">Weighted random</option>
                 <option value="in-order">In order</option>
+                <option value="daily-review">Daily Review</option>
               </select>
             </label>
             <label className="question-count">
@@ -588,6 +597,17 @@ export default function PlayMode() {
             timerSeconds={practiceTimerSeconds}
             onTimerSecondsChange={handlePracticeTimerSecondsChange}
             to={`/sentence-builder?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}`}
+          />
+        )}
+        {selectedMode === "translate" && (
+          <PracticeModeStart
+            count={practiceQuestionCount}
+            onCountChange={handlePracticeQuestionCountChange}
+            orderMode={practiceOrderMode}
+            onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
+            timerSeconds={practiceTimerSeconds}
+            onTimerSecondsChange={handlePracticeTimerSecondsChange}
+            to={`/translate?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}`}
           />
         )}
       </section>

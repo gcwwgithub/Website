@@ -136,7 +136,7 @@ function normalizeEnglishSettings(settings = {}) {
 }
 
 function normalizeOrderMode(orderMode) {
-  return ["random", "weighted", "in-order"].includes(orderMode) ? orderMode : "random";
+  return ["random", "weighted", "in-order", "daily-review"].includes(orderMode) ? orderMode : "random";
 }
 
 function normalizeTimerSeconds(timerSeconds) {

@@ -29,7 +29,7 @@ export function applySavedColorProgress(rows, storageKey) {
   const progress = readColorProgress(storageKey);
 
   return rows.map((row) => {
-    const savedColor = progress[row.__rowNumber];
+    const savedColor = progress[getColorProgressId(row)];
     if (savedColor === undefined) {
       return row;
     }
@@ -38,13 +38,14 @@ export function applySavedColorProgress(rows, storageKey) {
   });
 }
 
-export function saveColorProgress(rowNumber, colorValue, storageKey) {
-  if (!rowNumber) {
+export function saveColorProgress(row, colorValue, storageKey) {
+  const progressId = getColorProgressId(row);
+  if (!progressId) {
     return;
   }
 
   const progress = readColorProgress(storageKey);
-  progress[rowNumber] = String(colorValue);
+  progress[progressId] = String(colorValue);
 
   try {
     window.localStorage.setItem(storageKey, JSON.stringify(progress));
@@ -88,7 +89,28 @@ function getSelectionWeight(colorValue) {
     return 1;
   }
 
-  return Math.max(1, parsedColor);
+  const normalizedColor = Math.max(1, parsedColor);
+  return normalizedColor * normalizedColor;
+}
+
+function getColorProgressId(row) {
+  if (!row || typeof row !== "object") {
+    return "";
+  }
+
+  const identityValue =
+    row["Chinese Words"] ||
+    row["Chinese Word"] ||
+    row._Chinese ||
+    row._English ||
+    row.item ||
+    row.sentence ||
+    (Array.isArray(row.parts) ? row.parts.join("") : "") ||
+    row.id ||
+    "";
+  const normalizedValue = String(identityValue).trim().toLowerCase();
+
+  return normalizedValue ? `row:${normalizedValue}` : "";
 }
 
 function readColorProgress(storageKey) {

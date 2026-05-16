@@ -1,0 +1,1 @@
+function u(){return new Date().toISOString().slice(0,10)}function a(r=3){return r<=2?"green":r<=5?"amber":"red"}function g(r,i,c=10){return r.map(t=>{const e=i.get(t.id),n=(e==null?void 0:e.weight)??t.defaultWeight??3,o=!e;return{...t,weight:n,isNew:o,score:(o?4:0)+n+Math.random()}}).sort((t,e)=>e.score-t.score).slice(0,c)}export{g as b,u as g,a as w};
