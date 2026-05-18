@@ -4,6 +4,8 @@ import ColorBadge from "../components/ColorBadge.jsx";
 import GameMenu from "../components/GameMenu.jsx";
 import TimerStatus from "../components/TimerStatus.jsx";
 import { loadTranslateRows } from "../services/adverbCsv.js";
+import { saveRemoteColorProgress, syncRemoteColorProgress } from "../services/colorProgressTracking.js";
+import { useSupabaseAuth } from "../services/supabaseAuth.js";
 import {
   applySavedColorProgress,
   buildPracticeSession,
@@ -16,6 +18,7 @@ const TRANSLATE_COLOR_PROGRESS_KEY = "chineseQuizNew.translateColorProgress.v1";
 
 export default function Translate() {
   const [searchParams] = useSearchParams();
+  const { user } = useSupabaseAuth();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
@@ -38,12 +41,42 @@ export default function Translate() {
   const isComplete = sessionRows.length > 0 && questionIndex >= sessionRows.length;
   const canSubmit = Boolean(answer.trim()) && !result;
 
+  function syncSupabaseProgress(nextRows) {
+    if (!user?.id || !nextRows?.length) {
+      return;
+    }
+
+    syncRemoteColorProgress({
+      userId: user.id,
+      storageKey: TRANSLATE_COLOR_PROGRESS_KEY,
+      rows: nextRows,
+    }).catch((trackingError) => {
+      console.warn("Could not sync Supabase translate progress.", trackingError);
+    });
+  }
+
+  function saveSupabaseProgress(row, colorValue) {
+    if (!user?.id || !row) {
+      return;
+    }
+
+    saveRemoteColorProgress({
+      userId: user.id,
+      storageKey: TRANSLATE_COLOR_PROGRESS_KEY,
+      row,
+      colorValue,
+    }).catch((trackingError) => {
+      console.warn("Could not save Supabase translate progress.", trackingError);
+    });
+  }
+
   useEffect(() => {
     async function loadSession() {
       setLoading(true);
       setError("");
       try {
         const loadedRows = applySavedColorProgress(await loadTranslateRows(), TRANSLATE_COLOR_PROGRESS_KEY);
+        syncSupabaseProgress(loadedRows);
         const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
@@ -64,7 +97,7 @@ export default function Translate() {
     }
 
     loadSession();
-  }, [orderMode, requestedCount, sessionRun, timerSeconds]);
+  }, [orderMode, requestedCount, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     answerRef.current = answer;
@@ -111,6 +144,7 @@ export default function Translate() {
       const wasCorrect = result === "correct";
       const nextColor = updateColorValue(currentQuestion.Color, wasCorrect);
       saveColorProgress(currentQuestion, nextColor, TRANSLATE_COLOR_PROGRESS_KEY);
+      saveSupabaseProgress({ ...currentQuestion, Color: nextColor }, nextColor);
       setRows((current) => replaceRowColor(current, currentQuestion.__rowNumber, nextColor));
       nextSessionRows = replaceRowColor(sessionRows, currentQuestion.__rowNumber, nextColor);
       setSessionRows(nextSessionRows);

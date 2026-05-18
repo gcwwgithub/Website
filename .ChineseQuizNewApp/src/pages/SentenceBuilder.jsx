@@ -4,6 +4,8 @@ import GameMenu from "../components/GameMenu.jsx";
 import ColorBadge from "../components/ColorBadge.jsx";
 import TimerStatus from "../components/TimerStatus.jsx";
 import { loadSentenceRows } from "../services/adverbCsv.js";
+import { saveRemoteColorProgress, syncRemoteColorProgress } from "../services/colorProgressTracking.js";
+import { useSupabaseAuth } from "../services/supabaseAuth.js";
 import {
   applySavedColorProgress,
   buildPracticeSession,
@@ -16,6 +18,7 @@ const SENTENCE_COLOR_PROGRESS_KEY = "chineseQuizNew.sentenceBuilderColorProgress
 
 export default function SentenceBuilder() {
   const [searchParams] = useSearchParams();
+  const { user } = useSupabaseAuth();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
@@ -41,10 +44,40 @@ export default function SentenceBuilder() {
   const isComplete = sessionRows.length > 0 && questionIndex >= sessionRows.length;
   const canSubmitAnswer = Boolean(answerTiles.length) && availableTiles.length === 0;
 
+  function syncSupabaseProgress(nextRows) {
+    if (!user?.id || !nextRows?.length) {
+      return;
+    }
+
+    syncRemoteColorProgress({
+      userId: user.id,
+      storageKey: SENTENCE_COLOR_PROGRESS_KEY,
+      rows: nextRows,
+    }).catch((trackingError) => {
+      console.warn("Could not sync Supabase sentence-builder progress.", trackingError);
+    });
+  }
+
+  function saveSupabaseProgress(row, colorValue) {
+    if (!user?.id || !row) {
+      return;
+    }
+
+    saveRemoteColorProgress({
+      userId: user.id,
+      storageKey: SENTENCE_COLOR_PROGRESS_KEY,
+      row,
+      colorValue,
+    }).catch((trackingError) => {
+      console.warn("Could not save Supabase sentence-builder progress.", trackingError);
+    });
+  }
+
   useEffect(() => {
     async function loadGame() {
       try {
         const loadedRows = applySavedColorProgress(await loadSentenceRows(), SENTENCE_COLOR_PROGRESS_KEY);
+        syncSupabaseProgress(loadedRows);
         const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
@@ -63,7 +96,7 @@ export default function SentenceBuilder() {
     }
 
     loadGame();
-  }, [orderMode, requestedCount, sessionRun, timerSeconds]);
+  }, [orderMode, requestedCount, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     answerTilesRef.current = answerTiles;
@@ -236,6 +269,7 @@ export default function SentenceBuilder() {
       const wasCorrect = result === "correct";
       const nextColor = updateColorValue(currentQuestion.Color, wasCorrect);
       saveColorProgress(currentQuestion, nextColor, SENTENCE_COLOR_PROGRESS_KEY);
+      saveSupabaseProgress({ ...currentQuestion, Color: nextColor }, nextColor);
       setRows((current) => replaceRowColor(current, currentQuestion.__rowNumber, nextColor));
       nextSessionRows = replaceRowColor(sessionRows, currentQuestion.__rowNumber, nextColor);
       setSessionRows(nextSessionRows);

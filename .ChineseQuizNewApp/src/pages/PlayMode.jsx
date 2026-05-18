@@ -359,18 +359,18 @@ export default function PlayMode() {
         <h2 className="mode-title">Choose mode</h2>
         <div className="mode-grid">
           <button
-            className={`mode-button ${selectedMode === "english-to-chinese" ? "selected" : ""}`}
-            onClick={() => setSelectedMode("english-to-chinese")}
-            aria-label="English to Chinese"
-          >
-            <img src="data/en.png" alt="" aria-hidden="true" />
-          </button>
-          <button
             className={`mode-button ${selectedMode === "chinese-to-english" ? "selected" : ""}`}
             onClick={() => setSelectedMode("chinese-to-english")}
             aria-label="Chinese to English"
           >
             <img src="data/cn.png" alt="" aria-hidden="true" />
+          </button>
+          <button
+            className={`mode-button ${selectedMode === "english-to-chinese" ? "selected" : ""}`}
+            onClick={() => setSelectedMode("english-to-chinese")}
+            aria-label="English to Chinese"
+          >
+            <img src="data/en.png" alt="" aria-hidden="true" />
           </button>
           <button
             className={`mode-button ${selectedMode === "adverb-game" ? "selected" : ""}`}
@@ -434,7 +434,6 @@ export default function PlayMode() {
                 <option value="random">Random</option>
                 <option value="weighted">Weighted random</option>
                 <option value="in-order">In order</option>
-                <option value="daily-review">Daily Review</option>
               </select>
             </label>
             <label className="question-count">

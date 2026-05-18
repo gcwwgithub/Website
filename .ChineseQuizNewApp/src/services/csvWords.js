@@ -138,6 +138,7 @@ function parseCsv(csvText, requiredColumns) {
           word[normalizedHeader] = dataRow[index]?.trim() ?? "";
         }
         word.__rowNumber = dataRowIndex + 2;
+        word.__firstColumnValue = dataRow[0]?.trim() ?? "";
         return word;
       }, {})
     )

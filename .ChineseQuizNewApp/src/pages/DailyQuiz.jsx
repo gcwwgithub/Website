@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { filterCsvRows, loadCsvWords, loadEnglishToChineseRows } from "../services/csvWords.js";
-import { getUserProgress, getWords, recordDailyAttempt, updateWordProgress } from "../services/words.js";
-import { DEFAULT_USER_ID } from "../constants.js";
-import { buildDailyQueue, getTodayKey, weightColor } from "../utils/quiz.js";
 import {
   parseFilterValuesParam,
   readChineseToEnglishSettings,
@@ -11,9 +8,13 @@ import {
   saveChineseToEnglishSettings,
   saveEnglishToChineseSettings,
 } from "../services/quizSettings.js";
+import { saveRemoteColorProgress, syncRemoteColorProgress } from "../services/colorProgressTracking.js";
+import { getColorProgressId, getLegacyColorProgressId } from "../services/progressIdentity.js";
+import { useSupabaseAuth } from "../services/supabaseAuth.js";
 
 export default function DailyQuiz() {
   const [searchParams] = useSearchParams();
+  const { user } = useSupabaseAuth();
   const savedSettings = useMemo(() => readChineseToEnglishSettings(), []);
   const savedEnglishSettings = useMemo(() => readEnglishToChineseSettings(), []);
   const mode = searchParams.get("mode") === "english-to-chinese" ? "english-to-chinese" : "chinese-to-english";
@@ -27,15 +28,11 @@ export default function DailyQuiz() {
   const rangeStart = Math.max(1, Number(searchParams.get("start")) || Number(activeSettings.rangeStart) || 1);
   const rangeEnd = Math.max(rangeStart, Number(searchParams.get("end")) || Number(activeSettings.rangeEnd) || Number.MAX_SAFE_INTEGER);
   const fallbackOrderMode = mode === "english-to-chinese" ? savedEnglishSettings.orderMode : savedSettings.orderMode;
-  const orderMode = normalizeOrderMode(searchParams.has("order") ? searchParams.get("order") : fallbackOrderMode);
+  const orderMode = normalizeOrderMode(searchParams.has("order") ? searchParams.get("order") : fallbackOrderMode, mode);
   const fallbackTimerSeconds = mode === "english-to-chinese" ? savedEnglishSettings.timerSeconds : savedSettings.timerSeconds;
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || Number(fallbackTimerSeconds) || 0));
   const sessionRun = searchParams.get("run") || "";
-  const [queue, setQueue] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [answer, setAnswer] = useState("");
-  const [revealed, setRevealed] = useState(false);
-  const [message, setMessage] = useState("");
+  const reviewSetKey = searchParams.get("reviewSet") || "";
   const [csvRows, setCsvRows] = useState([]);
   const [csvIndex, setCsvIndex] = useState(0);
   const [csvResults, setCsvResults] = useState({ correct: 0, wrong: 0 });
@@ -56,12 +53,38 @@ export default function DailyQuiz() {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const todayKey = useMemo(() => getTodayKey(), []);
-  const currentWord = queue[index];
-  const promptText = mode === "english-to-chinese" ? currentWord?.english : currentWord?.chinese;
-  const answerLabel = mode === "english-to-chinese" ? "Chinese" : "English or pinyin";
-  const modeTitle = mode === "english-to-chinese" ? "English to Chinese" : "Chinese to English";
   const isDailyReview = orderMode === "daily-review";
+  const isReviewMode = orderMode === "daily-review" || orderMode === "review-again";
+
+  function trackColorProgress(row, storageKey, colorValue) {
+    if (!user?.id || !row) {
+      return;
+    }
+
+    saveRemoteColorProgress({
+      userId: user.id,
+      row,
+      storageKey,
+      colorValue,
+    }).catch((trackingError) => {
+      console.warn("Could not save Supabase color progress.", trackingError);
+    });
+  }
+
+  function syncColorProgress(rows, storageKey, options = {}) {
+    if (!user?.id || !rows?.length) {
+      return;
+    }
+
+    syncRemoteColorProgress({
+      userId: user.id,
+      rows,
+      storageKey,
+      isNew: options.isNew,
+    }).catch((trackingError) => {
+      console.warn("Could not sync Supabase color progress.", trackingError);
+    });
+  }
 
   useEffect(() => {
     async function loadQuiz() {
@@ -72,10 +95,11 @@ export default function DailyQuiz() {
         if (mode === "english-to-chinese") {
           const loadedRows = await loadEnglishToChineseRows();
           pruneStaleColorProgress(loadedRows, ENGLISH_COLOR_PROGRESS_KEY);
-          const filteredRows = filterCsvRows(loadedRows, filterType, selectedFilterValues);
+          const loadedRowsWithSavedProgress = applySavedColorProgress(loadedRows, ENGLISH_COLOR_PROGRESS_KEY);
+          syncColorProgress(loadedRowsWithSavedProgress, ENGLISH_COLOR_PROGRESS_KEY);
+          const filteredRows = filterCsvRows(loadedRowsWithSavedProgress, filterType, selectedFilterValues);
           const rangedRows = applyRange(filteredRows, rangeStart, rangeEnd);
-          const rowsWithSavedProgress = applySavedColorProgress(rangedRows, ENGLISH_COLOR_PROGRESS_KEY);
-          setCsvRows(buildCsvSession(rowsWithSavedProgress, requestedCount, orderMode));
+          setCsvRows(buildCsvSession(rangedRows, requestedCount, orderMode, reviewSetKey));
           setCsvIndex(0);
           setCsvResults({ correct: 0, wrong: 0 });
           setWrongCsvRows([]);
@@ -90,10 +114,11 @@ export default function DailyQuiz() {
         if (mode === "chinese-to-english") {
           const loadedCsvRows = await loadCsvWords();
           pruneStaleColorProgress(loadedCsvRows);
-          const filteredRows = filterCsvRows(loadedCsvRows, filterType, selectedFilterValues);
+          const loadedRowsWithSavedProgress = applySavedColorProgress(loadedCsvRows);
+          syncColorProgress(loadedRowsWithSavedProgress, CSV_COLOR_PROGRESS_KEY);
+          const filteredRows = filterCsvRows(loadedRowsWithSavedProgress, filterType, selectedFilterValues);
           const rangedRows = applyRange(filteredRows, rangeStart, rangeEnd);
-          const rowsWithSavedProgress = applySavedColorProgress(rangedRows);
-          setCsvRows(buildCsvSession(rowsWithSavedProgress, requestedCount, orderMode));
+          setCsvRows(buildCsvSession(rangedRows, requestedCount, orderMode, reviewSetKey));
           setCsvIndex(0);
           setCsvResults({ correct: 0, wrong: 0 });
           setWrongCsvRows([]);
@@ -105,8 +130,6 @@ export default function DailyQuiz() {
           return;
         }
 
-        const [words, progress] = await Promise.all([getWords(), getUserProgress(DEFAULT_USER_ID)]);
-        setQueue(buildDailyQueue(words, progress, requestedCount));
       } catch (loadError) {
         setError(loadError.message);
       } finally {
@@ -114,10 +137,10 @@ export default function DailyQuiz() {
       }
     }
     loadQuiz();
-  }, [filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, selectedFilterValues, sessionRun, timerSeconds]);
+  }, [filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, selectedFilterValues, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
-    if (loading || isDailyReview || timerSeconds <= 0 || isCsvFlipped || csvIndex >= csvRows.length) {
+    if (loading || isReviewMode || timerSeconds <= 0 || isCsvFlipped || csvIndex >= csvRows.length) {
       setTimerRemaining(timerSeconds);
       return;
     }
@@ -137,10 +160,10 @@ export default function DailyQuiz() {
     }, 1000);
 
     return () => window.clearInterval(intervalId);
-  }, [csvIndex, csvRows.length, isCsvFlipped, isDailyReview, loading, timerSeconds]);
+  }, [csvIndex, csvRows.length, isCsvFlipped, isReviewMode, loading, timerSeconds]);
 
   useEffect(() => {
-    if (mode !== "chinese-to-english") {
+    if (mode !== "chinese-to-english" || orderMode === "review-again") {
       return;
     }
 
@@ -159,7 +182,7 @@ export default function DailyQuiz() {
   }, [filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, selectedFilterValues, showFrontPinyin, showFrontUsage, showMeaningCount, timerSeconds]);
 
   useEffect(() => {
-    if (mode !== "english-to-chinese") {
+    if (mode !== "english-to-chinese" || orderMode === "review-again") {
       return;
     }
 
@@ -174,36 +197,6 @@ export default function DailyQuiz() {
       showChineseSentence: showEnglishChineseSentence,
     });
   }, [filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, selectedFilterValues, showEnglishChineseSentence, timerSeconds]);
-
-  async function submitAnswer(event) {
-    event.preventDefault();
-    if (!currentWord || !answer.trim()) return;
-
-    const normalizedAnswer = answer.trim().toLowerCase();
-    const correctAnswers = mode === "english-to-chinese"
-      ? [currentWord.chinese]
-      : [currentWord.english, currentWord.pinyin];
-    const normalizedCorrectAnswers = correctAnswers
-      .filter(Boolean)
-      .map((value) => value.trim().toLowerCase());
-    const wasCorrect = normalizedCorrectAnswers.includes(normalizedAnswer);
-
-    const nextWeight = await updateWordProgress({ userId: DEFAULT_USER_ID, word: currentWord, wasCorrect });
-    await recordDailyAttempt({ userId: DEFAULT_USER_ID, dateKey: todayKey, wordId: currentWord.id, wasCorrect });
-
-    setQueue((current) =>
-      current.map((word) => (word.id === currentWord.id ? { ...word, weight: nextWeight } : word))
-    );
-    setMessage(wasCorrect ? "Correct. Weight decreased." : "Not quite. Weight increased.");
-    setRevealed(true);
-  }
-
-  function nextWord() {
-    setAnswer("");
-    setRevealed(false);
-    setMessage("");
-    setIndex((current) => current + 1);
-  }
 
   if (loading) return <main className="page">Loading quiz...</main>;
 
@@ -223,11 +216,12 @@ export default function DailyQuiz() {
     const isCsvComplete = csvRows.length > 0 && csvIndex >= csvRows.length;
 
     function answerEnglishQuestion(wasCorrect) {
-      const shouldUpdateColor = orderMode !== "daily-review";
+      const shouldUpdateColor = !isReviewMode;
       const nextColor = shouldUpdateColor ? updateColorValue(csvRow?.Color, wasCorrect) : csvRow?.Color;
       const answeredRow = csvRow && shouldUpdateColor ? { ...csvRow, Color: nextColor } : csvRow;
       if (answeredRow && shouldUpdateColor) {
         saveColorProgress(answeredRow, nextColor, ENGLISH_COLOR_PROGRESS_KEY);
+        trackColorProgress(answeredRow, ENGLISH_COLOR_PROGRESS_KEY, nextColor);
       }
 
       setCsvHistory((current) => [
@@ -276,8 +270,13 @@ export default function DailyQuiz() {
     }
 
     function nextEnglishReviewCard() {
-      if (csvIndex >= csvRows.length - 1) {
+      if (isDailyReview && csvIndex >= csvRows.length - 1) {
         saveDailyReviewCompletion(csvRows, ENGLISH_COLOR_PROGRESS_KEY);
+        syncColorProgress(
+          csvRows.map((row) => ({ ...row, Color: getDailyReviewCompletionColor(row), __hasSavedColorProgress: true })),
+          ENGLISH_COLOR_PROGRESS_KEY,
+          { isNew: false }
+        );
       }
       setIsCsvFlipped(false);
       setWasAutoFlipped(false);
@@ -314,7 +313,7 @@ export default function DailyQuiz() {
     }
 
     if (isCsvComplete) {
-      if (isDailyReview) {
+      if (isReviewMode) {
         return (
           <main className="page narrow-page">
             <section className="quiz-card result-card">
@@ -323,6 +322,12 @@ export default function DailyQuiz() {
               <ReviewedCardsList rows={csvRows} mode="english-to-chinese" />
               <div className="result-actions">
                 <Link className="play-button" to={`/quiz?${buildReplayParams(searchParams, {
+                  showChineseSentence: showEnglishChineseSentence,
+                  order: "daily-review",
+                })}`}>
+                  Review new
+                </Link>
+                <Link className="secondary-button settings-link" to={`/quiz?${buildReviewAgainParams(searchParams, csvRows, {
                   showChineseSentence: showEnglishChineseSentence,
                 })}`}>
                   Review again
@@ -424,16 +429,16 @@ export default function DailyQuiz() {
               <div className="csv-preview">
                 <EnglishToChineseFlashcard
                   row={csvRow}
-                  isFlipped={isDailyReview || isCsvFlipped}
+                  isFlipped={isReviewMode || isCsvFlipped}
                   progressText={csvRows.length ? `${csvIndex + 1} / ${csvRows.length}` : "CSV preview"}
                   showChineseSentence={showEnglishChineseSentence}
-                  timerSeconds={isDailyReview ? 0 : timerSeconds}
+                  timerSeconds={isReviewMode ? 0 : timerSeconds}
                   timerRemaining={timerRemaining}
                   wasAutoFlipped={wasAutoFlipped}
-                  canUndo={!isDailyReview && csvHistory.length > 0}
-                  onUndo={isDailyReview ? null : undoLastEnglishAction}
+                  canUndo={!isReviewMode && csvHistory.length > 0}
+                  onUndo={isReviewMode ? null : undoLastEnglishAction}
                 />
-                {isDailyReview ? (
+                {isReviewMode ? (
                   <div className="card-actions single-action">
                     <button onClick={nextEnglishReviewCard}>Next</button>
                   </div>
@@ -466,11 +471,12 @@ export default function DailyQuiz() {
     const isCsvComplete = csvRows.length > 0 && csvIndex >= csvRows.length;
 
     function answerCsvQuestion(wasCorrect) {
-      const shouldUpdateColor = orderMode !== "daily-review";
+      const shouldUpdateColor = !isReviewMode;
       const nextColor = shouldUpdateColor ? updateColorValue(csvRow?.Color, wasCorrect) : csvRow?.Color;
       const answeredRow = csvRow && shouldUpdateColor ? { ...csvRow, Color: nextColor } : csvRow;
       if (answeredRow && shouldUpdateColor) {
         saveColorProgress(answeredRow, nextColor);
+        trackColorProgress(answeredRow, CSV_COLOR_PROGRESS_KEY, nextColor);
       }
 
       setCsvHistory((current) => [
@@ -519,8 +525,13 @@ export default function DailyQuiz() {
     }
 
     function nextCsvReviewCard() {
-      if (csvIndex >= csvRows.length - 1) {
+      if (isDailyReview && csvIndex >= csvRows.length - 1) {
         saveDailyReviewCompletion(csvRows);
+        syncColorProgress(
+          csvRows.map((row) => ({ ...row, Color: getDailyReviewCompletionColor(row), __hasSavedColorProgress: true })),
+          CSV_COLOR_PROGRESS_KEY,
+          { isNew: false }
+        );
       }
       setIsCsvFlipped(false);
       setWasAutoFlipped(false);
@@ -557,7 +568,7 @@ export default function DailyQuiz() {
     }
 
     if (isCsvComplete) {
-      if (isDailyReview) {
+      if (isReviewMode) {
         return (
           <main className="page narrow-page">
             <section className="quiz-card result-card">
@@ -566,6 +577,14 @@ export default function DailyQuiz() {
               <ReviewedCardsList rows={csvRows} mode="chinese-to-english" />
               <div className="result-actions">
                 <Link className="play-button" to={`/quiz?${buildReplayParams(searchParams, {
+                  showPinyin: showFrontPinyin,
+                  showChineseUsage: showFrontUsage,
+                  showMeaningCount,
+                  order: "daily-review",
+                })}`}>
+                  Review new
+                </Link>
+                <Link className="secondary-button settings-link" to={`/quiz?${buildReviewAgainParams(searchParams, csvRows, {
                   showPinyin: showFrontPinyin,
                   showChineseUsage: showFrontUsage,
                   showMeaningCount,
@@ -699,18 +718,18 @@ export default function DailyQuiz() {
               <div className="csv-preview">
                 <CsvFlashcard
                   row={csvRow}
-                  isFlipped={isDailyReview || isCsvFlipped}
+                  isFlipped={isReviewMode || isCsvFlipped}
                   progressText={csvRows.length ? `${csvIndex + 1} / ${csvRows.length}` : "CSV preview"}
                   showFrontPinyin={showFrontPinyin}
                   showFrontUsage={showFrontUsage}
                   showMeaningCount={showMeaningCount}
-                  timerSeconds={isDailyReview ? 0 : timerSeconds}
+                  timerSeconds={isReviewMode ? 0 : timerSeconds}
                   timerRemaining={timerRemaining}
                   wasAutoFlipped={wasAutoFlipped}
-                  canUndo={!isDailyReview && csvHistory.length > 0}
-                  onUndo={isDailyReview ? null : undoLastAction}
+                  canUndo={!isReviewMode && csvHistory.length > 0}
+                  onUndo={isReviewMode ? null : undoLastAction}
                 />
-                {isDailyReview ? (
+                {isReviewMode ? (
                   <div className="card-actions single-action">
                     <button onClick={nextCsvReviewCard}>Next</button>
                   </div>
@@ -738,57 +757,14 @@ export default function DailyQuiz() {
     );
   }
 
-  if (!queue.length) {
-    return (
-      <main className="page">
-        <section className="panel empty-state">
-          <h2>No words yet</h2>
-          <p>Add a few words before starting your daily quiz.</p>
-        </section>
-      </main>
-    );
-  }
-
-  if (!currentWord) {
-    return (
-      <main className="page">
-        <section className="panel empty-state">
-          <p className="eyebrow">Daily Quiz</p>
-          <h2>Session complete</h2>
-          <p>You reviewed {queue.length} words today.</p>
-        </section>
-      </main>
-    );
-  }
-
   return (
-    <main className="page narrow-page">
-      <p className="eyebrow">{modeTitle} {index + 1} / {queue.length}</p>
-      <section className="quiz-card">
-        <span className={`weight-pill ${weightColor(currentWord.weight)}`}>Weight {currentWord.weight}</span>
-        <h2>{promptText}</h2>
-        <form onSubmit={submitAnswer}>
-          <label>
-            {answerLabel}
-            <input
-              value={answer}
-              onChange={(event) => setAnswer(event.target.value)}
-              disabled={revealed}
-              autoFocus
-            />
-          </label>
-          {!revealed && <button>Check</button>}
-        </form>
-        {revealed && (
-          <div className="answer-panel">
-            <p>{message}</p>
-            <p><strong>Chinese:</strong> {currentWord.chinese}</p>
-            <p><strong>Pinyin:</strong> {currentWord.pinyin || "None"}</p>
-            <p><strong>English:</strong> {currentWord.english}</p>
-            {currentWord.example && <p>{currentWord.example}</p>}
-            <button onClick={nextWord}>Next</button>
-          </div>
-        )}
+    <main className="page">
+      <section className="panel empty-state">
+        <h2>Choose a quiz mode</h2>
+        <p>Start a CSV practice session from the play screen.</p>
+        <Link className="button-link" to="/play">
+          Back to Play
+        </Link>
       </section>
     </main>
   );
@@ -1238,9 +1214,13 @@ function manuallyFlipCard(setIsCsvFlipped, setWasAutoFlipped) {
   setIsCsvFlipped(true);
 }
 
-function buildCsvSession(rows, count, orderMode) {
+function buildCsvSession(rows, count, orderMode, reviewSetKey = "") {
   if (orderMode === "in-order") {
     return rows.slice(0, Math.min(count, rows.length));
+  }
+
+  if (orderMode === "review-again") {
+    return buildReviewAgainCsvSession(rows, reviewSetKey);
   }
 
   if (orderMode === "daily-review") {
@@ -1270,17 +1250,21 @@ function buildRandomCsvSession(rows, count) {
 }
 
 function buildWeightedCsvSession(rows, count) {
+  return takeWeightedRows(rows, count);
+}
+
+function takeWeightedRows(rows, count) {
   const availableRows = [...rows];
   const selectedRows = [];
-  const targetCount = Math.min(count, availableRows.length);
+  const targetCount = Math.min(count, rows.length);
 
   while (selectedRows.length < targetCount && availableRows.length) {
-    const totalWeight = availableRows.reduce((sum, row) => sum + getSelectionWeight(row.Color), 0);
+    const totalWeight = availableRows.reduce((sum, row) => sum + getWeightedSelectionWeight(row), 0);
     let pick = Math.random() * totalWeight;
     let selectedIndex = 0;
 
     for (let index = 0; index < availableRows.length; index += 1) {
-      pick -= getSelectionWeight(availableRows[index].Color);
+      pick -= getWeightedSelectionWeight(availableRows[index]);
       if (pick <= 0) {
         selectedIndex = index;
         break;
@@ -1292,6 +1276,13 @@ function buildWeightedCsvSession(rows, count) {
   }
 
   return selectedRows;
+}
+
+function getWeightedSelectionWeight(row) {
+  const colorWeight = getSelectionWeight(row.Color) * 1.1;
+  const seenMultiplier = isNewCard(row) ? 0.5 : 1.5;
+
+  return colorWeight * seenMultiplier;
 }
 
 function buildDailyReviewCsvSession(rows, count) {
@@ -1318,7 +1309,7 @@ function buildDailyReviewCsvSession(rows, count) {
   const normalTarget = Math.floor(targetCount * 0.25);
   const easyTarget = targetCount - newTarget - weakTarget - normalTarget;
 
-  takeUniqueRows(shuffleRows(buckets.new), newTarget, selectedRows, selectedSet);
+  takeUniqueRows(buildWeightedCsvSession(buckets.new, buckets.new.length), newTarget, selectedRows, selectedSet);
   takeUniqueRows(buildWeightedCsvSession(buckets.weak, buckets.weak.length), weakTarget, selectedRows, selectedSet);
   takeUniqueRows(buildWeightedCsvSession(buckets.normal, buckets.normal.length), normalTarget, selectedRows, selectedSet);
   takeUniqueRows(shuffleRows(buckets.easy), easyTarget, selectedRows, selectedSet);
@@ -1328,12 +1319,22 @@ function buildDailyReviewCsvSession(rows, count) {
       ...buildWeightedCsvSession(buckets.weak, buckets.weak.length),
       ...buildWeightedCsvSession(buckets.normal, buckets.normal.length),
       ...shuffleRows(buckets.easy),
-      ...shuffleRows(buckets.new),
+      ...buildWeightedCsvSession(buckets.new, buckets.new.length),
     ];
     takeUniqueRows(fallbackRows, targetCount - selectedRows.length, selectedRows, selectedSet);
   }
 
   return shuffleRows(selectedRows).slice(0, targetCount);
+}
+
+function buildReviewAgainCsvSession(rows, reviewSetKey) {
+  const reviewIds = readDailyReviewSet(reviewSetKey);
+  if (!reviewIds.length) {
+    return [];
+  }
+
+  const rowsById = new Map(rows.map((row) => [getColorProgressId(row), row]));
+  return reviewIds.map((progressId) => rowsById.get(progressId)).filter(Boolean);
 }
 
 function takeUniqueRows(rows, count, selectedRows, selectedSet) {
@@ -1415,7 +1416,7 @@ function applySavedColorProgress(rows, storageKey = CSV_COLOR_PROGRESS_KEY) {
   const progress = readColorProgress(storageKey);
 
   return rows.map((row) => {
-    const savedColor = progress[getColorProgressId(row)];
+    const savedColor = progress[getColorProgressId(row)] ?? progress[getLegacyColorProgressId(row)];
     if (savedColor === undefined) {
       return { ...row, __hasSavedColorProgress: false };
     }
@@ -1434,7 +1435,11 @@ function readColorProgress(storageKey = CSV_COLOR_PROGRESS_KEY) {
 }
 
 function pruneStaleColorProgress(rows, storageKey = CSV_COLOR_PROGRESS_KEY) {
-  const validProgressIds = new Set(rows.map(getColorProgressId).filter(Boolean));
+  const validProgressIds = new Set(
+    rows
+      .flatMap((row) => [getColorProgressId(row), getLegacyColorProgressId(row)])
+      .filter(Boolean)
+  );
   const progress = readColorProgress(storageKey);
   const prunedProgress = {};
   let removedStaleProgress = false;
@@ -1489,27 +1494,11 @@ function saveColorProgress(row, colorValue, storageKey = CSV_COLOR_PROGRESS_KEY)
   }
 }
 
-function getColorProgressId(row) {
-  if (!row || typeof row !== "object") {
-    return "";
-  }
-
-  const identityValue =
-    row["Chinese Words"] ||
-    row["Chinese Word"] ||
-    row._Chinese ||
-    row.item ||
-    row.sentence ||
-    (Array.isArray(row.parts) ? row.parts.join("") : "") ||
-    row.id ||
-    "";
-  const normalizedValue = String(identityValue).trim().toLowerCase();
-
-  return normalizedValue ? `row:${normalizedValue}` : "";
-}
-
 function buildReplayParams(searchParams, options = {}) {
   const replayParams = new URLSearchParams(searchParams);
+  if ("order" in options) {
+    replayParams.set("order", options.order);
+  }
   if ("showPinyin" in options) {
     replayParams.set("pinyin", options.showPinyin ? "1" : "0");
   }
@@ -1526,8 +1515,49 @@ function buildReplayParams(searchParams, options = {}) {
   return replayParams.toString();
 }
 
-function normalizeOrderMode(orderMode) {
-  return ["random", "weighted", "in-order", "daily-review"].includes(orderMode) ? orderMode : "random";
+function buildReviewAgainParams(searchParams, rows, options = {}) {
+  const reviewSetKey = saveDailyReviewSet(rows);
+  const replayParams = new URLSearchParams(buildReplayParams(searchParams, {
+    ...options,
+    order: "review-again",
+  }));
+  replayParams.set("reviewSet", reviewSetKey);
+  return replayParams.toString();
+}
+
+function saveDailyReviewSet(rows) {
+  const reviewSetKey = `daily-review-${Date.now()}`;
+  const progressIds = rows.map(getColorProgressId).filter(Boolean);
+
+  try {
+    window.sessionStorage.setItem(reviewSetKey, JSON.stringify(progressIds));
+  } catch {
+    // Review-again is optional; if session storage fails, the route will show no replay rows.
+  }
+
+  return reviewSetKey;
+}
+
+function readDailyReviewSet(reviewSetKey) {
+  if (!reviewSetKey) {
+    return [];
+  }
+
+  try {
+    const savedSet = window.sessionStorage.getItem(reviewSetKey);
+    const parsedSet = savedSet ? JSON.parse(savedSet) : [];
+    return Array.isArray(parsedSet) ? parsedSet : [];
+  } catch {
+    return [];
+  }
+}
+
+function normalizeOrderMode(orderMode, mode = "chinese-to-english") {
+  if (mode === "english-to-chinese" && orderMode === "daily-review") {
+    return "random";
+  }
+
+  return ["random", "weighted", "in-order", "daily-review", "review-again"].includes(orderMode) ? orderMode : "random";
 }
 
 function removeLastMatchingRow(rows, rowToRemove) {

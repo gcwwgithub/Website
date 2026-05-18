@@ -1,3 +1,5 @@
+import { getColorProgressId, getLegacyColorProgressId } from "../services/progressIdentity.js";
+
 export function buildPracticeSession(rows, count, orderMode) {
   if (orderMode === "in-order") {
     return rows.slice(0, Math.min(count, rows.length));
@@ -29,12 +31,12 @@ export function applySavedColorProgress(rows, storageKey) {
   const progress = readColorProgress(storageKey);
 
   return rows.map((row) => {
-    const savedColor = progress[getColorProgressId(row)];
+    const savedColor = progress[getColorProgressId(row)] ?? progress[getLegacyColorProgressId(row)];
     if (savedColor === undefined) {
-      return row;
+      return { ...row, __hasSavedColorProgress: false };
     }
 
-    return { ...row, Color: String(savedColor) };
+    return { ...row, Color: String(savedColor), __hasSavedColorProgress: true };
   });
 }
 
@@ -59,17 +61,21 @@ export function shuffleRows(rows) {
 }
 
 function buildWeightedSession(rows, count) {
+  return takeWeightedRows(rows, count);
+}
+
+function takeWeightedRows(rows, count) {
   const availableRows = [...rows];
   const selectedRows = [];
-  const targetCount = Math.min(count, availableRows.length);
+  const targetCount = Math.min(count, rows.length);
 
   while (selectedRows.length < targetCount && availableRows.length) {
-    const totalWeight = availableRows.reduce((sum, row) => sum + getSelectionWeight(row.Color), 0);
+    const totalWeight = availableRows.reduce((sum, row) => sum + getWeightedSelectionWeight(row), 0);
     let pick = Math.random() * totalWeight;
     let selectedIndex = 0;
 
     for (let index = 0; index < availableRows.length; index += 1) {
-      pick -= getSelectionWeight(availableRows[index].Color);
+      pick -= getWeightedSelectionWeight(availableRows[index]);
       if (pick <= 0) {
         selectedIndex = index;
         break;
@@ -83,6 +89,17 @@ function buildWeightedSession(rows, count) {
   return selectedRows;
 }
 
+function isNewPracticeRow(row) {
+  return !row?.__hasSavedColorProgress || row.Color === "" || row.Color == null;
+}
+
+function getWeightedSelectionWeight(row) {
+  const colorWeight = getSelectionWeight(row.Color) * 1.1;
+  const seenMultiplier = isNewPracticeRow(row) ? 0.5 : 1.5;
+
+  return colorWeight * seenMultiplier;
+}
+
 function getSelectionWeight(colorValue) {
   const parsedColor = Number.parseInt(colorValue, 10);
   if (Number.isNaN(parsedColor)) {
@@ -91,26 +108,6 @@ function getSelectionWeight(colorValue) {
 
   const normalizedColor = Math.max(1, parsedColor);
   return normalizedColor * normalizedColor;
-}
-
-function getColorProgressId(row) {
-  if (!row || typeof row !== "object") {
-    return "";
-  }
-
-  const identityValue =
-    row["Chinese Words"] ||
-    row["Chinese Word"] ||
-    row._Chinese ||
-    row._English ||
-    row.item ||
-    row.sentence ||
-    (Array.isArray(row.parts) ? row.parts.join("") : "") ||
-    row.id ||
-    "";
-  const normalizedValue = String(identityValue).trim().toLowerCase();
-
-  return normalizedValue ? `row:${normalizedValue}` : "";
 }
 
 function readColorProgress(storageKey) {

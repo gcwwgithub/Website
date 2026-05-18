@@ -88,6 +88,7 @@ export async function loadSentenceRows() {
 
       return {
         __rowNumber: index + (hasHeader ? 2 : 1),
+        __firstColumnValue: columns[0]?.trim() ?? "",
         Color: colorIndex >= 0 ? columns[colorIndex]?.trim() || "1" : "1",
         alternateAnswers: alternateIndexes
           .map((columnIndex) => columns[columnIndex]?.trim())
@@ -179,6 +180,7 @@ function parseCsv(csvText, requiredColumns = REQUIRED_COLUMNS) {
     normalizedHeaders.reduce((word, header, index) => {
       word[header] = dataRow[index]?.trim() ?? "";
       word.__rowNumber = dataRowIndex + 2;
+      word.__firstColumnValue = dataRow[0]?.trim() ?? "";
       return word;
     }, {})
   );

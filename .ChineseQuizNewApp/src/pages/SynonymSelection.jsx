@@ -4,6 +4,8 @@ import GameMenu from "../components/GameMenu.jsx";
 import ColorBadge from "../components/ColorBadge.jsx";
 import TimerStatus from "../components/TimerStatus.jsx";
 import { loadSynonymDetails, loadSynonymRows } from "../services/adverbCsv.js";
+import { saveRemoteColorProgress, syncRemoteColorProgress } from "../services/colorProgressTracking.js";
+import { useSupabaseAuth } from "../services/supabaseAuth.js";
 import {
   applySavedColorProgress,
   buildPracticeSession,
@@ -16,6 +18,7 @@ const SYNONYM_COLOR_PROGRESS_KEY = "chineseQuizNew.synonymColorProgress.v1";
 
 export default function SynonymSelection() {
   const [searchParams] = useSearchParams();
+  const { user } = useSupabaseAuth();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
@@ -37,11 +40,41 @@ export default function SynonymSelection() {
   const isAnswered = Boolean(selected) || wasAutoRevealed;
   const isComplete = sessionRows.length > 0 && questionIndex >= sessionRows.length;
 
+  function syncSupabaseProgress(nextRows) {
+    if (!user?.id || !nextRows?.length) {
+      return;
+    }
+
+    syncRemoteColorProgress({
+      userId: user.id,
+      storageKey: SYNONYM_COLOR_PROGRESS_KEY,
+      rows: nextRows,
+    }).catch((trackingError) => {
+      console.warn("Could not sync Supabase synonym progress.", trackingError);
+    });
+  }
+
+  function saveSupabaseProgress(row, colorValue) {
+    if (!user?.id || !row) {
+      return;
+    }
+
+    saveRemoteColorProgress({
+      userId: user.id,
+      storageKey: SYNONYM_COLOR_PROGRESS_KEY,
+      row,
+      colorValue,
+    }).catch((trackingError) => {
+      console.warn("Could not save Supabase synonym progress.", trackingError);
+    });
+  }
+
   useEffect(() => {
     async function loadGame() {
       try {
         const [synonymRows, loadedSynonymDetails] = await Promise.all([loadSynonymRows(), loadSynonymDetails()]);
         const loadedRows = applySavedColorProgress(synonymRows, SYNONYM_COLOR_PROGRESS_KEY);
+        syncSupabaseProgress(loadedRows);
         const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
@@ -62,7 +95,7 @@ export default function SynonymSelection() {
     }
 
     loadGame();
-  }, [orderMode, requestedCount, sessionRun, timerSeconds]);
+  }, [orderMode, requestedCount, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     if (loading || timerSeconds <= 0 || isAnswered || !currentRow || isComplete) {
@@ -103,6 +136,7 @@ export default function SynonymSelection() {
       const nextColor = updateColorValue(currentRow.Color, wasCorrect);
       const answeredRow = { ...currentRow, Color: nextColor };
       saveColorProgress(currentRow, nextColor, SYNONYM_COLOR_PROGRESS_KEY);
+      saveSupabaseProgress(answeredRow, nextColor);
       nextRows = replaceRowColor(rows, currentRow.__rowNumber, nextColor);
       nextSessionRows = replaceRowColor(sessionRows, currentRow.__rowNumber, nextColor);
       setRows(nextRows);

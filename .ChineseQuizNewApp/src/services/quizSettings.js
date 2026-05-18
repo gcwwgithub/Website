@@ -129,7 +129,7 @@ function normalizeEnglishSettings(settings = {}) {
     ...settings,
     filterType: normalizeFilterType(settings.filterType),
     filterValues: normalizeFilterValues(settings.filterValues),
-    orderMode: normalizeOrderMode(settings.orderMode),
+    orderMode: normalizeEnglishOrderMode(settings.orderMode),
     timerSeconds: normalizeTimerSeconds(settings.timerSeconds),
     showChineseSentence: settings.showChineseSentence !== false,
   };
@@ -137,6 +137,10 @@ function normalizeEnglishSettings(settings = {}) {
 
 function normalizeOrderMode(orderMode) {
   return ["random", "weighted", "in-order", "daily-review"].includes(orderMode) ? orderMode : "random";
+}
+
+function normalizeEnglishOrderMode(orderMode) {
+  return ["random", "weighted", "in-order"].includes(orderMode) ? orderMode : "random";
 }
 
 function normalizeTimerSeconds(timerSeconds) {

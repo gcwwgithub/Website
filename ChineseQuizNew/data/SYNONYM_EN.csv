@@ -44,7 +44,7 @@ _Chinese Word,_Pinyin,_English
 急忙,jímáng,hastily; hurriedly (Usage: Use to describe the anxious or agitated state of mind; focuses on the person feeling frantic or flustered.)
 经常,jīngcháng,often; frequently (Usage: Standard word for 'often' or 'frequently'.)
 经过,jīngguò,to pass by; after going through; process (Usage: Use to describe a 'process' or the experience of going through a period of time/event.)
-经历,jīnglì,to experience; experience undergone (Usage: A 'life experience' or an event that one has gone through.)
+经历,jīnglì,"to experience; experience undergone (Usage: A 'life experience' or an event that one has gone through. Best paired with a stage, a period of time, a crisis)"
 敬佩,jìngpèi,to admire; to respect deeply (Usage: A formal and deep 'respect' and admiration for someone.)
 经验,jīngyàn,experience; knowledge from experience (Usage: The 'skill' or 'knowledge' gained from doing something many times.)
 就,jiù,then; right away; already (Usage: Used to emphasize that something happened 'sooner' than expected or 'as soon as'.)
@@ -62,11 +62,10 @@ _Chinese Word,_Pinyin,_English
 屡次,lǚcì,repeatedly; many times (Usage: Formal word for 'many times' or 'repeatedly' (often for bad behavior).)
 猛然,měngrán,suddenly; abruptly (Usage: Literary word for 'suddenly' (often used for a sudden realization).)
 明白,míngbai,to understand; clear (Usage: To 'understand' a point clearly or for a situation to be 'obvious'.)
-偶然,ǒurán,"accidental; by chance (Usage:General. Used to describe a random event or something that isn't a ""rule."")"
-偶然间,ǒuránjiān,"by chance; accidentally (Usage: Literary. Used to describe a specific, fleeting moment where something unexpected occurred.)"
+偶然,ǒurán,"accidental; by chance (Usage:General. Used to describe a random event or something that isn't a ""rule."" An Adjective)"
+偶然间,ǒuránjiān,"by chance; accidentally (Usage: Literary. Used to describe a specific, fleeting moment where something unexpected occurred. Always a Time-Based Adverb, It is strictly used right before an action verb)"
 佩服,pèifu,"to admire; to respect (Usage: To 'admire' someone's skill, courage, or character.)"
-碰巧,pèngqiǎo,by chance; coincidentally (Usage: An adverb meaning 'by coincidence' or 'happened to'.)
-恰巧,qiàqiǎo,"just happens to; coincidentally (Usage: Formal. Used like ""it so happened that..."" in written reports or polite speech.)"
+碰巧/恰巧,pèngqiǎo/qiàqiǎo,by chance; coincidentally (Usage: An adverb meaning 'by coincidence' or 'happened to'.)
 认为,rènwéi,to think; to believe (Usage: To 'think' or 'hold the opinion' (formal and reasoned).)
 上班,shàngbān,to go to work; to be at work (Usage: Use when specifically talking about the act of going to the office or being on duty (the shift).)
 适合,shìhé,"to suit; to be suitable for (Usage: Verb: 'to suit' or 'to fit' someone/something (e.g., This job suits you).)"
@@ -75,7 +74,7 @@ _Chinese Word,_Pinyin,_English
 特殊,tèshū,special; particular (Usage: Meaning 'exceptional' or 'special' (not the norm).)
 调整,tiáozhěng,"to adjust (Usage: To 'adjust' or 'fine-tune' settings, a schedule, or an attitude.)"
 体会,tǐhuì,to realize; to understand from experience (Usage: To 'realize' or 'learn from experience' (focuses on the inner understanding).)
-体验,tǐyàn,to experience; personal experience (Usage: To 'experience' something personally (often used for new activities or feelings).)
+体验,tǐyàn,"to experience; personal experience (Usage: To 'experience' something personally (often used for a culture, a product/service, a lifestyle)"
 通常,tōngcháng,usually; generally (Usage: General word for 'usually' or 'normally'.)
 通过,tōngguò,to pass through; by means of; to approve (Usage: Use to describe a 'means' or 'channel' (through a person/test) or 'passing' a physical point.)
 突然,tūrán,suddenly (Usage: Adverb meaning 'suddenly'; describes an unexpected change.)
@@ -124,3 +123,15 @@ _Chinese Word,_Pinyin,_English
 一样,yīyàng,"the same; alike (Usage: Refers to equality or lack of difference; it is the most common, colloquial way to say ""the same"" and often follows the pattern ""A 和 B 一样"".)"
 相似,xiāngsì,similar; resemble (Usage: Refers to things that have common traits or look alike but are not identical; it emphasizes partial likeness rather than total equality.)
 相仿,xiāngfǎng,"similar; roughly the same (Usage: Refers to things being close in scale, age, or level; it is most frequently used when comparing quantities, ages, or social statuses.)"
+必须,bìxū,"must; have to (Usage: Refers to an absolute necessity or an objective requirement that cannot be avoided; carries a strong, commanding tone.)"
+应该,yīnggāi,"should; ought to (Usage: Refers to a moral obligation, a reasonable expectation, or what is generally considered correct and proper; softer than ""must"".)"
+不得不,bùdébù,have no choice but to; cannot but (Usage: Refers to being forced into a situation against one's preference due to external circumstances; emphasizes a lack of alternatives.)
+应当,yīngdāng,"should; ought to (Usage: Refers to a duty or obligation based on principles or logic; it is virtually identical to ""应该"" but sounds slightly more formal or written.)"
+室外,shìwài,"outdoor; outside the room (Usage: Refers strictly to any space that is not inside a building; it is the direct opposite of ""室内"" [indoor], such as an outdoor swimming pool.)"
+野外,yěwài,"the wild; open country (Usage: Refers to natural areas far away from cities and human cultivation, typically associated with survival, field research, or untamed nature.)"
+户外,hùwài,"outdoor; open-air (Usage: Refers to activities, sports, or recreation done outside rather than indoors, often carrying a modern, lifestyle-oriented connotation like hiking or camping.)"
+郊外,jiāowài,"outskirts; suburbs (Usage: Refers specifically to the countryside or areas immediately surrounding a city; usually associated with weekend excursions, picnics, or scenic day trips.)"
+既然,jìrán,"since; now that (Usage: Refers to a state of affairs that is already a known fact or reality, used to introduce a logical deduction, suggestion, or consequence based on that fact.)"
+因为,yīnwèi,"because; as (Usage: Refers to the causal explanation for an outcome; it is the most common, versatile, and colloquial way to introduce a reason or cause.)"
+由于,yóuyú,"due to; owing to; because of (Usage: Refers to the origin, cause, or prerequisite of a result; it is more formal and written than ""因为"" and often placed at the very beginning of a sentence.)"
+所以,suǒyǐ,"so; therefore; as a result (Usage: Refers to the outcome or conclusion drawn from a preceding cause; it is the standard marker for a result and frequently pairs with ""因为"" or ""由于"".)"
