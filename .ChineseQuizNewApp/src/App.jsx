@@ -4,7 +4,6 @@ import AppShell from "./components/AppShell.jsx";
 
 const AdverbGame = lazy(() => import("./pages/AdverbGame.jsx"));
 const DailyQuiz = lazy(() => import("./pages/DailyQuiz.jsx"));
-const MainMenu = lazy(() => import("./pages/MainMenu.jsx"));
 const PlayMode = lazy(() => import("./pages/PlayMode.jsx"));
 const SentenceBuilder = lazy(() => import("./pages/SentenceBuilder.jsx"));
 const Settings = lazy(() => import("./pages/Settings.jsx"));
@@ -20,8 +19,8 @@ export default function App() {
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<AppShell />}>
-          <Route index element={<MainMenu />} />
-          <Route path="play" element={<PlayMode />} />
+          <Route index element={<PlayMode />} />
+          <Route path="play" element={<Navigate to="/" replace />} />
           <Route path="adverbs" element={<AdverbGame />} />
           <Route path="synonyms" element={<SynonymSelection />} />
           <Route path="sentence-builder" element={<SentenceBuilder />} />

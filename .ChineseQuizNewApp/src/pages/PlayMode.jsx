@@ -355,6 +355,11 @@ export default function PlayMode() {
 
   return (
     <main className="page home-page">
+      <div className="mode-page-actions">
+        <Link className="secondary-button settings-link" to="/settings">
+          Settings
+        </Link>
+      </div>
       <section className="hero-panel mode-panel">
         <h2 className="mode-title">Choose mode</h2>
         <div className="mode-grid">

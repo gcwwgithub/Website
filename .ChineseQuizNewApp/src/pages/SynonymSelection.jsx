@@ -285,7 +285,7 @@ export default function SynonymSelection() {
                 onClick={() => answer(optionWord)}
                 type="button"
               >
-                <span>{optionWord}</span>
+                <span className="adverb-option-word">{formatSynonymOption(optionWord)}</span>
                 {isAnswered && <SynonymInfo detail={optionDetail} word={optionWord} />}
               </button>
             );
@@ -435,11 +435,54 @@ function splitSynonymMeaning(meaning) {
 }
 
 function findSynonymDetail(detailsByWord, word = "") {
-  return detailsByWord[normalizeOptionWord(word)];
+  const normalizedWord = normalizeOptionWord(word);
+  const exactDetail = detailsByWord[normalizedWord];
+  if (exactDetail) {
+    return exactDetail;
+  }
+
+  const alternatives = splitSynonymAlternatives(normalizedWord)
+    .map((alternative) => ({
+      word: alternative,
+      detail: detailsByWord[alternative],
+    }))
+    .filter(({ detail }) => detail);
+
+  if (!alternatives.length) {
+    return undefined;
+  }
+
+  return {
+    pinyin: alternatives.map(({ detail }) => detail.pinyin).filter(Boolean).join(" / "),
+    meaning: alternatives
+      .map(({ word: alternative, detail }) => `${alternative}: ${detail.meaning}`)
+      .join(" | "),
+  };
 }
 
 function normalizeOptionWord(word = "") {
   return String(word).trim();
+}
+
+function splitSynonymAlternatives(word = "") {
+  return normalizeOptionWord(word)
+    .split("/")
+    .map((alternative) => alternative.trim())
+    .filter(Boolean);
+}
+
+function formatSynonymOption(word = "") {
+  const alternatives = splitSynonymAlternatives(word);
+  if (alternatives.length <= 1) {
+    return word;
+  }
+
+  return alternatives.map((alternative, index) => (
+    <span className="synonym-alternative" key={`${alternative}-${index}`}>
+      {alternative}
+      {index < alternatives.length - 1 && <span className="synonym-slash">/</span>}
+    </span>
+  ));
 }
 
 function IconAudioButton({ label, onClick }) {

@@ -118,9 +118,10 @@ form {
 }
 
 .top-bar-inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
   width: 100%;
   margin: 0;
   padding: 0.85rem 1rem;
@@ -135,6 +136,7 @@ form {
 .auth-status {
   display: inline-flex;
   align-items: center;
+  justify-self: end;
   gap: 0.5rem;
   max-width: min(22rem, 48vw);
   min-height: 2.5rem;
@@ -145,6 +147,15 @@ form {
   font-size: 0.86rem;
   font-weight: 800;
   padding: 0.35rem 0.75rem;
+}
+
+.auth-status-link {
+  text-decoration: none;
+}
+
+.auth-status-link:hover {
+  border-color: rgba(94, 234, 212, 0.5);
+  color: #ccfbf1;
 }
 
 .auth-status span:last-child {
@@ -169,6 +180,17 @@ form {
 .auth-status.signed-in .auth-status-dot {
   background: #2dd4bf;
   box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.16);
+}
+
+.top-bar-title {
+  justify-self: center;
+  margin: 0;
+  color: #f8fafc;
+  font-size: clamp(1.15rem, 3vw, 1.45rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  text-align: center;
 }
 
 .top-bar h1,
@@ -302,9 +324,31 @@ form {
   padding: 0.5rem 0 2rem;
 }
 
+.page-heading-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.page-heading-row .eyebrow,
+.page-heading-row .mode-title {
+  margin: 0;
+}
+
+.page-heading-row .settings-link {
+  justify-self: start;
+}
+
 .home-page {
   min-height: 68vh;
   place-items: center;
+}
+
+.mode-page-actions {
+  width: min(760px, 100%);
+  justify-self: center;
 }
 
 .narrow-page {
@@ -1430,6 +1474,26 @@ form {
   background: #111827;
   color: #eef2f8;
   text-align: left;
+}
+
+.adverb-option-word {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.3rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.synonym-alternative {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.synonym-slash {
+  color: #94a3b8;
+  font-weight: 750;
 }
 
 .adverb-options button:not(:disabled):hover {

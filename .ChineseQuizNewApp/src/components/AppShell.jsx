@@ -1,23 +1,47 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useSupabaseAuth } from "../services/supabaseAuth.js";
+
+const GAME_ROUTES = new Set([
+  "/adverbs",
+  "/quiz",
+  "/sentence-builder",
+  "/synonyms",
+  "/translate",
+]);
 
 export default function AppShell() {
   const { user, loading } = useSupabaseAuth();
-  const authLabel = loading ? "Checking sign-in" : user ? `Signed in: ${user.email || "Supabase user"}` : "Not signed in";
+  const location = useLocation();
+  const isGameMode = GAME_ROUTES.has(location.pathname);
+  const authLabel = loading ? "Checking sign-in" : user ? `Signed in: ${user.email || "Supabase user"}` : "Log in";
 
   return (
     <>
       <header className="top-bar">
         <div className="top-bar-inner">
           <div className="top-bar-left">
-            <a className="site-home-link" href="../index.html">
-              WebPlayground
-            </a>
+            {isGameMode ? (
+              <Link className="site-home-link" to="/">
+                Home
+              </Link>
+            ) : (
+              <a className="site-home-link" href="../index.html">
+                WebPlayground
+              </a>
+            )}
           </div>
-          <div className={`auth-status ${user ? "signed-in" : ""}`}>
-            <span className="auth-status-dot" aria-hidden="true" />
-            <span>{authLabel}</span>
-          </div>
+          <h1 className="top-bar-title">Chinese Quiz</h1>
+          {user || loading ? (
+            <div className={`auth-status ${user ? "signed-in" : ""}`}>
+              <span className="auth-status-dot" aria-hidden="true" />
+              <span>{authLabel}</span>
+            </div>
+          ) : (
+            <Link className="auth-status auth-status-link" to="/settings">
+              <span className="auth-status-dot" aria-hidden="true" />
+              <span>{authLabel}</span>
+            </Link>
+          )}
         </div>
       </header>
       <div className="app-shell">

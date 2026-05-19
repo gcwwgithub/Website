@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { isSupabaseConfigured, supabaseConfigWarning } from "../supabase.js";
 import {
   signInWithSupabasePassword,
@@ -8,6 +9,7 @@ import {
 import { deleteRemoteColorProgress } from "../services/colorProgressTracking.js";
 
 export default function Settings() {
+  const navigate = useNavigate();
   const { user, loading } = useSupabaseAuth();
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
@@ -36,6 +38,7 @@ export default function Settings() {
       await signInWithSupabasePassword({ email: email.trim(), password });
       setPassword("");
       setAuthMessage("Signed in.");
+      navigate("/");
     } catch (error) {
       setAuthError(error.message);
     }
@@ -78,7 +81,11 @@ export default function Settings() {
 
   return (
     <main className="page narrow-page">
-      <p className="eyebrow">Settings</p>
+      <div className="page-heading-row">
+        <Link className="secondary-button settings-link" to="/">
+          Go home
+        </Link>
+      </div>
       <section className="panel">
         <h2>Memory</h2>
         <p className="muted">

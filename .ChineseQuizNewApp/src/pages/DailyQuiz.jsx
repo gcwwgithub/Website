@@ -899,7 +899,6 @@ function EnglishToChineseFlashcard({
     <article className="dictionary-card english-card">
       <div className="dictionary-card-top">
         <p className="eyebrow">{progressText}</p>
-        {isNewCard(row) && <span className="new-card-badge">NEW</span>}
         <p className="question-id">{row.__rowNumber || "?"}</p>
         {onUndo && (
           <button className="undo-button" onClick={onUndo} disabled={!canUndo}>

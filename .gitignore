@@ -1,0 +1,4 @@
+.vite/
+*.log
+*.err.log
+

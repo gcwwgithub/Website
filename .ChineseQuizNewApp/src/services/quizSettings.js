@@ -14,7 +14,7 @@ export const DEFAULT_CHINESE_TO_ENGLISH_SETTINGS = {
   timerSeconds: "0",
   showPinyin: true,
   showChineseUsage: true,
-  showMeaningCount: false,
+  showMeaningCount: true,
 };
 
 export const DEFAULT_ENGLISH_TO_CHINESE_SETTINGS = {
@@ -119,7 +119,7 @@ function normalizeSettings(settings = {}) {
     timerSeconds: normalizeTimerSeconds(settings.timerSeconds),
     showPinyin: settings.showPinyin !== false,
     showChineseUsage: settings.showChineseUsage !== false,
-    showMeaningCount: settings.showMeaningCount === true,
+    showMeaningCount: settings.showMeaningCount !== false,
   };
 }
 
