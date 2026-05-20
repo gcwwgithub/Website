@@ -217,7 +217,9 @@ export default function DailyQuiz() {
 
     function answerEnglishQuestion(wasCorrect) {
       const shouldUpdateColor = !isReviewMode;
-      const nextColor = shouldUpdateColor ? updateColorValue(csvRow?.Color, wasCorrect) : csvRow?.Color;
+      const nextColor = shouldUpdateColor
+        ? updateColorValue(csvRow?.Color, wasCorrect, { isSeenBefore: csvRow?.__hasSavedColorProgress })
+        : csvRow?.Color;
       const answeredRow = csvRow && shouldUpdateColor ? { ...csvRow, Color: nextColor } : csvRow;
       if (answeredRow && shouldUpdateColor) {
         saveColorProgress(answeredRow, nextColor, ENGLISH_COLOR_PROGRESS_KEY);
@@ -1215,7 +1217,12 @@ function manuallyFlipCard(setIsCsvFlipped, setWasAutoFlipped) {
 
 function buildCsvSession(rows, count, orderMode, reviewSetKey = "") {
   if (orderMode === "in-order") {
-    return rows.slice(0, Math.min(count, rows.length));
+    return buildRequiredColorSession(
+      rows,
+      count,
+      (remainingRows, fillerCount) => remainingRows.slice(0, fillerCount),
+      { preserveRowOrder: true }
+    );
   }
 
   if (orderMode === "review-again") {
@@ -1223,14 +1230,14 @@ function buildCsvSession(rows, count, orderMode, reviewSetKey = "") {
   }
 
   if (orderMode === "daily-review") {
-    return buildDailyReviewCsvSession(rows, count);
+    return buildRequiredColorSession(rows, count, buildDailyReviewCsvSession);
   }
 
   if (orderMode === "weighted") {
-    return buildWeightedCsvSession(rows, count);
+    return buildRequiredColorSession(rows, count, buildWeightedCsvSession);
   }
 
-  return buildRandomCsvSession(rows, count);
+  return buildRequiredColorSession(rows, count, buildRandomCsvSession);
 }
 
 function applyRange(rows, start, end) {
@@ -1250,6 +1257,27 @@ function buildRandomCsvSession(rows, count) {
 
 function buildWeightedCsvSession(rows, count) {
   return takeWeightedRows(rows, count);
+}
+
+function buildRequiredColorSession(rows, count, buildFillerRows, options = {}) {
+  const requiredRows = rows.filter(isAlwaysIncludedCard);
+  const requiredSet = new Set(requiredRows);
+  const remainingRows = rows.filter((row) => !requiredSet.has(row));
+  const targetCount = Math.max(Math.min(count, rows.length), requiredRows.length);
+  const fillerRows = buildFillerRows(remainingRows, targetCount - requiredRows.length);
+  const sessionRows = [...requiredRows, ...fillerRows];
+
+  if (options.preserveRowOrder) {
+    const sessionSet = new Set(sessionRows);
+    return rows.filter((row) => sessionSet.has(row));
+  }
+
+  return shuffleRows(sessionRows);
+}
+
+function isAlwaysIncludedCard(row) {
+  const parsedColor = Number.parseInt(row?.Color, 10);
+  return !Number.isNaN(parsedColor) && parsedColor > 10;
 }
 
 function takeWeightedRows(rows, count) {
@@ -1278,7 +1306,7 @@ function takeWeightedRows(rows, count) {
 }
 
 function getWeightedSelectionWeight(row) {
-  const colorWeight = getSelectionWeight(row.Color) * 1.1;
+  const colorWeight = getSelectionWeight(row.Color) * 1.25;
   const seenMultiplier = isNewCard(row) ? 0.5 : 1.5;
 
   return colorWeight * seenMultiplier;
@@ -1394,15 +1422,19 @@ function getSelectionWeight(colorValue) {
   }
 
   const normalizedColor = Math.max(1, parsedColor);
-  return normalizedColor * normalizedColor;
+  return normalizedColor ** 3;
 }
 
-function updateColorValue(colorValue, wasCorrect) {
+function updateColorValue(colorValue, wasCorrect, options = {}) {
   const parsedColor = Number.parseInt(colorValue, 10);
   const currentColor = Number.isNaN(parsedColor) ? 1 : parsedColor;
 
   if (wasCorrect) {
     return String(Math.max(1, currentColor - 1));
+  }
+
+  if (options.isSeenBefore && currentColor < 5 && currentColor < 10) {
+    return "10";
   }
 
   return String(currentColor < 5 ? 7 : currentColor + 2);

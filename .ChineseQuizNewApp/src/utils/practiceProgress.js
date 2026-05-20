@@ -94,7 +94,7 @@ function isNewPracticeRow(row) {
 }
 
 function getWeightedSelectionWeight(row) {
-  const colorWeight = getSelectionWeight(row.Color) * 1.1;
+  const colorWeight = getSelectionWeight(row.Color) * 1.25;
   const seenMultiplier = isNewPracticeRow(row) ? 0.5 : 1.5;
 
   return colorWeight * seenMultiplier;
@@ -107,7 +107,7 @@ function getSelectionWeight(colorValue) {
   }
 
   const normalizedColor = Math.max(1, parsedColor);
-  return normalizedColor * normalizedColor;
+  return normalizedColor ** 3;
 }
 
 function readColorProgress(storageKey) {
