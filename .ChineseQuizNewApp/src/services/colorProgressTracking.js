@@ -1,5 +1,5 @@
 import { supabase } from "../supabase.js";
-import { getStrictColorProgressId } from "./progressIdentity.js";
+import { getColorProgressId } from "./progressIdentity.js";
 
 export async function saveRemoteColorProgress({ userId, storageKey, row, colorValue, isNew }) {
   if (!supabase || !userId || !storageKey || !row) {
@@ -41,13 +41,54 @@ export async function syncRemoteColorProgress({ userId, storageKey, rows, isNew 
     return;
   }
 
-  const { error } = await supabase
+  for (const batch of chunkRows(payload, 500)) {
+    const { error } = await supabase
+      .from("chinese_quiz_color_progress")
+      .upsert(batch, { onConflict: "user_id,game_mode,progress_id" });
+
+    if (error) {
+      throw error;
+    }
+  }
+}
+
+export async function fetchRemoteColorProgress({ userId, storageKey }) {
+  if (!supabase || !userId || !storageKey) {
+    return {};
+  }
+
+  const { data, error } = await supabase
     .from("chinese_quiz_color_progress")
-    .upsert(payload, { onConflict: "user_id,game_mode,progress_id" });
+    .select("progress_id,color_value,is_new")
+    .eq("user_id", userId)
+    .eq("game_mode", getGameMode(storageKey));
 
   if (error) {
     throw error;
   }
+
+  return (data || []).reduce((progressById, row) => {
+    progressById[row.progress_id] = {
+      colorValue: row.color_value,
+      isNew: row.is_new,
+    };
+    return progressById;
+  }, {});
+}
+
+export function applyRemoteColorProgress(rows, remoteProgress) {
+  return rows.map((row) => {
+    const progress = remoteProgress[getColorProgressId(row)];
+    if (!progress || progress.colorValue == null) {
+      return { ...row, __hasSavedColorProgress: false };
+    }
+
+    return {
+      ...row,
+      Color: String(progress.colorValue),
+      __hasSavedColorProgress: progress.isNew === false,
+    };
+  });
 }
 
 export async function deleteRemoteColorProgress({ userId }) {
@@ -87,7 +128,15 @@ function buildColorProgressPayload({ userId, storageKey, row, colorValue, isNew 
 }
 
 function getProgressId(row) {
-  return getStrictColorProgressId(row);
+  return getColorProgressId(row);
+}
+
+function chunkRows(rows, size) {
+  const chunks = [];
+  for (let index = 0; index < rows.length; index += size) {
+    chunks.push(rows.slice(index, index + size));
+  }
+  return chunks;
 }
 
 function normalizeColorValue(colorValue) {

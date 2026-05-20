@@ -4,7 +4,11 @@ import GameMenu from "../components/GameMenu.jsx";
 import ColorBadge from "../components/ColorBadge.jsx";
 import TimerStatus from "../components/TimerStatus.jsx";
 import { loadAdverbRows } from "../services/adverbCsv.js";
-import { saveRemoteColorProgress, syncRemoteColorProgress } from "../services/colorProgressTracking.js";
+import {
+  applyRemoteColorProgress,
+  fetchRemoteColorProgress,
+  saveRemoteColorProgress,
+} from "../services/colorProgressTracking.js";
 import { useSupabaseAuth } from "../services/supabaseAuth.js";
 import {
   applySavedColorProgress,
@@ -42,20 +46,6 @@ export default function AdverbGame() {
   const isAnswered = Boolean(selected) || wasAutoRevealed;
   const isComplete = sessionRows.length > 0 && questionIndex >= sessionRows.length;
 
-  function syncSupabaseProgress(nextRows) {
-    if (!user?.id || !nextRows?.length) {
-      return;
-    }
-
-    syncRemoteColorProgress({
-      userId: user.id,
-      storageKey: ADVERB_COLOR_PROGRESS_KEY,
-      rows: nextRows,
-    }).catch((trackingError) => {
-      console.warn("Could not sync Supabase adverb progress.", trackingError);
-    });
-  }
-
   function saveSupabaseProgress(row, colorValue) {
     if (!user?.id || !row) {
       return;
@@ -74,8 +64,13 @@ export default function AdverbGame() {
   useEffect(() => {
     async function loadGame() {
       try {
-        const loadedRows = applySavedColorProgress(await loadAdverbRows(), ADVERB_COLOR_PROGRESS_KEY);
-        syncSupabaseProgress(loadedRows);
+        const baseRows = await loadAdverbRows();
+        const loadedRows = user?.id
+          ? applyRemoteColorProgress(
+              baseRows,
+              await fetchRemoteColorProgress({ userId: user.id, storageKey: ADVERB_COLOR_PROGRESS_KEY })
+            )
+          : applySavedColorProgress(baseRows, ADVERB_COLOR_PROGRESS_KEY);
         const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);

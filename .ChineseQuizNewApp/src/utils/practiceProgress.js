@@ -1,4 +1,4 @@
-import { getColorProgressId, getLegacyColorProgressId } from "../services/progressIdentity.js";
+import { getColorProgressId } from "../services/progressIdentity.js";
 
 export function buildPracticeSession(rows, count, orderMode) {
   if (orderMode === "in-order") {
@@ -31,7 +31,7 @@ export function applySavedColorProgress(rows, storageKey) {
   const progress = readColorProgress(storageKey);
 
   return rows.map((row) => {
-    const savedColor = progress[getColorProgressId(row)] ?? progress[getLegacyColorProgressId(row)];
+    const savedColor = progress[getColorProgressId(row)];
     if (savedColor === undefined) {
       return { ...row, __hasSavedColorProgress: false };
     }

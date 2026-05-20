@@ -3,10 +3,10 @@ const SENTENCE_CSV_PATH = "data/SENTENCE.csv";
 const SYNONYM_CSV_PATH = "data/SYNONYM.csv";
 const SYNONYM_EN_CSV_PATH = "data/SYNONYM_EN.csv";
 const TRANSLATE_CSV_PATH = "data/TRANSLATE.csv";
-const REQUIRED_COLUMNS = ["item", "type", "category", "example sentence 1", "chinese sentence 1"];
-const SYNONYM_REQUIRED_COLUMNS = ["Chinese Word", "Chinese Sentence", "Wrong Answer 1", "Wrong Answer 2", "Wrong Answer 3"];
+const REQUIRED_COLUMNS = ["item", "type", "category", "example sentence 1", "chinese sentence 1", "ID"];
+const SYNONYM_REQUIRED_COLUMNS = ["Chinese Word", "Chinese Sentence", "Wrong Answer 1", "Wrong Answer 2", "Wrong Answer 3", "ID"];
 const SYNONYM_DETAIL_REQUIRED_COLUMNS = ["_Chinese Word", "_Pinyin", "_English"];
-const TRANSLATE_REQUIRED_COLUMNS = ["_English", "_Possible Translation 1"];
+const TRANSLATE_REQUIRED_COLUMNS = ["_English", "_Possible Translation 1", "ID"];
 
 export async function loadAdverbRows() {
   const response = await fetch(ADVERB_CSV_PATH);
@@ -15,7 +15,7 @@ export async function loadAdverbRows() {
   }
 
   const csvText = await response.text();
-  return parseCsv(csvText, []).filter(hasAdverbQuestion);
+  return parseCsv(csvText, ["ID"]).filter(hasAdverbQuestion);
 }
 
 export async function loadGrammarRows() {
@@ -69,6 +69,7 @@ export async function loadSentenceRows() {
   return dataRows
     .map((columns, index) => {
       const colorIndex = headers.findIndex((header) => header.toLowerCase() === "color");
+      const idIndex = headers.findIndex((header) => header.toLowerCase() === "id");
       const alternateIndexes = headers
         .map((header, headerIndex) => ({ header: header.toLowerCase(), headerIndex }))
         .filter(({ header }) => header.startsWith("alt") || header.startsWith("alternate accepted answer"))
@@ -82,13 +83,13 @@ export async function loadSentenceRows() {
           if (!hasHeader) {
             return true;
           }
-          return columnIndex !== colorIndex && !alternateIndexes.includes(columnIndex);
+          return columnIndex !== colorIndex && columnIndex !== idIndex && !alternateIndexes.includes(columnIndex);
         })
         .map(({ column }) => column);
 
       return {
         __rowNumber: index + (hasHeader ? 2 : 1),
-        __firstColumnValue: columns[0]?.trim() ?? "",
+        ID: idIndex >= 0 ? columns[idIndex]?.trim() || "" : "",
         Color: colorIndex >= 0 ? columns[colorIndex]?.trim() || "1" : "1",
         alternateAnswers: alternateIndexes
           .map((columnIndex) => columns[columnIndex]?.trim())
@@ -96,7 +97,7 @@ export async function loadSentenceRows() {
         parts,
       };
     })
-    .filter((row) => row.parts.length > 1);
+    .filter((row) => row.ID && row.parts.length > 1);
 }
 
 export async function loadTranslateRows() {
@@ -180,13 +181,16 @@ function parseCsv(csvText, requiredColumns = REQUIRED_COLUMNS) {
     normalizedHeaders.reduce((word, header, index) => {
       word[header] = dataRow[index]?.trim() ?? "";
       word.__rowNumber = dataRowIndex + 2;
-      word.__firstColumnValue = dataRow[0]?.trim() ?? "";
       return word;
     }, {})
   );
 }
 
 function hasAdverbQuestion(row) {
+  if (!row.ID) {
+    return false;
+  }
+
   const hasNewShape = row._Chinese && (row.English || row._English) && row._EN1 && row._CN1;
   const hasOldShape = row.type === "adverb" && row.item && row["example sentence 1"];
   return hasNewShape || hasOldShape;

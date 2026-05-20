@@ -9,8 +9,9 @@ const VOCAB_REQUIRED_COLUMNS = [
   "Color",
   "Band 0 HSK",
   "Dao",
+  "ID",
 ];
-const ENGLISH_TO_CHINESE_REQUIRED_COLUMNS = ["Chinese Words", "pinyin", "English Words", "Color", "Band 0 HSK", "Dao"];
+const ENGLISH_TO_CHINESE_REQUIRED_COLUMNS = ["Chinese Words", "pinyin", "English Words", "Color", "Band 0 HSK", "Dao", "ID"];
 
 export async function loadCsvWords() {
   return loadCsv(CSV_PATH, VOCAB_REQUIRED_COLUMNS);
@@ -138,7 +139,6 @@ function parseCsv(csvText, requiredColumns) {
           word[normalizedHeader] = dataRow[index]?.trim() ?? "";
         }
         word.__rowNumber = dataRowIndex + 2;
-        word.__firstColumnValue = dataRow[0]?.trim() ?? "";
         return word;
       }, {})
     )

@@ -8,8 +8,13 @@ import {
   saveChineseToEnglishSettings,
   saveEnglishToChineseSettings,
 } from "../services/quizSettings.js";
-import { saveRemoteColorProgress, syncRemoteColorProgress } from "../services/colorProgressTracking.js";
-import { getColorProgressId, getLegacyColorProgressId } from "../services/progressIdentity.js";
+import {
+  applyRemoteColorProgress,
+  fetchRemoteColorProgress,
+  saveRemoteColorProgress,
+  syncRemoteColorProgress,
+} from "../services/colorProgressTracking.js";
+import { getColorProgressId } from "../services/progressIdentity.js";
 import { useSupabaseAuth } from "../services/supabaseAuth.js";
 
 export default function DailyQuiz() {
@@ -94,10 +99,16 @@ export default function DailyQuiz() {
       try {
         if (mode === "english-to-chinese") {
           const loadedRows = await loadEnglishToChineseRows();
-          pruneStaleColorProgress(loadedRows, ENGLISH_COLOR_PROGRESS_KEY);
-          const loadedRowsWithSavedProgress = applySavedColorProgress(loadedRows, ENGLISH_COLOR_PROGRESS_KEY);
-          syncColorProgress(loadedRowsWithSavedProgress, ENGLISH_COLOR_PROGRESS_KEY);
-          const filteredRows = filterCsvRows(loadedRowsWithSavedProgress, filterType, selectedFilterValues);
+          const loadedRowsWithProgress = user?.id
+            ? applyRemoteColorProgress(
+                loadedRows,
+                await fetchRemoteColorProgress({ userId: user.id, storageKey: ENGLISH_COLOR_PROGRESS_KEY })
+              )
+            : applySavedColorProgress(loadedRows, ENGLISH_COLOR_PROGRESS_KEY);
+          if (!user?.id) {
+            pruneStaleColorProgress(loadedRows, ENGLISH_COLOR_PROGRESS_KEY);
+          }
+          const filteredRows = filterCsvRows(loadedRowsWithProgress, filterType, selectedFilterValues);
           const rangedRows = applyRange(filteredRows, rangeStart, rangeEnd);
           setCsvRows(buildCsvSession(rangedRows, requestedCount, orderMode, reviewSetKey));
           setCsvIndex(0);
@@ -113,10 +124,16 @@ export default function DailyQuiz() {
 
         if (mode === "chinese-to-english") {
           const loadedCsvRows = await loadCsvWords();
-          pruneStaleColorProgress(loadedCsvRows);
-          const loadedRowsWithSavedProgress = applySavedColorProgress(loadedCsvRows);
-          syncColorProgress(loadedRowsWithSavedProgress, CSV_COLOR_PROGRESS_KEY);
-          const filteredRows = filterCsvRows(loadedRowsWithSavedProgress, filterType, selectedFilterValues);
+          const loadedRowsWithProgress = user?.id
+            ? applyRemoteColorProgress(
+                loadedCsvRows,
+                await fetchRemoteColorProgress({ userId: user.id, storageKey: CSV_COLOR_PROGRESS_KEY })
+              )
+            : applySavedColorProgress(loadedCsvRows);
+          if (!user?.id) {
+            pruneStaleColorProgress(loadedCsvRows);
+          }
+          const filteredRows = filterCsvRows(loadedRowsWithProgress, filterType, selectedFilterValues);
           const rangedRows = applyRange(filteredRows, rangeStart, rangeEnd);
           setCsvRows(buildCsvSession(rangedRows, requestedCount, orderMode, reviewSetKey));
           setCsvIndex(0);
@@ -1447,7 +1464,7 @@ function applySavedColorProgress(rows, storageKey = CSV_COLOR_PROGRESS_KEY) {
   const progress = readColorProgress(storageKey);
 
   return rows.map((row) => {
-    const savedColor = progress[getColorProgressId(row)] ?? progress[getLegacyColorProgressId(row)];
+    const savedColor = progress[getColorProgressId(row)];
     if (savedColor === undefined) {
       return { ...row, __hasSavedColorProgress: false };
     }
@@ -1468,7 +1485,7 @@ function readColorProgress(storageKey = CSV_COLOR_PROGRESS_KEY) {
 function pruneStaleColorProgress(rows, storageKey = CSV_COLOR_PROGRESS_KEY) {
   const validProgressIds = new Set(
     rows
-      .flatMap((row) => [getColorProgressId(row), getLegacyColorProgressId(row)])
+      .map(getColorProgressId)
       .filter(Boolean)
   );
   const progress = readColorProgress(storageKey);

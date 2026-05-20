@@ -1,7 +1,7 @@
 create table if not exists public.chinese_quiz_color_progress (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  progress_id text not null,
+  progress_id text not null, -- CSV ID column for the current game mode.
   color_value integer,
   is_new boolean not null default true,
   updated_at timestamptz not null default now()

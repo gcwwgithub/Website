@@ -4,7 +4,11 @@ import GameMenu from "../components/GameMenu.jsx";
 import ColorBadge from "../components/ColorBadge.jsx";
 import TimerStatus from "../components/TimerStatus.jsx";
 import { loadSentenceRows } from "../services/adverbCsv.js";
-import { saveRemoteColorProgress, syncRemoteColorProgress } from "../services/colorProgressTracking.js";
+import {
+  applyRemoteColorProgress,
+  fetchRemoteColorProgress,
+  saveRemoteColorProgress,
+} from "../services/colorProgressTracking.js";
 import { useSupabaseAuth } from "../services/supabaseAuth.js";
 import {
   applySavedColorProgress,
@@ -44,20 +48,6 @@ export default function SentenceBuilder() {
   const isComplete = sessionRows.length > 0 && questionIndex >= sessionRows.length;
   const canSubmitAnswer = Boolean(answerTiles.length) && availableTiles.length === 0;
 
-  function syncSupabaseProgress(nextRows) {
-    if (!user?.id || !nextRows?.length) {
-      return;
-    }
-
-    syncRemoteColorProgress({
-      userId: user.id,
-      storageKey: SENTENCE_COLOR_PROGRESS_KEY,
-      rows: nextRows,
-    }).catch((trackingError) => {
-      console.warn("Could not sync Supabase sentence-builder progress.", trackingError);
-    });
-  }
-
   function saveSupabaseProgress(row, colorValue) {
     if (!user?.id || !row) {
       return;
@@ -76,8 +66,13 @@ export default function SentenceBuilder() {
   useEffect(() => {
     async function loadGame() {
       try {
-        const loadedRows = applySavedColorProgress(await loadSentenceRows(), SENTENCE_COLOR_PROGRESS_KEY);
-        syncSupabaseProgress(loadedRows);
+        const baseRows = await loadSentenceRows();
+        const loadedRows = user?.id
+          ? applyRemoteColorProgress(
+              baseRows,
+              await fetchRemoteColorProgress({ userId: user.id, storageKey: SENTENCE_COLOR_PROGRESS_KEY })
+            )
+          : applySavedColorProgress(baseRows, SENTENCE_COLOR_PROGRESS_KEY);
         const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
