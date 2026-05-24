@@ -10,6 +10,7 @@ const VOCAB_REQUIRED_COLUMNS = [
   "Band 0 HSK",
   "Dao",
   "ID",
+  "Lose Streak",
 ];
 const ENGLISH_TO_CHINESE_REQUIRED_COLUMNS = ["Chinese Words", "pinyin", "English Words", "Color", "Band 0 HSK", "Dao", "ID"];
 

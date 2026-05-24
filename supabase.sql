@@ -3,12 +3,16 @@ create table if not exists public.chinese_quiz_color_progress (
   user_id uuid not null references auth.users(id) on delete cascade,
   progress_id text not null, -- CSV ID column for the current game mode.
   color_value integer,
+  lose_streak integer not null default 0,
   is_new boolean not null default true,
   updated_at timestamptz not null default now()
 );
 
 alter table public.chinese_quiz_color_progress
   add column if not exists game_mode text;
+
+alter table public.chinese_quiz_color_progress
+  add column if not exists lose_streak integer not null default 0;
 
 do $$
 begin
