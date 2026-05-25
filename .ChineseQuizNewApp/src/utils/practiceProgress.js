@@ -1,8 +1,12 @@
 import { getColorProgressId } from "../services/progressIdentity.js";
 
-export function buildPracticeSession(rows, count, orderMode) {
+export function buildPracticeSession(rows, count, orderMode, reviewSetKey = "") {
   if (orderMode === "in-order") {
     return rows.slice(0, Math.min(count, rows.length));
+  }
+
+  if (orderMode === "review-again") {
+    return buildReviewAgainSession(rows, reviewSetKey);
   }
 
   if (orderMode === "weighted") {
@@ -13,7 +17,7 @@ export function buildPracticeSession(rows, count, orderMode) {
 }
 
 export function normalizeOrderMode(orderMode) {
-  return ["random", "weighted", "in-order"].includes(orderMode) ? orderMode : "random";
+  return ["random", "weighted", "in-order", "review-again"].includes(orderMode) ? orderMode : "random";
 }
 
 export function updateColorValue(colorValue, wasCorrect) {
@@ -58,6 +62,56 @@ export function saveColorProgress(row, colorValue, storageKey) {
 
 export function shuffleRows(rows) {
   return [...rows].sort(() => Math.random() - 0.5);
+}
+
+export function buildReviewAgainParams(basePath, searchParams, rows, options = {}) {
+  const params = new URLSearchParams(searchParams);
+  const reviewSetKey = saveReviewSet(rows, options.prefix || "review-again");
+  params.set("order", "review-again");
+  params.set("reviewSet", reviewSetKey);
+  params.set("run", String(Date.now()));
+  return `${basePath}?${params.toString()}`;
+}
+
+export function isReviewAgainMode(orderMode) {
+  return orderMode === "review-again";
+}
+
+function buildReviewAgainSession(rows, reviewSetKey) {
+  const reviewIds = readReviewSet(reviewSetKey);
+  if (!reviewIds.length) {
+    return [];
+  }
+
+  const rowsById = new Map(rows.map((row) => [getColorProgressId(row), row]));
+  return reviewIds.map((progressId) => rowsById.get(progressId)).filter(Boolean);
+}
+
+function saveReviewSet(rows, prefix) {
+  const reviewSetKey = `${prefix}-${Date.now()}`;
+  const progressIds = rows.map(getColorProgressId).filter(Boolean);
+
+  try {
+    window.sessionStorage.setItem(reviewSetKey, JSON.stringify(progressIds));
+  } catch {
+    // Review-again is optional; the normal session should still finish.
+  }
+
+  return reviewSetKey;
+}
+
+function readReviewSet(reviewSetKey) {
+  if (!reviewSetKey) {
+    return [];
+  }
+
+  try {
+    const savedSet = window.sessionStorage.getItem(reviewSetKey);
+    const parsedSet = savedSet ? JSON.parse(savedSet) : [];
+    return Array.isArray(parsedSet) ? parsedSet : [];
+  } catch {
+    return [];
+  }
 }
 
 function buildWeightedSession(rows, count) {

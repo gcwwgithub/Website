@@ -19,7 +19,7 @@ import { useSupabaseAuth } from "../services/supabaseAuth.js";
 
 export default function DailyQuiz() {
   const [searchParams] = useSearchParams();
-  const { user } = useSupabaseAuth();
+  const { user, loading: authLoading } = useSupabaseAuth();
   const savedSettings = useMemo(() => readChineseToEnglishSettings(), []);
   const savedEnglishSettings = useMemo(() => readEnglishToChineseSettings(), []);
   const mode = searchParams.get("mode") === "english-to-chinese" ? "english-to-chinese" : "chinese-to-english";
@@ -93,6 +93,10 @@ export default function DailyQuiz() {
   }
 
   useEffect(() => {
+    if (authLoading) {
+      return;
+    }
+
     async function loadQuiz() {
       setLoading(true);
       setError("");
@@ -155,7 +159,7 @@ export default function DailyQuiz() {
       }
     }
     loadQuiz();
-  }, [filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, selectedFilterValues, sessionRun, timerSeconds, user?.id]);
+  }, [authLoading, filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, selectedFilterValues, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     if (loading || isReviewMode || timerSeconds <= 0 || isCsvFlipped || csvIndex >= csvRows.length) {
@@ -397,6 +401,11 @@ export default function DailyQuiz() {
                 showChineseSentence: showEnglishChineseSentence,
               })}`}>
                 Play again
+              </Link>
+              <Link className="secondary-button settings-link" to={`/quiz?${buildReviewAgainParams(searchParams, csvRows, {
+                showChineseSentence: showEnglishChineseSentence,
+              })}`}>
+                Review again
               </Link>
               <Link className="secondary-button settings-link" to="/">
                 Go home
@@ -681,6 +690,13 @@ export default function DailyQuiz() {
                 showMeaningCount,
               })}`}>
                 Play again
+              </Link>
+              <Link className="secondary-button settings-link" to={`/quiz?${buildReviewAgainParams(searchParams, csvRows, {
+                showPinyin: showFrontPinyin,
+                showChineseUsage: showFrontUsage,
+                showMeaningCount,
+              })}`}>
+                Review again
               </Link>
               <Link className="secondary-button settings-link" to="/">
                 Go home
@@ -1063,16 +1079,30 @@ function FormattedEnglishMeaning({ text = "" }) {
 function formatEnglishMeaningLines(text = "") {
   return text
     .replace(/\s+(?=(?:noun|verb|adjective|adverb|interjection|pronoun|preposition|conjunction|measure word|proper noun)\s*:)/gi, (match, offset, fullText) =>
-      isSlashJoinedWordFormLabel(fullText, offset) ? match : "\n"
+      shouldKeepInlineWordFormLabel(fullText, offset, match) ? match : "\n"
     )
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
 }
 
+function shouldKeepInlineWordFormLabel(text, offset, match) {
+  return isSlashJoinedWordFormLabel(text, offset) || isCompoundVerbLabel(text, offset, match);
+}
+
 function isSlashJoinedWordFormLabel(text, offset) {
   const beforeLabel = text.slice(0, offset).trimEnd();
   return beforeLabel.endsWith("/");
+}
+
+function isCompoundVerbLabel(text, offset, match) {
+  const labelText = text.slice(offset + match.length).toLowerCase();
+  if (!labelText.startsWith("verb")) {
+    return false;
+  }
+
+  const beforeLabel = text.slice(0, offset).trimEnd();
+  return /\b(?:auxiliary|auxilary|modal|helping)$/.test(beforeLabel.toLowerCase());
 }
 
 function countMeaningForms(text = "") {
@@ -1108,7 +1138,7 @@ function countMeaningFormLine(line) {
 }
 
 function splitWordFormLabels(text) {
-  const knownFormPattern = /\b(?:noun|verb|adjective|adverb|interjection|pronoun|preposition|conjunction|measure word|proper noun)\b/i;
+  const knownFormPattern = /\b(?:noun|verb|auxiliary verb|auxilary verb|modal verb|helping verb|adjective|adverb|interjection|pronoun|preposition|conjunction|measure word|proper noun)\b/i;
   if (!knownFormPattern.test(text)) {
     return [];
   }

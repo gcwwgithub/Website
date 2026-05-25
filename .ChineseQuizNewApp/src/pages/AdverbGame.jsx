@@ -12,7 +12,9 @@ import {
 import { useSupabaseAuth } from "../services/supabaseAuth.js";
 import {
   applySavedColorProgress,
+  buildReviewAgainParams,
   buildPracticeSession,
+  isReviewAgainMode,
   normalizeOrderMode,
   saveColorProgress,
   shuffleRows,
@@ -28,6 +30,7 @@ export default function AdverbGame() {
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
   const sessionRun = searchParams.get("run") || "";
+  const reviewSetKey = searchParams.get("reviewSet") || "";
   const initialShowChineseSentence = searchParams.get("sentence") === "1";
   const [rows, setRows] = useState([]);
   const [sessionRows, setSessionRows] = useState([]);
@@ -45,6 +48,7 @@ export default function AdverbGame() {
   const [error, setError] = useState("");
   const isAnswered = Boolean(selected) || wasAutoRevealed;
   const isComplete = sessionRows.length > 0 && questionIndex >= sessionRows.length;
+  const isReviewAgain = isReviewAgainMode(orderMode);
 
   function saveSupabaseProgress(row, colorValue) {
     if (!user?.id || !row) {
@@ -71,7 +75,7 @@ export default function AdverbGame() {
               await fetchRemoteColorProgress({ userId: user.id, storageKey: ADVERB_COLOR_PROGRESS_KEY })
             )
           : applySavedColorProgress(baseRows, ADVERB_COLOR_PROGRESS_KEY);
-        const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode);
+        const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode, reviewSetKey);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
         setQuestionIndex(0);
@@ -90,10 +94,10 @@ export default function AdverbGame() {
     }
 
     loadGame();
-  }, [orderMode, requestedCount, sessionRun, timerSeconds, user?.id]);
+  }, [orderMode, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
-    if (loading || timerSeconds <= 0 || isAnswered || !currentRow || isComplete) {
+    if (loading || isReviewAgain || timerSeconds <= 0 || isAnswered || !currentRow || isComplete) {
       setTimerRemaining(timerSeconds);
       return undefined;
     }
@@ -112,7 +116,7 @@ export default function AdverbGame() {
     }, 1000);
 
     return () => window.clearInterval(intervalId);
-  }, [currentRow, isAnswered, isComplete, loading, questionIndex, timerSeconds]);
+  }, [currentRow, isAnswered, isComplete, isReviewAgain, loading, questionIndex, timerSeconds]);
 
   function answer(option) {
     if (!currentRow || isAnswered) {
@@ -130,12 +134,14 @@ export default function AdverbGame() {
       const wasCorrect = selected === currentRow.item;
       const nextColor = updateColorValue(currentRow.Color, wasCorrect);
       const answeredRow = { ...currentRow, Color: nextColor };
-      saveColorProgress(currentRow, nextColor, ADVERB_COLOR_PROGRESS_KEY);
-      saveSupabaseProgress(answeredRow, nextColor);
-      nextRows = replaceRowColor(rows, currentRow.__rowNumber, nextColor);
-      nextSessionRows = replaceRowColor(sessionRows, currentRow.__rowNumber, nextColor);
-      setRows(nextRows);
-      setSessionRows(nextSessionRows);
+      if (!isReviewAgain) {
+        saveColorProgress(currentRow, nextColor, ADVERB_COLOR_PROGRESS_KEY);
+        saveSupabaseProgress(answeredRow, nextColor);
+        nextRows = replaceRowColor(rows, currentRow.__rowNumber, nextColor);
+        nextSessionRows = replaceRowColor(sessionRows, currentRow.__rowNumber, nextColor);
+        setRows(nextRows);
+        setSessionRows(nextSessionRows);
+      }
       setScore((current) => ({
         correct: current.correct + (wasCorrect ? 1 : 0),
         wrong: current.wrong + (wasCorrect ? 0 : 1),
@@ -241,6 +247,12 @@ export default function AdverbGame() {
             >
               Play again
             </Link>
+            <Link
+              className="secondary-button settings-link"
+              to={buildReviewAgainParams("/adverbs", searchParams, sessionRows, { prefix: "adverb-review" })}
+            >
+              Review again
+            </Link>
             <Link className="secondary-button settings-link" to="/">
               Go home
             </Link>
@@ -295,7 +307,7 @@ export default function AdverbGame() {
         <ColorBadge colorValue={currentRow.Color} />
         <TimerStatus
           isFlipped={isAnswered}
-          timerSeconds={timerSeconds}
+          timerSeconds={isReviewAgain ? 0 : timerSeconds}
           timerRemaining={timerRemaining}
           wasAutoFlipped={wasAutoRevealed}
         />

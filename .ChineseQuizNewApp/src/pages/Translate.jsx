@@ -12,7 +12,9 @@ import {
 import { useSupabaseAuth } from "../services/supabaseAuth.js";
 import {
   applySavedColorProgress,
+  buildReviewAgainParams,
   buildPracticeSession,
+  isReviewAgainMode,
   normalizeOrderMode,
   saveColorProgress,
   updateColorValue,
@@ -27,6 +29,7 @@ export default function Translate() {
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
   const sessionRun = searchParams.get("run") || "";
+  const reviewSetKey = searchParams.get("reviewSet") || "";
   const [rows, setRows] = useState([]);
   const [sessionRows, setSessionRows] = useState([]);
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -44,6 +47,7 @@ export default function Translate() {
   const currentQuestion = sessionRows[questionIndex];
   const isComplete = sessionRows.length > 0 && questionIndex >= sessionRows.length;
   const canSubmit = Boolean(answer.trim()) && !result;
+  const isReviewAgain = isReviewAgainMode(orderMode);
 
   function saveSupabaseProgress(row, colorValue) {
     if (!user?.id || !row) {
@@ -72,7 +76,7 @@ export default function Translate() {
               await fetchRemoteColorProgress({ userId: user.id, storageKey: TRANSLATE_COLOR_PROGRESS_KEY })
             )
           : applySavedColorProgress(baseRows, TRANSLATE_COLOR_PROGRESS_KEY);
-        const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode);
+        const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode, reviewSetKey);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
         setQuestionIndex(0);
@@ -92,14 +96,14 @@ export default function Translate() {
     }
 
     loadSession();
-  }, [orderMode, requestedCount, sessionRun, timerSeconds, user?.id]);
+  }, [orderMode, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     answerRef.current = answer;
   }, [answer]);
 
   useEffect(() => {
-    if (loading || timerSeconds <= 0 || result || !currentQuestion || isComplete) {
+    if (loading || isReviewAgain || timerSeconds <= 0 || result || !currentQuestion || isComplete) {
       setTimerRemaining(timerSeconds);
       return undefined;
     }
@@ -120,7 +124,7 @@ export default function Translate() {
     }, 1000);
 
     return () => window.clearInterval(intervalId);
-  }, [currentQuestion, isComplete, loading, questionIndex, result, timerSeconds]);
+  }, [currentQuestion, isComplete, isReviewAgain, loading, questionIndex, result, timerSeconds]);
 
   function submitAnswer() {
     if (!canSubmit || !currentQuestion) {
@@ -138,11 +142,13 @@ export default function Translate() {
     if (currentQuestion && result) {
       const wasCorrect = result === "correct";
       const nextColor = updateColorValue(currentQuestion.Color, wasCorrect);
-      saveColorProgress(currentQuestion, nextColor, TRANSLATE_COLOR_PROGRESS_KEY);
-      saveSupabaseProgress({ ...currentQuestion, Color: nextColor }, nextColor);
-      setRows((current) => replaceRowColor(current, currentQuestion.__rowNumber, nextColor));
-      nextSessionRows = replaceRowColor(sessionRows, currentQuestion.__rowNumber, nextColor);
-      setSessionRows(nextSessionRows);
+      if (!isReviewAgain) {
+        saveColorProgress(currentQuestion, nextColor, TRANSLATE_COLOR_PROGRESS_KEY);
+        saveSupabaseProgress({ ...currentQuestion, Color: nextColor }, nextColor);
+        setRows((current) => replaceRowColor(current, currentQuestion.__rowNumber, nextColor));
+        nextSessionRows = replaceRowColor(sessionRows, currentQuestion.__rowNumber, nextColor);
+        setSessionRows(nextSessionRows);
+      }
       setScore((current) => ({
         correct: current.correct + (wasCorrect ? 1 : 0),
         wrong: current.wrong + (wasCorrect ? 0 : 1),
@@ -242,6 +248,12 @@ export default function Translate() {
             <Link className="play-button" to={`/translate?count=${requestedCount}&order=${orderMode}&timer=${timerSeconds}&run=${Date.now()}`}>
               Play again
             </Link>
+            <Link
+              className="secondary-button settings-link"
+              to={buildReviewAgainParams("/translate", searchParams, sessionRows, { prefix: "translate-review" })}
+            >
+              Review again
+            </Link>
             <Link className="secondary-button settings-link" to="/">
               Go home
             </Link>
@@ -274,7 +286,7 @@ export default function Translate() {
         <ColorBadge colorValue={currentQuestion.Color} />
         <TimerStatus
           isFlipped={Boolean(result)}
-          timerSeconds={timerSeconds}
+          timerSeconds={isReviewAgain ? 0 : timerSeconds}
           timerRemaining={timerRemaining}
           wasAutoFlipped={wasAutoRevealed}
         />

@@ -339,7 +339,7 @@ verb: to construct",这座建筑是由著名建筑师亲自设计并建造的。
 noun: proposal / suggestion",我提议我们今天早点下班，这个提议大家都同意了。,"I suggested we get off work earlier today, and everyone agreed with the idea.",Band7,2.1,5,0,283,,0
 学业,xuéyè,noun: studies; schoolwork; academic work,他最近的学业压力很大。,He has been under a lot of academic pressure recently.,Band7,2.1,5,0,284,,0
 炎热,yánrè,adjective: scorching hot; extremely hot,夏天的天气非常炎热。,The weather in summer is extremely hot.,Band7,2.1,5,0,285,Formal,0
-争吵,zhēngchǎo,verb: to quarrel; to argue / noun: quarrel,他们因为一点小事争吵了起来。,They started arguing over a small matter.,Band7,2.1,5,0,286,,0
+争吵,zhēngchǎo,verb: to quarrel; to argue / noun: quarrel,他们因为一点小事争吵了起来。,They started arguing over a small matter.,Band7,2.1,5,0,286,Formal,0
 花草,huācǎo,noun: flowers and plants,她每天都会给花草浇水。,She waters the flowers and plants every day.,Unknown,2.1,5,0,287,,0
 花盆,huāpén,noun: flowerpot; plant pot,阳台上放着几个花盆。,There are several flowerpots on the balcony.,Unknown,2.1,5,0,288,,0
 救护,jiùhù,verb: to rescue and provide medical aid,医护人员正在救护伤者。,Medical staff are rescuing and treating the injured.,Unknown,2.1,5,0,289,,0
@@ -499,7 +499,7 @@ verb: to perform",这次演出非常成功，演员们演出得很精彩,"The sh
 独特,dútè,adjective: unique; distinctive,她有一种非常独特的风格。,She has a very unique style.,Band4,2.3,5,0,419,,0
 放松,fàngsōng,verb: to relax; to loosen up,工作以后，我喜欢听音乐放松。,"After work, I like listening to music to relax.",Band4,2.3,5,0,420,,0
 尽力,jìnlì,verb: to do one’s best,我已经尽力帮助你了。,I have already done my best to help you.,Band4,2.3,5,0,421,,0
-乐趣,lèqù,noun: fun; enjoyment; pleasure,阅读能带来很多乐趣。,Reading can bring a lot of enjoyment.,Band4,2.3,5,0,422,,0
+乐趣,lèqù,noun: fun; enjoyment; pleasure,阅读能带来很多乐趣。,Reading can bring a lot of enjoyment.,Band4,2.3,5,0,422,Formal,0
 无法,wúfǎ,adverb: unable to / incapable of,没有密码，我无法打开这个文件。,"Without the password, I can't open this file.",Band4,2.3,5,0,423,,0
 无论,wúlùn,conjunction: no matter / regardless of (formal),无论发生什么，我都会支持你。,"No matter what happens, I’ll support you.",Band4,2.3,5,0,424,Formal,0
 喜爱,xǐài,verb: to like; to love; to be fond of,她从小就喜爱音乐。,She has loved music since childhood.,Band4,2.3,5,0,425,,0
@@ -692,7 +692,7 @@ verb: to forecast",天气预报预报明天有雨。,The weather forecast predic
 预防,yùfáng,verb: to prevent,多洗手可以有效预防病毒传播。,Washing hands frequently can effectively prevent the spread of viruses.,Band3,2.6,5,0,599,,0
 沉默,chénmò,adjective/verb: silent; silence,听到这个消息后，他突然沉默了。,"After hearing the news, he suddenly fell silent.",Band4,2.6,5,0,600,,0
 多种,duōzhǒng,adjective: many kinds of; multiple types,超市里有多种水果可以选择。,There are many kinds of fruits to choose from in the supermarket.,Band4,2.6,5,0,601,,0
-发挥,fāhuī,verb: to bring into play; to发挥; to display ability,希望你能发挥自己的实力。,I hope you can fully display your abilities.,Band4,2.6,5,0,602,,0
+发挥,fāhuī,verb: to bring into play; to display ability,希望你能发挥自己的实力。,I hope you can fully display your abilities.,Band4,2.6,5,0,602,,0
 负担,fùdān,noun/verb: burden; to bear a burden,房租已经成了他的经济负担。,Rent has become his financial burden.,Band4,2.6,5,0,603,,0
 减少,jiǎnshǎo,verb: to reduce; to decrease,我们应该减少浪费。,We should reduce waste.,Band4,2.6,5,0,604,,0
 考虑,kǎolǜ,verb: to consider; to think about,我会认真考虑你的建议。,I will seriously consider your suggestion.,Band4,2.6,5,0,605,,0
@@ -1352,8 +1352,7 @@ adverb: continuously",他连续三天加班，身体已经吃不消了。,He wor
 商店,shāngdiàn,noun: shop / store,那家商店24小时营业，晚上也可以买东西。,"That store is open 24 hours, so you can shop even at night.",Band1,3.8,5,0,1238,,0
 不满,bùmǎn,dissatisfied,"(Adjective)员工们对新的政策感到不满
 (Noun)这引起了许多人的不满",He is very dissatisfied with the service,Band2,3.8,5,0,1239,,0
-公路,gōnglù,generally refers to a major road connecting cities and towns. (Not the same as expressway),我们沿着这条公路一直开。,We drove straight along this highway.,Band2,3.8,5,0,1240,,0
-公路,gōnglù,noun: highway; road,那条公路非常宽。,That highway is very wide.,Band2,3.8,5,0,1241,,0
+公路,gōnglù,noun: highway; road (generally refers to a major road connecting cities and towns. (Not the same as expressway)),那条公路非常宽。,That highway is very wide.,Band2,3.8,5,0,1241,,0
 公司,gōngsī,company,他在一家外国公司工作。,He works at a foreign company.,Band2,3.8,5,0,1242,,0
 并且,bìngqiě,"And, moreover, furthermore. emphasizes the second point.",她聪明，并且很努力。,She’s smart and also hardworking.,Band3,3.8,5,0,1243,,0
 赶紧,gǎnjǐn,adverb: quickly / immediately,你赶紧把门关上，外面太冷了！,"Quick, close the door — it’s freezing outside!",Band3,3.8,5,0,1244,,0
