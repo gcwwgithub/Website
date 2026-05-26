@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Character Game</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="top-bar">
+        <a class="home-link" id="homeLink" href="../index.html">WebPlayground</a>
+      </header>
+
+      <section class="menu-panel" id="menuPanel">
+        <div class="game-heading">
+          <p class="eyebrow">Japanese Typing Quiz</p>
+          <h1>Kana & Kanji</h1>
+        </div>
+
+        <form id="setupForm" class="setup-form">
+          <fieldset>
+            <legend>Characters</legend>
+            <div class="option-grid">
+              <label class="option-card">
+                <input type="radio" name="mode" value="mixed" checked>
+                <span>Mixed</span>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="mode" value="hiragana">
+                <span>Hiragana</span>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="mode" value="katakana">
+                <span>Katakana</span>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="mode" value="kanji">
+                <span>Kanji</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <label class="question-count" for="questionCount">
+            <span>Questions</span>
+            <input id="questionCount" name="questionCount" type="number" min="5" max="100" step="5" value="20">
+          </label>
+
+          <button class="primary-button" type="submit">Start Game</button>
+        </form>
+      </section>
+
+      <section class="game-panel hidden" id="gamePanel" aria-live="polite">
+        <div class="game-heading">
+          <div class="question-line">
+            <p class="eyebrow">Question</p>
+            <div class="prompt-stats" aria-label="Question progress">
+              <span id="progressText">Question 1 / 20</span>
+              <span id="scoreText">0 correct</span>
+            </div>
+          </div>
+          <h1 id="quizTitle">Mixed</h1>
+        </div>
+
+        <div class="prompt-card">
+          <div id="characterPrompt" class="character-prompt">あ</div>
+          <p id="promptHint" class="prompt-hint">Type the romanized sound or reading.</p>
+        </div>
+
+        <form id="answerForm" class="answer-form" autocomplete="off">
+          <fieldset class="form-choice hidden" id="formChoicePanel">
+            <legend>Form</legend>
+            <div class="form-choice-grid">
+              <label>
+                <input type="radio" name="formChoice" value="hiragana" checked>
+                <span>Hiragana</span>
+              </label>
+              <label>
+                <input type="radio" name="formChoice" value="katakana">
+                <span>Katakana</span>
+              </label>
+              <label>
+                <input type="radio" name="formChoice" value="kanji">
+                <span>Kanji</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <label for="answerInput">Answer</label>
+          <div class="answer-row">
+            <input id="answerInput" type="text" inputmode="latin" placeholder="Type your answer">
+            <button type="submit">Check</button>
+          </div>
+        </form>
+
+        <p id="feedback" class="feedback neutral">Ready.</p>
+
+        <div class="actions">
+          <button id="hintButton" class="secondary-button" type="button">Hint</button>
+          <button id="skipButton" class="secondary-button" type="button">Skip</button>
+        </div>
+      </section>
+
+      <section class="results-panel hidden" id="resultsPanel">
+        <div class="game-heading">
+          <p class="eyebrow">Results</p>
+          <h1>Final Score</h1>
+        </div>
+
+        <div class="summary-grid">
+          <div>
+            <span id="finalScore">0/0</span>
+            <p>Score</p>
+          </div>
+          <div>
+            <span id="finalCorrect">0</span>
+            <p>Correct</p>
+          </div>
+          <div>
+            <span id="finalWrong">0</span>
+            <p>Wrong</p>
+          </div>
+          <div>
+            <span id="finalSkipped">0</span>
+            <p>Skipped</p>
+          </div>
+        </div>
+
+        <div class="result-columns">
+          <section>
+            <h2>Correct</h2>
+            <div id="correctList" class="result-list"></div>
+          </section>
+          <section>
+            <h2>Wrong</h2>
+            <div id="wrongList" class="result-list"></div>
+          </section>
+          <section>
+            <h2>Skipped</h2>
+            <div id="skippedList" class="result-list"></div>
+          </section>
+        </div>
+
+        <div class="actions">
+          <button id="playAgainButton" class="primary-button" type="button">Play Again</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

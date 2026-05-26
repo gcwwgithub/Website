@@ -28,6 +28,8 @@ export default function SentenceBuilder() {
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
+  const rangeStart = Math.max(1, Number(searchParams.get("start")) || 1);
+  const rangeEnd = Math.max(rangeStart, Number(searchParams.get("end")) || Number.MAX_SAFE_INTEGER);
   const sessionRun = searchParams.get("run") || "";
   const reviewSetKey = searchParams.get("reviewSet") || "";
   const [sessionRows, setSessionRows] = useState([]);
@@ -77,7 +79,8 @@ export default function SentenceBuilder() {
               await fetchRemoteColorProgress({ userId: user.id, storageKey: SENTENCE_COLOR_PROGRESS_KEY })
             )
           : applySavedColorProgress(baseRows, SENTENCE_COLOR_PROGRESS_KEY);
-        const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode, reviewSetKey);
+        const rangedRows = applyRange(loadedRows, rangeStart, rangeEnd);
+        const loadedSessionRows = buildPracticeSession(rangedRows, requestedCount, orderMode, reviewSetKey);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
         setQuestionIndex(0);
@@ -95,7 +98,7 @@ export default function SentenceBuilder() {
     }
 
     loadGame();
-  }, [orderMode, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
+  }, [orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     answerTilesRef.current = answerTiles;
@@ -259,6 +262,15 @@ export default function SentenceBuilder() {
     const wasCorrect = isAcceptedSentenceAnswer(submittedAnswer, currentQuestion);
     setSubmittedAnswer(submittedAnswer);
     setResult(wasCorrect ? "correct" : "wrong");
+  }
+
+  function giveUpQuestion() {
+    if (!currentQuestion || result) {
+      return;
+    }
+
+    setSubmittedAnswer(answerTiles.map((tile) => tile.text).join(""));
+    setResult("wrong");
   }
 
   function nextQuestion() {
@@ -442,6 +454,7 @@ export default function SentenceBuilder() {
               Clear
             </button>
             <button className="secondary-action" onClick={skipQuestion}>Skip</button>
+            <button className="secondary-action" onClick={giveUpQuestion}>Give up</button>
           </div>
         )}
         {result && (
@@ -671,6 +684,10 @@ function findTargetTileRow(pointerY, rows) {
 
 function replaceRowColor(rows, rowNumber, colorValue) {
   return rows.map((row) => (row.__rowNumber === rowNumber ? { ...row, Color: colorValue } : row));
+}
+
+function applyRange(rows, start, end) {
+  return rows.slice(start - 1, end);
 }
 
 function isAcceptedSentenceAnswer(answer, question) {

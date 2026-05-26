@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { loadAdverbRows, loadSentenceRows, loadSynonymRows, loadTranslateRows } from "../services/adverbCsv.js";
 import { filterCsvRows, getCsvFilterValues, loadCsvWords, loadEnglishToChineseRows } from "../services/csvWords.js";
 import {
   formatFilterValuesParam,
@@ -32,9 +33,12 @@ export default function PlayMode() {
   const [englishTimerSeconds, setEnglishTimerSeconds] = useState(savedEnglishSettings.timerSeconds);
   const [showEnglishChineseSentence, setShowEnglishChineseSentence] = useState(savedEnglishSettings.showChineseSentence);
   const [practiceQuestionCount, setPracticeQuestionCount] = useState("20");
+  const [practiceRangeStart, setPracticeRangeStart] = useState("1");
+  const [practiceRangeEnd, setPracticeRangeEnd] = useState("");
   const [practiceOrderMode, setPracticeOrderMode] = useState("random");
   const [practiceTimerSeconds, setPracticeTimerSeconds] = useState("0");
   const [showAdverbChineseSentence, setShowAdverbChineseSentence] = useState(false);
+  const [practiceRows, setPracticeRows] = useState([]);
   const [englishRows, setEnglishRows] = useState([]);
   const [csvRows, setCsvRows] = useState([]);
   const [loadingCsv, setLoadingCsv] = useState(false);
@@ -47,6 +51,9 @@ export default function PlayMode() {
   const safeEnglishTimerSeconds = clampNumber(englishTimerSeconds, 0, 600);
   const safePracticeQuestionCount = clampNumber(practiceQuestionCount, 1, 100);
   const safePracticeTimerSeconds = clampNumber(practiceTimerSeconds, 0, 600);
+  const practiceRangeMax = Math.max(1, practiceRows.length);
+  const safePracticeRangeStart = clampNumber(practiceRangeStart, 1, practiceRangeMax);
+  const safePracticeRangeEnd = clampNumber(practiceRangeEnd || practiceRangeMax, safePracticeRangeStart, practiceRangeMax);
   const filteredRows = useMemo(() => filterCsvRows(csvRows, filterType, filterValues), [csvRows, filterType, filterValues]);
   const englishFilteredRows = useMemo(
     () => filterCsvRows(englishRows, englishFilterType, englishFilterValues),
@@ -121,6 +128,42 @@ export default function PlayMode() {
   }, [csvRows.length, selectedMode]);
 
   useEffect(() => {
+    const loadPracticeRows = getPracticeRowsLoader(selectedMode);
+    if (!loadPracticeRows) {
+      setPracticeRows([]);
+      return;
+    }
+
+    let isActive = true;
+
+    async function loadSetupData() {
+      setLoadingCsv(true);
+      setCsvError("");
+      try {
+        const rows = await loadPracticeRows();
+        if (isActive) {
+          setPracticeRows(rows);
+        }
+      } catch (error) {
+        if (isActive) {
+          setCsvError(error.message);
+          setPracticeRows([]);
+        }
+      } finally {
+        if (isActive) {
+          setLoadingCsv(false);
+        }
+      }
+    }
+
+    loadSetupData();
+
+    return () => {
+      isActive = false;
+    };
+  }, [selectedMode]);
+
+  useEffect(() => {
     if (!englishRangeEnd && englishRangeMax > 1) {
       setEnglishRangeEnd(String(englishRangeMax));
     }
@@ -131,6 +174,12 @@ export default function PlayMode() {
       setRangeEnd(String(rangeMax));
     }
   }, [rangeEnd, rangeMax]);
+
+  useEffect(() => {
+    if (practiceRangeMax > 1 && (!practiceRangeEnd || Number(practiceRangeEnd) > practiceRangeMax)) {
+      setPracticeRangeEnd(String(practiceRangeMax));
+    }
+  }, [practiceRangeEnd, practiceRangeMax]);
 
   useEffect(() => {
     if (previousFilterValuesKey.current === filterValuesKey) {
@@ -190,6 +239,14 @@ export default function PlayMode() {
 
   function handlePracticeQuestionCountChange(event) {
     setPracticeQuestionCount(event.target.value.replace(/\D/g, ""));
+  }
+
+  function handlePracticeRangeStartChange(event) {
+    setPracticeRangeStart(event.target.value.replace(/\D/g, ""));
+  }
+
+  function handlePracticeRangeEndChange(event) {
+    setPracticeRangeEnd(event.target.value.replace(/\D/g, ""));
   }
 
   function handlePracticeTimerSecondsChange(event) {
@@ -565,9 +622,14 @@ export default function PlayMode() {
             onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
             timerSeconds={practiceTimerSeconds}
             onTimerSecondsChange={handlePracticeTimerSecondsChange}
+            rangeStart={practiceRangeStart}
+            rangeEnd={practiceRangeEnd}
+            rangeMax={practiceRangeMax}
+            onRangeStartChange={handlePracticeRangeStartChange}
+            onRangeEndChange={handlePracticeRangeEndChange}
             to={`/adverbs?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&sentence=${
               showAdverbChineseSentence ? "1" : "0"
-            }&timer=${safePracticeTimerSeconds}`}
+            }&timer=${safePracticeTimerSeconds}&start=${safePracticeRangeStart}&end=${safePracticeRangeEnd}`}
           >
             <div className="setup-checks">
               <label>
@@ -589,7 +651,12 @@ export default function PlayMode() {
             onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
             timerSeconds={practiceTimerSeconds}
             onTimerSecondsChange={handlePracticeTimerSecondsChange}
-            to={`/synonyms?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}`}
+            rangeStart={practiceRangeStart}
+            rangeEnd={practiceRangeEnd}
+            rangeMax={practiceRangeMax}
+            onRangeStartChange={handlePracticeRangeStartChange}
+            onRangeEndChange={handlePracticeRangeEndChange}
+            to={`/synonyms?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}&start=${safePracticeRangeStart}&end=${safePracticeRangeEnd}`}
           />
         )}
         {selectedMode === "sentence-builder" && (
@@ -600,7 +667,12 @@ export default function PlayMode() {
             onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
             timerSeconds={practiceTimerSeconds}
             onTimerSecondsChange={handlePracticeTimerSecondsChange}
-            to={`/sentence-builder?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}`}
+            rangeStart={practiceRangeStart}
+            rangeEnd={practiceRangeEnd}
+            rangeMax={practiceRangeMax}
+            onRangeStartChange={handlePracticeRangeStartChange}
+            onRangeEndChange={handlePracticeRangeEndChange}
+            to={`/sentence-builder?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}&start=${safePracticeRangeStart}&end=${safePracticeRangeEnd}`}
           />
         )}
         {selectedMode === "translate" && (
@@ -611,7 +683,12 @@ export default function PlayMode() {
             onOrderModeChange={(event) => setPracticeOrderMode(event.target.value)}
             timerSeconds={practiceTimerSeconds}
             onTimerSecondsChange={handlePracticeTimerSecondsChange}
-            to={`/translate?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}`}
+            rangeStart={practiceRangeStart}
+            rangeEnd={practiceRangeEnd}
+            rangeMax={practiceRangeMax}
+            onRangeStartChange={handlePracticeRangeStartChange}
+            onRangeEndChange={handlePracticeRangeEndChange}
+            to={`/translate?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}&start=${safePracticeRangeStart}&end=${safePracticeRangeEnd}`}
           />
         )}
       </section>
@@ -625,6 +702,11 @@ function PracticeModeStart({
   onCountChange,
   orderMode,
   onOrderModeChange,
+  rangeStart,
+  rangeEnd,
+  rangeMax,
+  onRangeStartChange,
+  onRangeEndChange,
   timerSeconds,
   onTimerSecondsChange,
   to,
@@ -642,6 +724,31 @@ function PracticeModeStart({
           placeholder="20"
         />
       </label>
+      <div className="range-grid">
+        <label>
+          Question range start
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={rangeStart}
+            onChange={onRangeStartChange}
+            placeholder="1"
+          />
+        </label>
+        <label>
+          Question range end
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={rangeEnd}
+            onChange={onRangeEndChange}
+            placeholder={String(rangeMax)}
+          />
+        </label>
+      </div>
+      <p className="muted">Available range: 1 to {rangeMax}</p>
       <label className="question-count">
         Question order
         <select value={orderMode} onChange={onOrderModeChange}>
@@ -719,6 +826,22 @@ function RangeSelector({ max, start, end, onStartChange, onEndChange }) {
       </div>
     </div>
   );
+}
+
+function getPracticeRowsLoader(mode) {
+  if (mode === "adverb-game") {
+    return loadAdverbRows;
+  }
+  if (mode === "synonym-selection") {
+    return loadSynonymRows;
+  }
+  if (mode === "sentence-builder") {
+    return loadSentenceRows;
+  }
+  if (mode === "translate") {
+    return loadTranslateRows;
+  }
+  return null;
 }
 
 function clampNumber(value, min, max) {

@@ -970,6 +970,11 @@ function EnglishToChineseFlashcard({
           <FormattedEnglishMeaning text={englishPrompt} />
         </span>
       </div>
+      {row.Formal && (
+        <div className="card-badge-row">
+          <p className="formal-note">Formal: {row.Formal}</p>
+        </div>
+      )}
       <ColorBadge colorValue={row.Color} />
 
       {showChineseSentence && hasSentence && (

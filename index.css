@@ -244,6 +244,46 @@ h1 {
   color: #fde68a;
 }
 
+.japanese-preview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 15rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    radial-gradient(circle at 50% 38%, rgba(245, 158, 11, 0.16), transparent 18rem),
+    #0b1118;
+  background-size: 34px 34px, 34px 34px, auto, auto;
+  padding: 1rem;
+}
+
+.japanese-preview span {
+  display: grid;
+  min-height: 8rem;
+  place-items: center;
+  border: 1px solid rgba(45, 212, 191, 0.34);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.82);
+  color: #eef2f8;
+  font-family: "Yu Gothic", "Meiryo", "Hiragino Sans", system-ui, sans-serif;
+  font-size: clamp(2.8rem, 8vw, 4.7rem);
+  font-weight: 900;
+}
+
+.japanese-preview strong {
+  grid-column: 1 / -1;
+  justify-self: center;
+  border: 1px solid rgba(245, 158, 11, 0.48);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.88);
+  color: #fde68a;
+  padding: 0.6rem 0.8rem;
+}
+
 .featured-card {
   grid-column: 1 / -1;
   grid-template-columns: minmax(0, 1.35fr) minmax(20rem, 0.65fr);

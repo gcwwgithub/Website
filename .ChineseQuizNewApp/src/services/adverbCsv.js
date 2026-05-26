@@ -5,7 +5,7 @@ const SYNONYM_EN_CSV_PATH = "data/SYNONYM_EN.csv";
 const TRANSLATE_CSV_PATH = "data/TRANSLATE.csv";
 const REQUIRED_COLUMNS = ["item", "type", "category", "example sentence 1", "chinese sentence 1", "ID"];
 const SYNONYM_REQUIRED_COLUMNS = ["Chinese Word", "Chinese Sentence", "Wrong Answer 1", "Wrong Answer 2", "Wrong Answer 3", "ID"];
-const SYNONYM_DETAIL_REQUIRED_COLUMNS = ["_Chinese Word", "_Pinyin", "_English"];
+const SYNONYM_DETAIL_REQUIRED_COLUMNS = ["_Chinese Word", "_English"];
 const TRANSLATE_REQUIRED_COLUMNS = ["_English", "_Possible Translation 1", "ID"];
 
 export async function loadAdverbRows() {
@@ -47,7 +47,7 @@ export async function loadSynonymDetails() {
   const csvText = await response.text();
   return parseCsv(csvText, SYNONYM_DETAIL_REQUIRED_COLUMNS).reduce((detailsByWord, row) => {
     detailsByWord[row["_Chinese Word"]] = {
-      pinyin: row["_Pinyin"],
+      pinyin: row["_Pinyin"] || row.Pinyin || row.pinyin || "",
       meaning: row["_English"],
     };
     return detailsByWord;

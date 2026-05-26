@@ -29,6 +29,8 @@ export default function AdverbGame() {
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
+  const rangeStart = Math.max(1, Number(searchParams.get("start")) || 1);
+  const rangeEnd = Math.max(rangeStart, Number(searchParams.get("end")) || Number.MAX_SAFE_INTEGER);
   const sessionRun = searchParams.get("run") || "";
   const reviewSetKey = searchParams.get("reviewSet") || "";
   const initialShowChineseSentence = searchParams.get("sentence") === "1";
@@ -75,7 +77,8 @@ export default function AdverbGame() {
               await fetchRemoteColorProgress({ userId: user.id, storageKey: ADVERB_COLOR_PROGRESS_KEY })
             )
           : applySavedColorProgress(baseRows, ADVERB_COLOR_PROGRESS_KEY);
-        const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode, reviewSetKey);
+        const rangedRows = applyRange(loadedRows, rangeStart, rangeEnd);
+        const loadedSessionRows = buildPracticeSession(rangedRows, requestedCount, orderMode, reviewSetKey);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
         setQuestionIndex(0);
@@ -94,7 +97,7 @@ export default function AdverbGame() {
     }
 
     loadGame();
-  }, [orderMode, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
+  }, [orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     if (loading || isReviewAgain || timerSeconds <= 0 || isAnswered || !currentRow || isComplete) {
@@ -501,6 +504,10 @@ function blankChineseWord(sentence = "", item = "") {
 
 function replaceRowColor(rows, rowNumber, colorValue) {
   return rows.map((row) => (row.__rowNumber === rowNumber ? { ...row, Color: colorValue } : row));
+}
+
+function applyRange(rows, start, end) {
+  return rows.slice(start - 1, end);
 }
 
 function EmphasizedText({ text, target }) {

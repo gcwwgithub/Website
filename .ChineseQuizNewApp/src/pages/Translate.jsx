@@ -28,6 +28,8 @@ export default function Translate() {
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
+  const rangeStart = Math.max(1, Number(searchParams.get("start")) || 1);
+  const rangeEnd = Math.max(rangeStart, Number(searchParams.get("end")) || Number.MAX_SAFE_INTEGER);
   const sessionRun = searchParams.get("run") || "";
   const reviewSetKey = searchParams.get("reviewSet") || "";
   const [rows, setRows] = useState([]);
@@ -42,6 +44,7 @@ export default function Translate() {
   const [score, setScore] = useState({ correct: 0, wrong: 0 });
   const [mistakes, setMistakes] = useState([]);
   const [skippedRows, setSkippedRows] = useState([]);
+  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const currentQuestion = sessionRows[questionIndex];
@@ -76,7 +79,8 @@ export default function Translate() {
               await fetchRemoteColorProgress({ userId: user.id, storageKey: TRANSLATE_COLOR_PROGRESS_KEY })
             )
           : applySavedColorProgress(baseRows, TRANSLATE_COLOR_PROGRESS_KEY);
-        const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode, reviewSetKey);
+        const rangedRows = applyRange(loadedRows, rangeStart, rangeEnd);
+        const loadedSessionRows = buildPracticeSession(rangedRows, requestedCount, orderMode, reviewSetKey);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
         setQuestionIndex(0);
@@ -88,6 +92,7 @@ export default function Translate() {
         setScore({ correct: 0, wrong: 0 });
         setMistakes([]);
         setSkippedRows([]);
+        setHistory([]);
       } catch (loadError) {
         setError(loadError.message);
       } finally {
@@ -96,7 +101,7 @@ export default function Translate() {
     }
 
     loadSession();
-  }, [orderMode, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
+  }, [orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     answerRef.current = answer;
@@ -136,12 +141,34 @@ export default function Translate() {
     setResult(isAcceptedTranslation(nextSubmittedAnswer, currentQuestion.acceptedAnswers) ? "correct" : "wrong");
   }
 
+  function giveUpQuestion() {
+    if (!currentQuestion || result) {
+      return;
+    }
+
+    setSubmittedAnswer(answer.trim());
+    setResult("wrong");
+  }
+
   function nextQuestion() {
     let nextSessionRows = sessionRows;
 
     if (currentQuestion && result) {
       const wasCorrect = result === "correct";
       const nextColor = updateColorValue(currentQuestion.Color, wasCorrect);
+      setHistory((current) => [
+        ...current,
+        {
+          index: questionIndex,
+          row: currentQuestion,
+          previousColor: currentQuestion.Color,
+          type: wasCorrect ? "correct" : "wrong",
+          answer,
+          submittedAnswer,
+          result,
+          wasAutoRevealed,
+        },
+      ]);
       if (!isReviewAgain) {
         saveColorProgress(currentQuestion, nextColor, TRANSLATE_COLOR_PROGRESS_KEY);
         saveSupabaseProgress({ ...currentQuestion, Color: nextColor }, nextColor);
@@ -167,9 +194,59 @@ export default function Translate() {
 
   function skipQuestion() {
     if (currentQuestion) {
+      setHistory((current) => [
+        ...current,
+        {
+          index: questionIndex,
+          row: currentQuestion,
+          type: "skipped",
+          answer,
+          submittedAnswer,
+          result,
+          wasAutoRevealed,
+        },
+      ]);
       setSkippedRows((current) => [...current, currentQuestion]);
     }
     advanceQuestion();
+  }
+
+  function undoLastAction() {
+    const lastAction = history[history.length - 1];
+    if (!lastAction) {
+      return;
+    }
+
+    setHistory((current) => current.slice(0, -1));
+    setQuestionIndex(lastAction.index);
+    setAnswer(lastAction.answer || "");
+    setSubmittedAnswer(lastAction.submittedAnswer || "");
+    setResult(lastAction.result || null);
+    setWasAutoRevealed(lastAction.wasAutoRevealed || false);
+    answerRef.current = lastAction.answer || "";
+
+    if (lastAction.previousColor !== undefined && !isReviewAgain) {
+      saveColorProgress(lastAction.row, lastAction.previousColor, TRANSLATE_COLOR_PROGRESS_KEY);
+      setRows((current) =>
+        current.map((row, rowIndex) =>
+          rowIndex === lastAction.index ? { ...row, Color: lastAction.previousColor } : row
+        )
+      );
+      setSessionRows((current) =>
+        current.map((row, rowIndex) =>
+          rowIndex === lastAction.index ? { ...row, Color: lastAction.previousColor } : row
+        )
+      );
+    }
+
+    if (lastAction.type === "correct") {
+      setScore((current) => ({ ...current, correct: Math.max(0, current.correct - 1) }));
+    } else if (lastAction.type === "wrong") {
+      setScore((current) => ({ ...current, wrong: Math.max(0, current.wrong - 1) }));
+      setMistakes((current) => removeLastMatchingRow(current, lastAction.row));
+    } else if (lastAction.type === "skipped") {
+      setSkippedRows((current) => removeLastMatchingRow(current, lastAction.row));
+    }
   }
 
   function advanceQuestion(nextSessionRows = sessionRows) {
@@ -282,6 +359,9 @@ export default function Translate() {
           <p className="eyebrow">{questionIndex + 1} / {sessionRows.length}</p>
           <p className="question-id">{currentQuestion.__rowNumber || "?"}</p>
           <p className="eyebrow game-name">Translate</p>
+          <button className="undo-button" onClick={undoLastAction} disabled={!history.length}>
+            Undo
+          </button>
         </div>
         <ColorBadge colorValue={currentQuestion.Color} />
         <TimerStatus
@@ -309,6 +389,7 @@ export default function Translate() {
             <button disabled={!canSubmit} onClick={submitAnswer}>Submit Answer</button>
             <button className="secondary-action" onClick={() => setAnswer("")}>Clear</button>
             <button className="secondary-action" onClick={skipQuestion}>Skip</button>
+            <button className="secondary-action" onClick={giveUpQuestion}>Give up</button>
           </div>
         )}
         {result && (
@@ -349,4 +430,17 @@ function normalizeChineseAnswer(value = "") {
 
 function replaceRowColor(rows, rowNumber, colorValue) {
   return rows.map((row) => (row.__rowNumber === rowNumber ? { ...row, Color: colorValue } : row));
+}
+
+function applyRange(rows, start, end) {
+  return rows.slice(start - 1, end);
+}
+
+function removeLastMatchingRow(rows, rowToRemove) {
+  const targetIndex = rows.map((row) => row.__rowNumber).lastIndexOf(rowToRemove.__rowNumber);
+  if (targetIndex === -1) {
+    return rows;
+  }
+
+  return rows.filter((_, index) => index !== targetIndex);
 }

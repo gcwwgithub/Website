@@ -11,6 +11,7 @@ const state = {
   filterMode: "filtered",
   hintsEnabled: false,
   searchMode: "random",
+  isCompletionRouteExpanded: false,
 };
 
 const elements = {
@@ -38,9 +39,10 @@ const elements = {
   messagePanel: document.querySelector("#messagePanel"),
   completionOverlay: document.querySelector("#completionOverlay"),
   completionRoute: document.querySelector("#completionRoute"),
+  completionPathList: document.querySelector("#completionPathList"),
+  completionRouteToggleButton: document.querySelector("#completionRouteToggleButton"),
   completionTime: document.querySelector("#completionTime"),
   completionSteps: document.querySelector("#completionSteps"),
-  completionNewSearchButton: document.querySelector("#completionNewSearchButton"),
   completionMenuButton: document.querySelector("#completionMenuButton"),
 };
 
@@ -283,6 +285,7 @@ async function goToArticle(title) {
 }
 
 async function startNewSearch() {
+  state.searchMode = "random";
   state.filterMode = elements.pageFilterSelect.value;
   state.hintsEnabled = elements.hintsToggle.checked;
   elements.menuOverlay.hidden = true;
@@ -319,6 +322,7 @@ async function startSelectedSearch() {
     return;
   }
 
+  state.searchMode = "predefined";
   state.filterMode = elements.pageFilterSelect.value;
   state.hintsEnabled = elements.hintsToggle.checked;
   elements.menuOverlay.hidden = true;
@@ -412,12 +416,91 @@ function showMenu() {
 function showCompletion() {
   if (!elements.completionOverlay.hidden) return;
   stopTimer();
-  elements.completionRoute.textContent = `${state.start.title} => ${state.target.title}`;
+  state.isCompletionRouteExpanded = false;
+  renderCompletionRoute();
+  renderCompletionPath();
   elements.completionTime.textContent = elements.timerValue.textContent;
   elements.completionSteps.textContent = String(Math.max(0, state.path.length - 1));
   elements.completionOverlay.hidden = false;
   document.body.classList.add("has-overlay");
   elements.newSearchButton.disabled = true;
+}
+
+function renderCompletionRoute() {
+  elements.completionRoute.innerHTML = "";
+
+  const startNode = document.createElement("strong");
+  startNode.className = "completion-route-node";
+  startNode.textContent = state.start.title;
+
+  const arrow = document.createElement("span");
+  arrow.className = "completion-route-arrow";
+  arrow.textContent = "=>";
+
+  const targetNode = document.createElement("strong");
+  targetNode.className = "completion-route-node is-target";
+  targetNode.textContent = state.target.title;
+
+  elements.completionRoute.append(startNode, arrow, targetNode);
+}
+
+function renderCompletionPath() {
+  const routeItems = getVisibleCompletionPath();
+  elements.completionPathList.innerHTML = "";
+
+  routeItems.forEach((item) => {
+    const listItem = document.createElement("li");
+    if (item.type === "gap") {
+      listItem.className = "completion-path-gap";
+      listItem.textContent = `${item.hiddenCount} articles hidden`;
+      elements.completionPathList.appendChild(listItem);
+      return;
+    }
+
+    const node = document.createElement("span");
+    node.className = "completion-path-node";
+    if (item.index === 0) node.classList.add("is-start");
+    if (item.index === state.path.length - 1) node.classList.add("is-target");
+
+    const step = document.createElement("strong");
+    step.textContent = item.index === 0 ? "Start" : item.index === state.path.length - 1 ? "End" : `Step ${item.index}`;
+
+    const title = document.createElement("span");
+    title.textContent = item.article.title;
+
+    node.append(step, title);
+    listItem.appendChild(node);
+    elements.completionPathList.appendChild(listItem);
+  });
+
+  const shouldAllowToggle = state.path.length > 10;
+  elements.completionRouteToggleButton.hidden = !shouldAllowToggle;
+  elements.completionRouteToggleButton.textContent = state.isCompletionRouteExpanded ? "Condense Route" : "Show Full Route";
+}
+
+function getVisibleCompletionPath() {
+  if (state.isCompletionRouteExpanded || state.path.length <= 10) {
+    return state.path.map((article, index) => ({ type: "article", article, index }));
+  }
+
+  const firstItems = state.path.slice(0, 4).map((article, index) => ({ type: "article", article, index }));
+  const lastStartIndex = state.path.length - 4;
+  const lastItems = state.path.slice(lastStartIndex).map((article, index) => ({
+    type: "article",
+    article,
+    index: lastStartIndex + index,
+  }));
+
+  return [
+    ...firstItems,
+    { type: "gap", hiddenCount: state.path.length - firstItems.length - lastItems.length },
+    ...lastItems,
+  ];
+}
+
+function toggleCompletionRoute() {
+  state.isCompletionRouteExpanded = !state.isCompletionRouteExpanded;
+  renderCompletionPath();
 }
 
 function updateHintIndicator() {
@@ -490,8 +573,8 @@ elements.randomTargetButton.addEventListener("click", () => randomizeCustomInput
 elements.searchModeRadios.forEach((radio) => {
   radio.addEventListener("change", updateSearchModeControls);
 });
-elements.newSearchButton.addEventListener("click", startNewSearch);
-elements.completionNewSearchButton.addEventListener("click", startNewSearch);
+elements.newSearchButton.addEventListener("click", showMenu);
+elements.completionRouteToggleButton.addEventListener("click", toggleCompletionRoute);
 elements.completionMenuButton.addEventListener("click", showMenu);
 elements.pageFilterSelect.addEventListener("change", () => {
   elements.filterDescription.textContent = elements.pageFilterSelect.value === "all"

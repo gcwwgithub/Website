@@ -90,12 +90,16 @@
 
     <section id="completionOverlay" class="completion-overlay" aria-labelledby="completionTitle" hidden>
       <div class="completion-panel">
-        <p class="menu-eyebrow">Destination Reached</p>
-        <h1 id="completionTitle">Search complete</h1>
+        <div class="completion-heading">
+          <p class="menu-eyebrow">Destination Reached</p>
+          <h1 id="completionTitle">Search complete</h1>
+        </div>
         <div class="completion-stats">
-          <article>
+          <article class="completion-route-card">
             <span>Route</span>
-            <strong id="completionRoute">-</strong>
+            <div id="completionRoute" class="completion-route">
+              <strong>-</strong>
+            </div>
           </article>
           <article>
             <span>Time</span>
@@ -106,9 +110,17 @@
             <strong id="completionSteps">0</strong>
           </article>
         </div>
+        <section class="completion-path-section" aria-labelledby="completionPathTitle">
+          <div class="completion-section-heading">
+            <h2 id="completionPathTitle">Articles Visited</h2>
+            <button id="completionRouteToggleButton" class="secondary-menu-button compact-button" type="button" hidden>
+              Show Full Route
+            </button>
+          </div>
+          <ol id="completionPathList" class="completion-path-list"></ol>
+        </section>
         <div class="completion-actions">
-          <button id="completionNewSearchButton" class="start-search-button" type="button">New Random Search</button>
-          <button id="completionMenuButton" class="secondary-menu-button" type="button">Settings Menu</button>
+          <button id="completionMenuButton" class="start-search-button" type="button">Play New Game</button>
         </div>
       </div>
     </section>

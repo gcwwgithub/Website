@@ -28,6 +28,8 @@ export default function SynonymSelection() {
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
+  const rangeStart = Math.max(1, Number(searchParams.get("start")) || 1);
+  const rangeEnd = Math.max(rangeStart, Number(searchParams.get("end")) || Number.MAX_SAFE_INTEGER);
   const sessionRun = searchParams.get("run") || "";
   const reviewSetKey = searchParams.get("reviewSet") || "";
   const [rows, setRows] = useState([]);
@@ -73,7 +75,8 @@ export default function SynonymSelection() {
               await fetchRemoteColorProgress({ userId: user.id, storageKey: SYNONYM_COLOR_PROGRESS_KEY })
             )
           : applySavedColorProgress(synonymRows, SYNONYM_COLOR_PROGRESS_KEY);
-        const loadedSessionRows = buildPracticeSession(loadedRows, requestedCount, orderMode, reviewSetKey);
+        const rangedRows = applyRange(loadedRows, rangeStart, rangeEnd);
+        const loadedSessionRows = buildPracticeSession(rangedRows, requestedCount, orderMode, reviewSetKey);
         setRows(loadedRows);
         setSessionRows(loadedSessionRows);
         setSynonymDetails(loadedSynonymDetails);
@@ -93,7 +96,7 @@ export default function SynonymSelection() {
     }
 
     loadGame();
-  }, [orderMode, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
+  }, [orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     if (loading || isReviewAgain || timerSeconds <= 0 || isAnswered || !currentRow || isComplete) {
@@ -357,6 +360,10 @@ function shuffleOptions(options) {
   return shuffledOptions;
 }
 
+function applyRange(rows, start, end) {
+  return rows.slice(start - 1, end);
+}
+
 function getPromptSizeClass(text = "") {
   if (text.length > 48) {
     return "tiny-prompt";
@@ -409,7 +416,6 @@ function getOptionClass(option, correct, selected, isAnswered) {
 }
 
 function SynonymInfo({ detail, word }) {
-  const pinyin = detail?.pinyin || "Pinyin not found";
   const meaning = detail?.meaning || "Meaning not found";
   const { definition, usage } = splitSynonymMeaning(meaning);
 
@@ -420,7 +426,7 @@ function SynonymInfo({ detail, word }) {
       </span>
       <span className="synonym-tooltip" role="tooltip">
         <span>{word}</span>
-        <strong>{pinyin}</strong>
+        {detail?.pinyin && <strong>{detail.pinyin}</strong>}
         <span>{definition}</span>
         {usage && <span className="synonym-usage">{usage}</span>}
       </span>
