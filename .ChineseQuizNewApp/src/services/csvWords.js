@@ -12,14 +12,23 @@ const VOCAB_REQUIRED_COLUMNS = [
   "ID",
   "Lose Streak",
 ];
-const ENGLISH_TO_CHINESE_REQUIRED_COLUMNS = ["Chinese Words", "pinyin", "English Words", "Color", "Band 0 HSK", "Dao", "ID"];
+const ENGLISH_TO_CHINESE_PROMPT_REQUIRED_COLUMNS = ["Chinese Words", "pinyin", "English Words", "Chinese Sentence", "ID"];
 
 export async function loadCsvWords() {
   return loadCsv(CSV_PATH, VOCAB_REQUIRED_COLUMNS);
 }
 
 export async function loadEnglishToChineseRows() {
-  return loadCsv(ENGLISH_TO_CHINESE_CSV_PATH, ENGLISH_TO_CHINESE_REQUIRED_COLUMNS);
+  const [baseRows, promptRows] = await Promise.all([
+    loadCsv(CSV_PATH, VOCAB_REQUIRED_COLUMNS),
+    loadCsv(ENGLISH_TO_CHINESE_CSV_PATH, ENGLISH_TO_CHINESE_PROMPT_REQUIRED_COLUMNS),
+  ]);
+  const promptRowsById = groupRowsById(promptRows);
+
+  return baseRows.map((row) => ({
+    ...row,
+    __englishToChinesePrompts: promptRowsById.get(row.ID) || [],
+  }));
 }
 
 async function loadCsv(path, requiredColumns) {
@@ -156,6 +165,23 @@ function normalizeHeaderName(header) {
   if (header === "_Dao") {
     return "Dao";
   }
+  if (header === "_Formal") {
+    return "Formal";
+  }
 
   return header;
+}
+
+function groupRowsById(rows) {
+  return rows.reduce((rowsById, row) => {
+    const id = row.ID;
+    if (!id) {
+      return rowsById;
+    }
+
+    const existingRows = rowsById.get(id) || [];
+    existingRows.push(row);
+    rowsById.set(id, existingRows);
+    return rowsById;
+  }, new Map());
 }

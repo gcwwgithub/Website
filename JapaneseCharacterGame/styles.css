@@ -61,12 +61,21 @@ button {
 }
 
 .home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   border: 1px solid rgba(45, 212, 191, 0.35);
   border-radius: 8px;
   background: rgba(45, 212, 191, 0.12);
   color: #dffdf8;
   font-weight: 850;
   padding: 0.65rem 0.8rem;
+}
+
+.home-link img {
+  width: 1.35rem;
+  height: 1.35rem;
+  object-fit: contain;
 }
 
 .menu-panel,

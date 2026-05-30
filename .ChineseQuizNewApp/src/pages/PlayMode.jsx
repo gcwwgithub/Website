@@ -413,8 +413,8 @@ export default function PlayMode() {
   return (
     <main className="page home-page">
       <div className="mode-page-actions">
-        <Link className="secondary-button settings-link" to="/settings">
-          Settings
+        <Link className="secondary-button settings-link icon-only-button" to="/settings" aria-label="Settings">
+          <img src="data/setting.svg" alt="" aria-hidden="true" />
         </Link>
       </div>
       <section className="hero-panel mode-panel">
@@ -463,7 +463,17 @@ export default function PlayMode() {
             <img src="data/translate.png" alt="" aria-hidden="true" />
           </button>
         </div>
-        {selectedMode === "english-to-chinese" && (
+        {selectedMode && loadingCsv && (
+          <div className="setup-options">
+            <div className="loading-panel embedded-loading">
+              <p className="eyebrow">Loading mode</p>
+              <div className="loading-track" aria-hidden="true">
+                <span />
+              </div>
+            </div>
+          </div>
+        )}
+        {!loadingCsv && selectedMode === "english-to-chinese" && (
           <div className="setup-options">
             <label className="question-count">
               Number of questions
@@ -530,7 +540,7 @@ export default function PlayMode() {
             </Link>
           </div>
         )}
-        {selectedMode === "chinese-to-english" && (
+        {!loadingCsv && selectedMode === "chinese-to-english" && (
           <div className="setup-options">
             <label className="question-count">
               Number of questions
@@ -614,7 +624,7 @@ export default function PlayMode() {
             </Link>
           </div>
         )}
-        {selectedMode === "adverb-game" && (
+        {!loadingCsv && selectedMode === "adverb-game" && (
           <PracticeModeStart
             count={practiceQuestionCount}
             onCountChange={handlePracticeQuestionCountChange}
@@ -643,7 +653,7 @@ export default function PlayMode() {
             </div>
           </PracticeModeStart>
         )}
-        {selectedMode === "synonym-selection" && (
+        {!loadingCsv && selectedMode === "synonym-selection" && (
           <PracticeModeStart
             count={practiceQuestionCount}
             onCountChange={handlePracticeQuestionCountChange}
@@ -659,7 +669,7 @@ export default function PlayMode() {
             to={`/synonyms?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}&start=${safePracticeRangeStart}&end=${safePracticeRangeEnd}`}
           />
         )}
-        {selectedMode === "sentence-builder" && (
+        {!loadingCsv && selectedMode === "sentence-builder" && (
           <PracticeModeStart
             count={practiceQuestionCount}
             onCountChange={handlePracticeQuestionCountChange}
@@ -675,7 +685,7 @@ export default function PlayMode() {
             to={`/sentence-builder?count=${safePracticeQuestionCount}&order=${practiceOrderMode}&timer=${safePracticeTimerSeconds}&start=${safePracticeRangeStart}&end=${safePracticeRangeEnd}`}
           />
         )}
-        {selectedMode === "translate" && (
+        {!loadingCsv && selectedMode === "translate" && (
           <PracticeModeStart
             count={practiceQuestionCount}
             onCountChange={handlePracticeQuestionCountChange}

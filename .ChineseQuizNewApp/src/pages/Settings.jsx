@@ -82,8 +82,8 @@ export default function Settings() {
   return (
     <main className="page narrow-page">
       <div className="page-heading-row">
-        <Link className="secondary-button settings-link" to="/">
-          Go home
+        <Link className="secondary-button settings-link icon-only-button" to="/" aria-label="Go home">
+          <img src="data/home.svg" alt="" aria-hidden="true" />
         </Link>
       </div>
       <section className="panel">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import GameMenu from "../components/GameMenu.jsx";
 import ColorBadge from "../components/ColorBadge.jsx";
+import LoadingScreen from "../components/LoadingScreen.jsx";
 import TimerStatus from "../components/TimerStatus.jsx";
 import { loadSynonymDetails, loadSynonymRows } from "../services/adverbCsv.js";
 import {
@@ -24,7 +25,7 @@ const SYNONYM_COLOR_PROGRESS_KEY = "chineseQuizNew.synonymColorProgress.v1";
 
 export default function SynonymSelection() {
   const [searchParams] = useSearchParams();
-  const { user } = useSupabaseAuth();
+  const { user, loading: authLoading } = useSupabaseAuth();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
@@ -66,7 +67,14 @@ export default function SynonymSelection() {
   }
 
   useEffect(() => {
+    if (authLoading) {
+      setLoading(true);
+      return;
+    }
+
     async function loadGame() {
+      setLoading(true);
+      setError("");
       try {
         const [synonymRows, loadedSynonymDetails] = await Promise.all([loadSynonymRows(), loadSynonymDetails()]);
         const loadedRows = user?.id
@@ -96,7 +104,7 @@ export default function SynonymSelection() {
     }
 
     loadGame();
-  }, [orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
+  }, [authLoading, orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     if (loading || isReviewAgain || timerSeconds <= 0 || isAnswered || !currentRow || isComplete) {
@@ -174,7 +182,7 @@ export default function SynonymSelection() {
   }
 
   if (loading) {
-    return <main className="page narrow-page">Loading synonym selection...</main>;
+    return <LoadingScreen label="Loading synonym selection" />;
   }
 
   if (error) {
@@ -243,8 +251,8 @@ export default function SynonymSelection() {
             >
               Review again
             </Link>
-            <Link className="secondary-button settings-link" to="/">
-              Go home
+            <Link className="secondary-button settings-link icon-only-button" to="/" aria-label="Go home">
+              <img src="data/home.svg" alt="" aria-hidden="true" />
             </Link>
           </div>
         </section>

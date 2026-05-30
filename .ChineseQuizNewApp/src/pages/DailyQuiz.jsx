@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import LoadingScreen from "../components/LoadingScreen.jsx";
 import { filterCsvRows, loadCsvWords, loadEnglishToChineseRows } from "../services/csvWords.js";
 import {
   parseFilterValuesParam,
@@ -115,7 +116,7 @@ export default function DailyQuiz() {
           }
           const filteredRows = filterCsvRows(loadedRowsWithProgress, filterType, selectedFilterValues);
           const rangedRows = applyRange(filteredRows, rangeStart, rangeEnd);
-          setCsvRows(buildCsvSession(rangedRows, requestedCount, orderMode, reviewSetKey));
+          setCsvRows(prepareEnglishToChineseSessionRows(buildCsvSession(rangedRows, requestedCount, orderMode, reviewSetKey)));
           setCsvIndex(0);
           setCsvResults({ correct: 0, wrong: 0 });
           setWrongCsvRows([]);
@@ -220,7 +221,7 @@ export default function DailyQuiz() {
     });
   }, [filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, selectedFilterValues, showEnglishChineseSentence, timerSeconds]);
 
-  if (loading) return <main className="page">Loading quiz...</main>;
+  if (loading) return <LoadingScreen label="Loading quiz" />;
 
   if (error) {
     return (
@@ -356,8 +357,8 @@ export default function DailyQuiz() {
                 })}`}>
                   Review again
                 </Link>
-                <Link className="secondary-button settings-link" to="/">
-                  Go home
+                <Link className="secondary-button settings-link icon-only-button" to="/" aria-label="Go home">
+                  <img src="data/home.svg" alt="" aria-hidden="true" />
                 </Link>
               </div>
             </section>
@@ -389,7 +390,7 @@ export default function DailyQuiz() {
                 <h3>Words to review</h3>
                 {wrongCsvRows.map((row, rowIndex) => (
                   <article className="wrong-row" key={`${row["Chinese Words"]}-${rowIndex}`}>
-                    <strong>{row["English Words"]}</strong>
+                    <strong>{getEnglishToChinesePromptText(row)}</strong>
                     <span>{row["Chinese Words"]}</span>
                     <span>{row.pinyin}</span>
                   </article>
@@ -407,8 +408,8 @@ export default function DailyQuiz() {
               })}`}>
                 Review again
               </Link>
-              <Link className="secondary-button settings-link" to="/">
-                Go home
+              <Link className="secondary-button settings-link icon-only-button" to="/" aria-label="Go home">
+                <img src="data/home.svg" alt="" aria-hidden="true" />
               </Link>
             </div>
           </section>
@@ -423,7 +424,7 @@ export default function DailyQuiz() {
           onClick={() => setIsOptionsOpen(true)}
           aria-label="Open quiz options"
         >
-          Menu
+          <img src="data/menu.svg" alt="" aria-hidden="true" />
         </button>
         <div
           className={`drawer-backdrop ${isOptionsOpen ? "open" : ""}`}
@@ -439,8 +440,8 @@ export default function DailyQuiz() {
           </button>
           <div className="drawer-content">
             <p className="eyebrow">Options</p>
-            <Link className="drawer-link" to="/">
-              Quiz Home
+            <Link className="drawer-link icon-drawer-link" to="/" aria-label="Quiz home">
+              <img src="data/home.svg" alt="" aria-hidden="true" />
             </Link>
             <label>
               <input
@@ -631,8 +632,8 @@ export default function DailyQuiz() {
                 })}`}>
                   Review again
                 </Link>
-                <Link className="secondary-button settings-link" to="/">
-                  Go home
+                <Link className="secondary-button settings-link icon-only-button" to="/" aria-label="Go home">
+                  <img src="data/home.svg" alt="" aria-hidden="true" />
                 </Link>
               </div>
             </section>
@@ -698,8 +699,8 @@ export default function DailyQuiz() {
               })}`}>
                 Review again
               </Link>
-              <Link className="secondary-button settings-link" to="/">
-                Go home
+              <Link className="secondary-button settings-link icon-only-button" to="/" aria-label="Go home">
+                <img src="data/home.svg" alt="" aria-hidden="true" />
               </Link>
             </div>
           </section>
@@ -714,7 +715,7 @@ export default function DailyQuiz() {
           onClick={() => setIsOptionsOpen(true)}
           aria-label="Open quiz options"
         >
-          Menu
+          <img src="data/menu.svg" alt="" aria-hidden="true" />
         </button>
         <div
           className={`drawer-backdrop ${isOptionsOpen ? "open" : ""}`}
@@ -730,8 +731,8 @@ export default function DailyQuiz() {
           </button>
           <div className="drawer-content">
             <p className="eyebrow">Options</p>
-            <Link className="drawer-link" to="/">
-              Quiz Home
+            <Link className="drawer-link icon-drawer-link" to="/" aria-label="Quiz home">
+              <img src="data/home.svg" alt="" aria-hidden="true" />
             </Link>
             <label>
               <input
@@ -846,8 +847,8 @@ function CsvFlashcard({
         {isNewCard(row) && <span className="new-card-badge">NEW</span>}
         <p className="question-id">{row.__rowNumber || "?"}</p>
         {onUndo && (
-          <button className="undo-button" onClick={onUndo} disabled={!canUndo}>
-            Undo
+          <button className="undo-button" onClick={onUndo} disabled={!canUndo} aria-label="Undo">
+            <img src="data/undo.svg" alt="" aria-hidden="true" />
           </button>
         )}
       </div>
@@ -861,7 +862,7 @@ function CsvFlashcard({
       <h2>{row["Chinese Words"]}</h2>
       {(row.Formal || (showMeaningCount && !isFlipped)) && (
         <div className="card-badge-row">
-          {row.Formal && <p className="formal-note">Formal: {row.Formal}</p>}
+          {row.Formal && <p className="formal-note">{row.Formal}</p>}
           {showMeaningCount && !isFlipped && (
             <p className="meaning-count">
               {meaningCount} {meaningCount === 1 ? "meaning/form" : "meanings/forms"}
@@ -872,33 +873,33 @@ function CsvFlashcard({
       <ColorBadge colorValue={row.Color} />
 
       <div className="dictionary-body-grid">
-        <div>
+        <div className="dictionary-section-stack">
           {shouldShowMeta && (
-            <div className="dictionary-meta">
-              {(showFrontPinyin || isFlipped) && <em>{row.pinyin}</em>}
-              {isFlipped && <FormattedEnglishMeaning text={row["English Words"]} />}
+            <div className="dictionary-section-row">
+              <div className="dictionary-meta">
+                {(showFrontPinyin || isFlipped) && <em>{row.pinyin}</em>}
+                {isFlipped && <FormattedEnglishMeaning text={row["English Words"]} />}
+              </div>
+              <IconAudioButton label="Read Chinese word" onClick={() => speakText(row["Chinese Words"], "zh-CN")} />
             </div>
           )}
 
           {shouldShowDivider && <div className="dictionary-divider" />}
 
           {shouldShowUsage && (
-            <div className="dictionary-sentence">
-              {(showFrontUsage || isFlipped) && (
-                <p className="chinese-line">
-                  {isFlipped ? highlightSentenceTarget(rawSentence, row["Chinese Words"]) : sentence}
-                </p>
-              )}
-              {isFlipped && <p>{row["English Usage in a sentence"]}</p>}
+            <div className="dictionary-section-row">
+              <div className="dictionary-sentence">
+                {(showFrontUsage || isFlipped) && <span className="field-label">Usage:</span>}
+                {(showFrontUsage || isFlipped) && (
+                  <p className="chinese-line">
+                    {isFlipped ? highlightSentenceTarget(rawSentence, row["Chinese Words"]) : sentence}
+                  </p>
+                )}
+                {isFlipped && <p className="sentence-translation">{row["English Usage in a sentence"]}</p>}
+                {isFlipped && row.Notes && <NotesBlock notes={row.Notes} />}
+              </div>
+              <IconAudioButton label="Read sentence" onClick={() => speakText(sentence, "zh-CN")} />
             </div>
-          )}
-        </div>
-        <div className="audio-rail">
-          {shouldShowMeta && (
-            <IconAudioButton label="Read Chinese word" onClick={() => speakText(row["Chinese Words"], "zh-CN")} />
-          )}
-          {shouldShowUsage && (
-            <IconAudioButton label="Read sentence" onClick={() => speakText(sentence, "zh-CN")} />
           )}
         </div>
       </div>
@@ -930,8 +931,12 @@ function EnglishToChineseFlashcard({
   canUndo,
   onUndo,
 }) {
-  const englishPrompt = row["English Words"];
-  const chineseSentence = getFirstValue(row, [
+  const promptRow = row.__selectedEnglishToChinesePrompt || {};
+  const englishPrompt = promptRow["English Words"] || row["English Words"];
+  const chineseSentence = getFirstValue(promptRow, [
+    "Chinese Sentence",
+    "Chinese sentence",
+  ]) || getFirstValue(row, [
     "Chinese Sentence",
     "Chinese sentence",
     "Chinese Usage in a Sentence",
@@ -953,8 +958,8 @@ function EnglishToChineseFlashcard({
         <p className="eyebrow">{progressText}</p>
         <p className="question-id">{row.__rowNumber || "?"}</p>
         {onUndo && (
-          <button className="undo-button" onClick={onUndo} disabled={!canUndo}>
-            Undo
+          <button className="undo-button" onClick={onUndo} disabled={!canUndo} aria-label="Undo">
+            <img src="data/undo.svg" alt="" aria-hidden="true" />
           </button>
         )}
       </div>
@@ -970,27 +975,12 @@ function EnglishToChineseFlashcard({
           <FormattedEnglishMeaning text={englishPrompt} />
         </span>
       </div>
-      {row.Formal && (
+      {(promptRow.Formal || row.Formal) && (
         <div className="card-badge-row">
-          <p className="formal-note">Formal: {row.Formal}</p>
+          <p className="formal-note">{promptRow.Formal || row.Formal}</p>
         </div>
       )}
       <ColorBadge colorValue={row.Color} />
-
-      {showChineseSentence && hasSentence && (
-        <div className="english-sentence-block">
-          <div>
-            <p className="chinese-line">
-              {isFlipped ? highlightSentenceTarget(chineseSentence, row["Chinese Words"]) : visibleSentence}
-            </p>
-            {sentencePinyin && <p className="pinyin-line">{sentencePinyin}</p>}
-          </div>
-          <IconAudioButton
-            label="Read Chinese sentence"
-            onClick={() => speakText(visibleSentence, "zh-CN")}
-          />
-        </div>
-      )}
 
       {isFlipped && (
         <div className="english-answer-block">
@@ -1001,6 +991,23 @@ function EnglishToChineseFlashcard({
           <IconAudioButton
             label="Read Chinese word"
             onClick={() => speakText(row["Chinese Words"], "zh-CN")}
+          />
+        </div>
+      )}
+
+      {showChineseSentence && hasSentence && (
+        <div className="english-sentence-block">
+          <div>
+            <span className="field-label">Usage:</span>
+            <p className="chinese-line">
+              {isFlipped ? highlightSentenceTarget(chineseSentence, row["Chinese Words"]) : visibleSentence}
+            </p>
+            {sentencePinyin && <p className="pinyin-line">{sentencePinyin}</p>}
+            {isFlipped && row.Notes && <NotesBlock notes={row.Notes} />}
+          </div>
+          <IconAudioButton
+            label="Read Chinese sentence"
+            onClick={() => speakText(visibleSentence, "zh-CN")}
           />
         </div>
       )}
@@ -1021,10 +1028,19 @@ function EnglishToChineseFlashcard({
   );
 }
 
+function NotesBlock({ notes }) {
+  return (
+    <div className="csv-note-block">
+      <span>Notes:</span>
+      <p>{notes}</p>
+    </div>
+  );
+}
+
 function IconAudioButton({ label, onClick }) {
   return (
     <button className="icon-audio-button" type="button" aria-label={label} onClick={onClick}>
-      <span aria-hidden="true">Audio</span>
+      <img src="data/volume.svg" alt="" aria-hidden="true" />
     </button>
   );
 }
@@ -1063,6 +1079,24 @@ function getEnglishPromptSizeClass(text = "") {
     return "long";
   }
   return "";
+}
+
+function prepareEnglishToChineseSessionRows(rows) {
+  return rows.map((row) => {
+    const promptRows = Array.isArray(row.__englishToChinesePrompts) ? row.__englishToChinesePrompts : [];
+    if (!promptRows.length) {
+      return row;
+    }
+
+    return {
+      ...row,
+      __selectedEnglishToChinesePrompt: promptRows[Math.floor(Math.random() * promptRows.length)],
+    };
+  });
+}
+
+function getEnglishToChinesePromptText(row) {
+  return row?.__selectedEnglishToChinesePrompt?.["English Words"] || row?.["English Words"] || "";
 }
 
 function FormattedEnglishMeaning({ text = "" }) {
@@ -1111,10 +1145,7 @@ function isCompoundVerbLabel(text, offset, match) {
 }
 
 function countMeaningForms(text = "") {
-  const lines = text
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
+  const lines = formatEnglishMeaningLines(text);
 
   if (!lines.length) {
     return 1;
@@ -1131,33 +1162,24 @@ function countMeaningFormLine(line) {
 
   const colonIndex = line.indexOf(":");
   if (colonIndex === -1) {
-    return splitMeaningText(line).length;
+    return 1;
   }
 
   const labelText = line.slice(0, colonIndex);
-  const definitionText = line.slice(colonIndex + 1);
   const formCount = splitWordFormLabels(labelText).length;
-  const meaningCount = splitMeaningText(definitionText).length;
 
-  return Math.max(formCount, meaningCount, 1);
+  return Math.max(formCount, 1);
 }
 
 function splitWordFormLabels(text) {
-  const knownFormPattern = /\b(?:noun|verb|auxiliary verb|auxilary verb|modal verb|helping verb|adjective|adverb|interjection|pronoun|preposition|conjunction|measure word|proper noun)\b/i;
-  if (!knownFormPattern.test(text)) {
-    return [];
-  }
-
-  return text.split("/").map((part) => part.trim()).filter(Boolean);
+  return text
+    .split("/")
+    .map((part) => part.trim())
+    .filter(isWordFormLabel);
 }
 
-function splitMeaningText(text) {
-  const parts = text
-    .split(/\s+(?:\/|;)\s+/)
-    .map((part) => part.trim())
-    .filter(Boolean);
-
-  return parts.length ? parts : [text.trim()].filter(Boolean);
+function isWordFormLabel(text) {
+  return /^(?:noun|verb|auxiliary verb|auxilary verb|modal verb|helping verb|adjective|adverb|interjection|pronoun|preposition|conjunction|measure word|proper noun)$/i.test(text);
 }
 
 function highlightBracketText(text) {
@@ -1246,7 +1268,7 @@ function ReviewedCardsList({ rows, mode }) {
     <section className="wrong-list reviewed-list">
       <h3>Reviewed cards</h3>
       {rows.map((row, rowIndex) => {
-        const primaryText = mode === "english-to-chinese" ? row["English Words"] : row["Chinese Words"];
+        const primaryText = mode === "english-to-chinese" ? getEnglishToChinesePromptText(row) : row["Chinese Words"];
         const secondaryText = mode === "english-to-chinese" ? row["Chinese Words"] : row["English Words"];
 
         return (

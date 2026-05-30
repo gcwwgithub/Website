@@ -21,12 +21,13 @@ export default function AppShell() {
         <div className="top-bar-inner">
           <div className="top-bar-left">
             {isGameMode ? (
-              <Link className="site-home-link" to="/">
-                Home
+              <Link className="site-home-link icon-only-link" to="/" aria-label="Home">
+                <img src="data/home.svg" alt="" aria-hidden="true" />
               </Link>
             ) : (
               <a className="site-home-link" href="../index.html">
-                WebPlayground
+                <img src="data/icon.png" alt="" aria-hidden="true" />
+                <span>Playground</span>
               </a>
             )}
           </div>

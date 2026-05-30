@@ -36,6 +36,7 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     border: 1px solid var(--border);
     border-radius: 10px;
     background: rgba(30, 41, 59, 0.9);
@@ -43,6 +44,12 @@ body {
     font-weight: 700;
     padding: 9px 12px;
     text-decoration: none;
+}
+
+.main-page-link img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
 }
 
 .main-page-link:hover {

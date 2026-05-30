@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import ColorBadge from "../components/ColorBadge.jsx";
 import GameMenu from "../components/GameMenu.jsx";
+import LoadingScreen from "../components/LoadingScreen.jsx";
 import TimerStatus from "../components/TimerStatus.jsx";
 import { loadTranslateRows } from "../services/adverbCsv.js";
 import {
@@ -24,7 +25,7 @@ const TRANSLATE_COLOR_PROGRESS_KEY = "chineseQuizNew.translateColorProgress.v1";
 
 export default function Translate() {
   const [searchParams] = useSearchParams();
-  const { user } = useSupabaseAuth();
+  const { user, loading: authLoading } = useSupabaseAuth();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
@@ -68,6 +69,11 @@ export default function Translate() {
   }
 
   useEffect(() => {
+    if (authLoading) {
+      setLoading(true);
+      return;
+    }
+
     async function loadSession() {
       setLoading(true);
       setError("");
@@ -101,7 +107,7 @@ export default function Translate() {
     }
 
     loadSession();
-  }, [orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
+  }, [authLoading, orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     answerRef.current = answer;
@@ -263,7 +269,7 @@ export default function Translate() {
   }
 
   if (loading) {
-    return <main className="page narrow-page">Loading translate...</main>;
+    return <LoadingScreen label="Loading translate" />;
   }
 
   if (error) {
@@ -331,8 +337,8 @@ export default function Translate() {
             >
               Review again
             </Link>
-            <Link className="secondary-button settings-link" to="/">
-              Go home
+            <Link className="secondary-button settings-link icon-only-button" to="/" aria-label="Go home">
+              <img src="data/home.svg" alt="" aria-hidden="true" />
             </Link>
           </div>
         </section>
@@ -355,13 +361,14 @@ export default function Translate() {
     <main className="page narrow-page">
       <GameMenu />
       <section className="quiz-card sentence-card translate-card">
-        <div className="dictionary-card-top game-card-top">
+        <div className="dictionary-card-top game-card-top translate-card-top">
           <p className="eyebrow">{questionIndex + 1} / {sessionRows.length}</p>
           <p className="question-id">{currentQuestion.__rowNumber || "?"}</p>
-          <p className="eyebrow game-name">Translate</p>
-          <button className="undo-button" onClick={undoLastAction} disabled={!history.length}>
-            Undo
-          </button>
+          <div className="translate-top-actions">
+            <button className="undo-button" onClick={undoLastAction} disabled={!history.length} aria-label="Undo">
+              <img src="data/undo.svg" alt="" aria-hidden="true" />
+            </button>
+          </div>
         </div>
         <ColorBadge colorValue={currentQuestion.Color} />
         <TimerStatus

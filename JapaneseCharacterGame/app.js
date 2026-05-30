@@ -136,7 +136,9 @@ function setScreen(screen) {
   gamePanel.classList.toggle("hidden", screen !== "game");
   resultsPanel.classList.toggle("hidden", screen !== "results");
   document.body.dataset.screen = screen;
-  homeLink.textContent = screen === "menu" ? "WebPlayground" : "Home";
+  homeLink.innerHTML = screen === "menu"
+    ? '<img src="../Images/icon.png" alt="" aria-hidden="true"><span>Playground</span>'
+    : "Home";
 }
 
 function getPool() {

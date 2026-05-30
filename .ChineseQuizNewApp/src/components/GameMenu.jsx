@@ -11,7 +11,7 @@ export default function GameMenu({ children }) {
         onClick={() => setIsOpen(true)}
         aria-label="Open game menu"
       >
-        Menu
+        <img src="data/menu.svg" alt="" aria-hidden="true" />
       </button>
       <div
         className={`drawer-backdrop ${isOpen ? "open" : ""}`}
@@ -27,8 +27,8 @@ export default function GameMenu({ children }) {
         </button>
         <div className="drawer-content">
           <p className="eyebrow">Menu</p>
-          <Link className="drawer-link" to="/">
-            Quiz Home
+          <Link className="drawer-link icon-drawer-link" to="/" aria-label="Quiz home">
+            <img src="data/home.svg" alt="" aria-hidden="true" />
           </Link>
           {children}
         </div>

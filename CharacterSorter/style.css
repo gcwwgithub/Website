@@ -71,6 +71,9 @@ button:disabled {
   top: 1rem;
   left: 1rem;
   z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(17, 24, 39, 0.88);
@@ -79,6 +82,12 @@ button:disabled {
   font-weight: 900;
   padding: 0.65rem 0.8rem;
   text-decoration: none;
+}
+
+.home-link img {
+  width: 1.35rem;
+  height: 1.35rem;
+  object-fit: contain;
 }
 
 .home-link:hover {

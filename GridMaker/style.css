@@ -83,9 +83,18 @@ label {
 }
 
 .home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   color: var(--text);
   font-weight: 900;
   text-decoration: none;
+}
+
+.home-link img {
+  width: 1.35rem;
+  height: 1.35rem;
+  object-fit: contain;
 }
 
 .top-actions {

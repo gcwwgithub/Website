@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import GameMenu from "../components/GameMenu.jsx";
 import ColorBadge from "../components/ColorBadge.jsx";
+import LoadingScreen from "../components/LoadingScreen.jsx";
 import TimerStatus from "../components/TimerStatus.jsx";
 import { loadAdverbRows } from "../services/adverbCsv.js";
 import {
@@ -25,7 +26,7 @@ const ADVERB_COLOR_PROGRESS_KEY = "chineseQuizNew.adverbColorProgress.v1";
 
 export default function AdverbGame() {
   const [searchParams] = useSearchParams();
-  const { user } = useSupabaseAuth();
+  const { user, loading: authLoading } = useSupabaseAuth();
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || 20));
   const orderMode = normalizeOrderMode(searchParams.get("order"));
   const timerSeconds = Math.max(0, Math.min(600, Number(searchParams.get("timer")) || 0));
@@ -68,7 +69,14 @@ export default function AdverbGame() {
   }
 
   useEffect(() => {
+    if (authLoading) {
+      setLoading(true);
+      return;
+    }
+
     async function loadGame() {
+      setLoading(true);
+      setError("");
       try {
         const baseRows = await loadAdverbRows();
         const loadedRows = user?.id
@@ -97,7 +105,7 @@ export default function AdverbGame() {
     }
 
     loadGame();
-  }, [orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
+  }, [authLoading, orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     if (loading || isReviewAgain || timerSeconds <= 0 || isAnswered || !currentRow || isComplete) {
@@ -175,7 +183,7 @@ export default function AdverbGame() {
   }
 
   if (loading) {
-    return <main className="page narrow-page">Loading adverb game...</main>;
+    return <LoadingScreen label="Loading adverb game" />;
   }
 
   if (error) {
@@ -256,8 +264,8 @@ export default function AdverbGame() {
             >
               Review again
             </Link>
-            <Link className="secondary-button settings-link" to="/">
-              Go home
+            <Link className="secondary-button settings-link icon-only-button" to="/" aria-label="Go home">
+              <img src="data/home.svg" alt="" aria-hidden="true" />
             </Link>
           </div>
         </section>

@@ -203,6 +203,8 @@ form {
 .site-home-link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
   min-height: 2.5rem;
   border: 1px solid #243044;
   border-radius: 8px;
@@ -210,6 +212,18 @@ form {
   color: #cbd5e1;
   font-weight: 800;
   padding: 0.35rem 0.75rem;
+}
+
+.site-home-link.icon-only-link {
+  width: 2.75rem;
+  padding: 0;
+}
+
+.site-home-link img,
+.settings-link img,
+.drawer-link img {
+  width: 1.35rem;
+  height: 1.35rem;
 }
 
 .app-title {
@@ -376,6 +390,40 @@ form {
   padding: 1.25rem;
 }
 
+.loading-page {
+  min-height: 52vh;
+  align-content: center;
+}
+
+.loading-panel {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.embedded-loading {
+  border: 1px solid #243044;
+  border-radius: 8px;
+  background: rgba(17, 24, 39, 0.68);
+  padding: 1rem;
+}
+
+.loading-track {
+  height: 0.7rem;
+  overflow: hidden;
+  border: 1px solid #334155;
+  border-radius: 999px;
+  background: #111827;
+}
+
+.loading-track span {
+  display: block;
+  width: 42%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5eead4, #f8fafc);
+  transition: width 180ms ease;
+}
+
 .hero-panel h2 {
   max-width: 650px;
   margin-bottom: 0;
@@ -443,6 +491,13 @@ form {
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 10px 28px rgba(20, 184, 166, 0.12);
   transform: translateY(-1px);
+}
+
+.settings-link.icon-only-button {
+  min-width: 2.75rem;
+  width: 2.75rem;
+  min-height: 2.5rem;
+  padding: 0;
 }
 
 .danger-button {
@@ -877,10 +932,19 @@ form {
 
 .undo-button {
   justify-self: end;
+  display: inline-grid;
+  width: 2.45rem;
+  height: 2.25rem;
+  place-items: center;
   background: #1f2937;
   color: #e5e7eb;
   font-size: 0.85rem;
-  padding: 0.55rem 0.8rem;
+  padding: 0;
+}
+
+.undo-button img {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 .undo-button:disabled {
@@ -1049,28 +1113,38 @@ form {
   padding: 0;
 }
 
-.dictionary-body-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 1.25rem;
-  align-items: start;
+.icon-audio-button img {
+  width: 1.05rem;
+  height: 1.05rem;
 }
 
-.audio-rail {
+.dictionary-body-grid {
   display: grid;
-  align-content: start;
-  gap: 0.65rem;
-  padding-top: 0.2rem;
+  gap: 1rem;
+}
+
+.dictionary-section-stack {
+  display: grid;
+  gap: 0;
+}
+
+.dictionary-section-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 1.25rem;
 }
 
 .dictionary-meta {
   display: grid;
   gap: 0.35rem;
-  color: #cbd5e1;
+  color: #dbe6f3;
+  font-size: 1rem;
+  line-height: 1.45;
 }
 
 .dictionary-meta em {
-  color: #ef4444;
+  color: #f9a8d4;
   font-style: italic;
 }
 
@@ -1083,7 +1157,7 @@ form {
 .dictionary-sentence {
   display: grid;
   gap: 0.35rem;
-  color: #aeb9ca;
+  color: #dbe6f3;
   font-size: 1rem;
   line-height: 1.45;
 }
@@ -1092,7 +1166,18 @@ form {
   margin: 0;
 }
 
+.field-label {
+  color: #5eead4;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
 .dictionary-sentence .chinese-line {
+  color: #dbe6f3;
+}
+
+.sentence-translation {
   color: #dbe6f3;
 }
 
@@ -1106,6 +1191,7 @@ form {
 }
 
 .dictionary-sentence .pinyin-line {
+  color: #f9a8d4;
   font-style: italic;
 }
 
@@ -1218,6 +1304,31 @@ form {
   padding: 0.35rem 0.65rem;
 }
 
+.csv-note-block {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+  border-top: 1px solid #243044;
+  padding-top: 0.65rem;
+  color: #dbe6f3;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.csv-note-block span {
+  color: #fbbf24;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.csv-note-block p {
+  margin: 0;
+  color: #dbe6f3;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
 .quiz-layout {
   position: relative;
   align-items: start;
@@ -1233,14 +1344,19 @@ form {
 .drawer-toggle {
   justify-self: start;
   display: inline-grid;
-  min-width: 4.25rem;
+  width: 2.75rem;
   height: 2.5rem;
   place-items: center;
   border: 1px solid rgba(94, 234, 212, 0.42);
   background: rgba(15, 23, 42, 0.94);
   color: #ccfbf1;
   font-size: 0.9rem;
-  padding: 0 0.85rem;
+  padding: 0;
+}
+
+.drawer-toggle img {
+  width: 1.35rem;
+  height: 1.35rem;
 }
 
 .drawer-backdrop {
@@ -1296,6 +1412,12 @@ form {
   color: #ccfbf1;
   font-weight: 850;
   padding: 0.75rem 0.9rem;
+}
+
+.drawer-link.icon-drawer-link {
+  width: 2.75rem;
+  min-height: 2.5rem;
+  padding: 0;
 }
 
 .drawer-link:hover {
@@ -1772,6 +1894,31 @@ form {
 
 .translate-card {
   gap: 1.1rem;
+}
+
+.translate-card-top {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.translate-top-actions {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.translate-top-actions .game-name {
+  margin: 0;
+}
+
+.translate-top-actions .undo-button {
+  grid-column: auto;
+  grid-row: auto;
+  flex: 0 0 auto;
 }
 
 .translate-prompt,
