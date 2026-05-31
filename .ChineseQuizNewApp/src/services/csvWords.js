@@ -6,11 +6,9 @@ const VOCAB_REQUIRED_COLUMNS = [
   "English Words",
   "Chinese Usage in a Sentence",
   "English Usage in a sentence",
-  "Color",
   "Band 0 HSK",
   "Dao",
   "ID",
-  "Lose Streak",
 ];
 const ENGLISH_TO_CHINESE_PROMPT_REQUIRED_COLUMNS = ["Chinese Words", "pinyin", "English Words", "Chinese Sentence", "ID"];
 
@@ -72,6 +70,22 @@ export function filterCsvRows(rows, filterType, selectedValues) {
   );
 }
 
+export function filterCsvRowsBySelections(rows, { hskValues = ["all"], daoValues = ["all"], includeFlagged = false } = {}) {
+  const hasHskSelection = hasActiveFilterSelection(hskValues);
+  const hasDaoSelection = hasActiveFilterSelection(daoValues);
+  const hasFlaggedSelection = includeFlagged === true;
+
+  if (!hasHskSelection && !hasDaoSelection && !hasFlaggedSelection) {
+    return [];
+  }
+
+  return rows.filter((row) =>
+    (hasHskSelection && rowMatchesFilterValues(row, "Band 0 HSK", hskValues)) ||
+    (hasDaoSelection && rowMatchesFilterValues(row, "Dao", daoValues)) ||
+    (hasFlaggedSelection && row.__isFlagged === true)
+  );
+}
+
 export function getCsvFilterValues(rows, filterType) {
   const column = filterType === "dao" ? "Dao" : "Band 0 HSK";
   const values = rows.flatMap((row) =>
@@ -93,6 +107,23 @@ function compareFilterValues(firstValue, secondValue) {
   }
 
   return firstValue.localeCompare(secondValue, undefined, { numeric: true });
+}
+
+function rowMatchesFilterValues(row, column, selectedValues) {
+  const values = Array.isArray(selectedValues) ? selectedValues : [selectedValues];
+  if (values.includes("all")) {
+    return true;
+  }
+
+  return (row[column] || "")
+    .split(";")
+    .map((value) => value.trim())
+    .some((value) => values.includes(value));
+}
+
+function hasActiveFilterSelection(selectedValues) {
+  const values = Array.isArray(selectedValues) ? selectedValues : [selectedValues];
+  return values.includes("all") || values.length > 0;
 }
 
 function parseCsv(csvText, requiredColumns) {
@@ -152,7 +183,17 @@ function parseCsv(csvText, requiredColumns) {
         return word;
       }, {})
     )
+    .map(normalizeParsedWord)
     .filter((word) => requiredColumns.every((column) => word[column]));
+}
+
+function normalizeParsedWord(word) {
+  return {
+    Color: "",
+    Encountered: "0",
+    "Lose Streak": "0",
+    ...word,
+  };
 }
 
 function normalizeHeaderName(header) {

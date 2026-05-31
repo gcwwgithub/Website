@@ -1,12 +1,12 @@
 import { supabase } from "../supabase.js";
 import { getColorProgressId } from "./progressIdentity.js";
 
-export async function saveRemoteColorProgress({ userId, storageKey, row, colorValue, loseStreak, isNew }) {
+export async function saveRemoteColorProgress({ userId, storageKey, row, colorValue, loseStreak, isFlagged, isNew }) {
   if (!supabase || !userId || !storageKey || !row) {
     return;
   }
 
-  const payload = buildColorProgressPayload({ userId, storageKey, row, colorValue, loseStreak, isNew });
+  const payload = buildColorProgressPayload({ userId, storageKey, row, colorValue, loseStreak, isFlagged, isNew });
   if (!payload) {
     return;
   }
@@ -33,6 +33,7 @@ export async function syncRemoteColorProgress({ userId, storageKey, rows, isNew 
         row,
         colorValue: row.Color,
         loseStreak: row["Lose Streak"],
+        isFlagged: row.__isFlagged,
         isNew,
       })
     )
@@ -60,7 +61,7 @@ export async function fetchRemoteColorProgress({ userId, storageKey }) {
 
   const { data, error } = await supabase
     .from("chinese_quiz_color_progress")
-    .select("progress_id,color_value,lose_streak,is_new")
+    .select("progress_id,color_value,lose_streak,is_flagged,is_new")
     .eq("user_id", userId)
     .eq("game_mode", getGameMode(storageKey));
 
@@ -72,6 +73,7 @@ export async function fetchRemoteColorProgress({ userId, storageKey }) {
     progressById[row.progress_id] = {
       colorValue: row.color_value,
       loseStreak: row.lose_streak,
+      isFlagged: row.is_flagged,
       isNew: row.is_new,
     };
     return progressById;
@@ -81,15 +83,16 @@ export async function fetchRemoteColorProgress({ userId, storageKey }) {
 export function applyRemoteColorProgress(rows, remoteProgress) {
   return rows.map((row) => {
     const progress = remoteProgress[getColorProgressId(row)];
-    if (!progress || progress.colorValue == null) {
-      return { ...row, __hasSavedColorProgress: false };
+    if (!progress) {
+      return { ...row, __hasSavedColorProgress: false, __isFlagged: false };
     }
 
     return {
       ...row,
-      Color: String(progress.colorValue),
+      Color: progress.colorValue == null ? row.Color : String(progress.colorValue),
       "Lose Streak": String(progress.loseStreak || 0),
       __hasSavedColorProgress: progress.isNew === false,
+      __isFlagged: progress.isFlagged === true,
     };
   });
 }
@@ -109,7 +112,7 @@ export async function deleteRemoteColorProgress({ userId }) {
   }
 }
 
-function buildColorProgressPayload({ userId, storageKey, row, colorValue, loseStreak, isNew }) {
+function buildColorProgressPayload({ userId, storageKey, row, colorValue, loseStreak, isFlagged, isNew }) {
   const progressId = getProgressId(row);
   if (!progressId) {
     return null;
@@ -126,6 +129,10 @@ function buildColorProgressPayload({ userId, storageKey, row, colorValue, loseSt
 
   if (isNew !== undefined) {
     payload.is_new = Boolean(isNew);
+  }
+
+  if (isFlagged !== undefined) {
+    payload.is_flagged = Boolean(isFlagged);
   }
 
   return payload;

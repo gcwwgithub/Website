@@ -8,6 +8,9 @@ export const DEFAULT_CHINESE_TO_ENGLISH_SETTINGS = {
   filterType: "hsk",
   filterValues: ["all"],
   hskBands: ["all"],
+  hskValues: ["all"],
+  daoValues: ["all"],
+  includeFlagged: false,
   rangeStart: "1",
   rangeEnd: "",
   orderMode: "random",
@@ -21,6 +24,8 @@ export const DEFAULT_ENGLISH_TO_CHINESE_SETTINGS = {
   questionCount: "20",
   filterType: "hsk",
   filterValues: ["all"],
+  hskValues: ["all"],
+  daoValues: ["all"],
   rangeStart: "1",
   rangeEnd: "",
   orderMode: "random",
@@ -109,12 +114,18 @@ export function formatFilterValuesParam(values) {
 }
 
 function normalizeSettings(settings = {}) {
+  const legacyHskValues = settings.filterType === "dao" ? ["all"] : settings.filterValues || settings.hskBands;
+  const legacyDaoValues = settings.filterType === "dao" ? settings.filterValues : ["all"];
+
   return {
     ...DEFAULT_CHINESE_TO_ENGLISH_SETTINGS,
     ...settings,
     filterType: normalizeFilterType(settings.filterType),
     filterValues: normalizeFilterValues(settings.filterValues || settings.hskBands),
     hskBands: normalizeFilterValues(settings.hskBands),
+    hskValues: normalizeFilterValues(settings.hskValues || legacyHskValues),
+    daoValues: normalizeFilterValues(settings.daoValues || legacyDaoValues),
+    includeFlagged: settings.includeFlagged === true,
     orderMode: normalizeOrderMode(settings.orderMode),
     timerSeconds: normalizeTimerSeconds(settings.timerSeconds),
     showPinyin: settings.showPinyin !== false,
@@ -124,11 +135,16 @@ function normalizeSettings(settings = {}) {
 }
 
 function normalizeEnglishSettings(settings = {}) {
+  const legacyHskValues = settings.filterType === "dao" ? ["all"] : settings.filterValues;
+  const legacyDaoValues = settings.filterType === "dao" ? settings.filterValues : ["all"];
+
   return {
     ...DEFAULT_ENGLISH_TO_CHINESE_SETTINGS,
     ...settings,
     filterType: normalizeFilterType(settings.filterType),
     filterValues: normalizeFilterValues(settings.filterValues),
+    hskValues: normalizeFilterValues(settings.hskValues || legacyHskValues),
+    daoValues: normalizeFilterValues(settings.daoValues || legacyDaoValues),
     orderMode: normalizeEnglishOrderMode(settings.orderMode),
     timerSeconds: normalizeTimerSeconds(settings.timerSeconds),
     showChineseSentence: settings.showChineseSentence !== false,

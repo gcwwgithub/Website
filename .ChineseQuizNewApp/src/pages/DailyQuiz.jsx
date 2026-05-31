@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import LoadingScreen from "../components/LoadingScreen.jsx";
-import { filterCsvRows, loadCsvWords, loadEnglishToChineseRows } from "../services/csvWords.js";
+import { filterCsvRowsBySelections, loadCsvWords, loadEnglishToChineseRows } from "../services/csvWords.js";
 import {
   parseFilterValuesParam,
   readChineseToEnglishSettings,
@@ -26,11 +26,22 @@ export default function DailyQuiz() {
   const mode = searchParams.get("mode") === "english-to-chinese" ? "english-to-chinese" : "chinese-to-english";
   const requestedCount = Math.max(1, Math.min(100, Number(searchParams.get("count")) || Number(savedSettings.questionCount) || 20));
   const activeSettings = mode === "english-to-chinese" ? savedEnglishSettings : savedSettings;
-  const filterType = searchParams.get("filter") === "dao" ? "dao" : activeSettings.filterType;
-  const selectedFilterValues = useMemo(
-    () => parseFilterValuesParam(searchParams.get("values") || searchParams.get("band") || activeSettings.filterValues.join(",")),
-    [activeSettings.filterValues, searchParams]
+  const legacyFilterType = searchParams.get("filter") === "dao" ? "dao" : activeSettings.filterType;
+  const legacyFilterValues = searchParams.get("values") || searchParams.get("band") || activeSettings.filterValues.join(",");
+  const selectedHskValues = useMemo(
+    () => parseFilterValuesParam(searchParams.get("hsk") || (legacyFilterType === "hsk" ? legacyFilterValues : activeSettings.hskValues.join(","))),
+    [activeSettings.hskValues, legacyFilterType, legacyFilterValues, searchParams]
   );
+  const selectedDaoValues = useMemo(
+    () => parseFilterValuesParam(searchParams.get("dao") || (legacyFilterType === "dao" ? legacyFilterValues : activeSettings.daoValues.join(","))),
+    [activeSettings.daoValues, legacyFilterType, legacyFilterValues, searchParams]
+  );
+  const includeFlagged =
+    mode === "chinese-to-english"
+      ? searchParams.has("flagged")
+        ? searchParams.get("flagged") === "1"
+        : activeSettings.includeFlagged === true
+      : false;
   const rangeStart = Math.max(1, Number(searchParams.get("start")) || Number(activeSettings.rangeStart) || 1);
   const rangeEnd = Math.max(rangeStart, Number(searchParams.get("end")) || Number(activeSettings.rangeEnd) || Number.MAX_SAFE_INTEGER);
   const fallbackOrderMode = mode === "english-to-chinese" ? savedEnglishSettings.orderMode : savedSettings.orderMode;
@@ -62,7 +73,7 @@ export default function DailyQuiz() {
   const isDailyReview = orderMode === "daily-review";
   const isReviewMode = orderMode === "daily-review" || orderMode === "review-again";
 
-  function trackColorProgress(row, storageKey, colorValue, loseStreak) {
+  function trackColorProgress(row, storageKey, colorValue, loseStreak, options = {}) {
     if (!user?.id || !row) {
       return;
     }
@@ -73,6 +84,7 @@ export default function DailyQuiz() {
       storageKey,
       colorValue,
       loseStreak,
+      isFlagged: options.isFlagged ?? row.__isFlagged,
     }).catch((trackingError) => {
       console.warn("Could not save Supabase color progress.", trackingError);
     });
@@ -114,7 +126,10 @@ export default function DailyQuiz() {
           if (!user?.id) {
             pruneStaleColorProgress(loadedRows, ENGLISH_COLOR_PROGRESS_KEY);
           }
-          const filteredRows = filterCsvRows(loadedRowsWithProgress, filterType, selectedFilterValues);
+          const filteredRows = filterCsvRowsBySelections(loadedRowsWithProgress, {
+            hskValues: selectedHskValues,
+            daoValues: selectedDaoValues,
+          });
           const rangedRows = applyRange(filteredRows, rangeStart, rangeEnd);
           setCsvRows(prepareEnglishToChineseSessionRows(buildCsvSession(rangedRows, requestedCount, orderMode, reviewSetKey)));
           setCsvIndex(0);
@@ -139,7 +154,11 @@ export default function DailyQuiz() {
           if (!user?.id) {
             pruneStaleColorProgress(loadedCsvRows);
           }
-          const filteredRows = filterCsvRows(loadedRowsWithProgress, filterType, selectedFilterValues);
+          const filteredRows = filterCsvRowsBySelections(loadedRowsWithProgress, {
+            hskValues: selectedHskValues,
+            daoValues: selectedDaoValues,
+            includeFlagged,
+          });
           const rangedRows = applyRange(filteredRows, rangeStart, rangeEnd);
           setCsvRows(buildCsvSession(rangedRows, requestedCount, orderMode, reviewSetKey));
           setCsvIndex(0);
@@ -160,7 +179,7 @@ export default function DailyQuiz() {
       }
     }
     loadQuiz();
-  }, [authLoading, filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, selectedFilterValues, sessionRun, timerSeconds, user?.id]);
+  }, [authLoading, includeFlagged, mode, orderMode, rangeEnd, rangeStart, requestedCount, reviewSetKey, selectedDaoValues, selectedHskValues, sessionRun, timerSeconds, user?.id]);
 
   useEffect(() => {
     if (loading || isReviewMode || timerSeconds <= 0 || isCsvFlipped || csvIndex >= csvRows.length) {
@@ -192,8 +211,11 @@ export default function DailyQuiz() {
 
     saveChineseToEnglishSettings({
       questionCount: String(requestedCount),
-      filterType,
-      filterValues: selectedFilterValues,
+      filterType: "hsk",
+      filterValues: selectedHskValues,
+      hskValues: selectedHskValues,
+      daoValues: selectedDaoValues,
+      includeFlagged,
       rangeStart: String(rangeStart),
       rangeEnd: Number.isFinite(rangeEnd) ? String(rangeEnd) : "",
       orderMode,
@@ -202,7 +224,7 @@ export default function DailyQuiz() {
       showChineseUsage: showFrontUsage,
       showMeaningCount,
     });
-  }, [filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, selectedFilterValues, showFrontPinyin, showFrontUsage, showMeaningCount, timerSeconds]);
+  }, [includeFlagged, mode, orderMode, rangeEnd, rangeStart, requestedCount, selectedDaoValues, selectedHskValues, showFrontPinyin, showFrontUsage, showMeaningCount, timerSeconds]);
 
   useEffect(() => {
     if (mode !== "english-to-chinese" || orderMode === "review-again") {
@@ -213,13 +235,15 @@ export default function DailyQuiz() {
       questionCount: String(requestedCount),
       rangeStart: String(rangeStart),
       rangeEnd: Number.isFinite(rangeEnd) ? String(rangeEnd) : "",
-      filterType,
-      filterValues: selectedFilterValues,
+      filterType: "hsk",
+      filterValues: selectedHskValues,
+      hskValues: selectedHskValues,
+      daoValues: selectedDaoValues,
       orderMode,
       timerSeconds: String(timerSeconds),
       showChineseSentence: showEnglishChineseSentence,
     });
-  }, [filterType, mode, orderMode, rangeEnd, rangeStart, requestedCount, selectedFilterValues, showEnglishChineseSentence, timerSeconds]);
+  }, [mode, orderMode, rangeEnd, rangeStart, requestedCount, selectedDaoValues, selectedHskValues, showEnglishChineseSentence, timerSeconds]);
 
   if (loading) return <LoadingScreen label="Loading quiz" />;
 
@@ -511,8 +535,13 @@ export default function DailyQuiz() {
         ? { ...csvRow, Color: nextColor, "Lose Streak": String(nextLoseStreak) }
         : csvRow;
       if (answeredRow && shouldUpdateColor) {
-        saveColorProgress(answeredRow, nextColor, CSV_COLOR_PROGRESS_KEY, { loseStreak: nextLoseStreak });
-        trackColorProgress(answeredRow, CSV_COLOR_PROGRESS_KEY, nextColor, nextLoseStreak);
+        saveColorProgress(answeredRow, nextColor, CSV_COLOR_PROGRESS_KEY, {
+          loseStreak: nextLoseStreak,
+          isFlagged: answeredRow.__isFlagged,
+        });
+        trackColorProgress(answeredRow, CSV_COLOR_PROGRESS_KEY, nextColor, nextLoseStreak, {
+          isFlagged: answeredRow.__isFlagged,
+        });
       }
 
       setCsvHistory((current) => [
@@ -606,6 +635,26 @@ export default function DailyQuiz() {
       } else if (lastAction.type === "skipped") {
         setSkippedCsvRows((current) => removeLastMatchingRow(current, lastAction.row));
       }
+    }
+
+    function toggleCsvFlag() {
+      if (!csvRow) {
+        return;
+      }
+
+      const nextFlagged = !isFlaggedCard(csvRow);
+      const nextRow = { ...csvRow, __isFlagged: nextFlagged };
+
+      setCsvRows((current) =>
+        current.map((row, rowIndex) => (rowIndex === csvIndex ? nextRow : row))
+      );
+      saveColorProgress(nextRow, nextRow.Color, CSV_COLOR_PROGRESS_KEY, {
+        loseStreak: nextRow["Lose Streak"],
+        isFlagged: nextFlagged,
+      });
+      trackColorProgress(nextRow, CSV_COLOR_PROGRESS_KEY, nextRow.Color, nextRow["Lose Streak"], {
+        isFlagged: nextFlagged,
+      });
     }
 
     if (isCsvComplete) {
@@ -776,6 +825,8 @@ export default function DailyQuiz() {
                   wasAutoFlipped={wasAutoFlipped}
                   canUndo={!isReviewMode && csvHistory.length > 0}
                   onUndo={isReviewMode ? null : undoLastAction}
+                  isFlagged={isFlaggedCard(csvRow)}
+                  onToggleFlag={toggleCsvFlag}
                 />
                 {isReviewMode ? (
                   <div className="card-actions single-action">
@@ -830,6 +881,8 @@ function CsvFlashcard({
   wasAutoFlipped,
   canUndo,
   onUndo,
+  isFlagged,
+  onToggleFlag,
 }) {
   const rawSentence = row["Chinese Usage in a Sentence"];
   const sentence = isFlipped
@@ -845,7 +898,17 @@ function CsvFlashcard({
       <div className="dictionary-card-top">
         <p className="eyebrow">{progressText}</p>
         {isNewCard(row) && <span className="new-card-badge">NEW</span>}
-        <p className="question-id">{row.__rowNumber || "?"}</p>
+        {onToggleFlag && (
+          <button
+            className={`flag-card-button ${isFlagged ? "active" : ""}`}
+            onClick={onToggleFlag}
+            type="button"
+            aria-pressed={isFlagged}
+          >
+            {isFlagged ? "Flagged" : "Flag"}
+          </button>
+        )}
+        <p className="question-id">{getDisplayCardId(row)}</p>
         {onUndo && (
           <button className="undo-button" onClick={onUndo} disabled={!canUndo} aria-label="Undo">
             <img src="data/undo.svg" alt="" aria-hidden="true" />
@@ -1316,10 +1379,10 @@ function manuallyFlipCard(setIsCsvFlipped, setWasAutoFlipped) {
 function buildCsvSession(rows, count, orderMode, reviewSetKey = "") {
   if (orderMode === "in-order") {
     return buildRequiredColorSession(
-      rows,
+      sortRowsByCsvId(rows),
       count,
       (remainingRows, fillerCount) => remainingRows.slice(0, fillerCount),
-      { preserveRowOrder: true }
+      { preserveRowOrder: true, requiredPredicate: isHighColorCard }
     );
   }
 
@@ -1342,6 +1405,34 @@ function applyRange(rows, start, end) {
   return rows.slice(start - 1, end);
 }
 
+function sortRowsByCsvId(rows) {
+  return [...rows].sort(compareRowsByCsvId);
+}
+
+function compareRowsByCsvId(firstRow, secondRow) {
+  const firstId = getSortableCsvId(firstRow);
+  const secondId = getSortableCsvId(secondRow);
+
+  if (firstId.number !== null && secondId.number !== null && firstId.number !== secondId.number) {
+    return firstId.number - secondId.number;
+  }
+
+  return firstId.text.localeCompare(secondId.text, undefined, { numeric: true });
+}
+
+function getSortableCsvId(row) {
+  const text = String(row?.ID || row?.id || row?.__rowNumber || "");
+  const number = Number.parseFloat(text);
+  return {
+    text,
+    number: Number.isNaN(number) ? null : number,
+  };
+}
+
+function getDisplayCardId(row) {
+  return row?.ID || row?.id || row?.__rowNumber || "?";
+}
+
 function buildRandomCsvSession(rows, count) {
   const shuffledRows = [...rows];
 
@@ -1358,7 +1449,8 @@ function buildWeightedCsvSession(rows, count) {
 }
 
 function buildRequiredColorSession(rows, count, buildFillerRows, options = {}) {
-  const requiredRows = rows.filter(isAlwaysIncludedCard);
+  const requiredPredicate = options.requiredPredicate || isAlwaysIncludedCard;
+  const requiredRows = rows.filter(requiredPredicate);
   const requiredSet = new Set(requiredRows);
   const remainingRows = rows.filter((row) => !requiredSet.has(row));
   const targetCount = Math.max(Math.min(count, rows.length), requiredRows.length);
@@ -1374,6 +1466,10 @@ function buildRequiredColorSession(rows, count, buildFillerRows, options = {}) {
 }
 
 function isAlwaysIncludedCard(row) {
+  return isFlaggedCard(row) || isHighColorCard(row);
+}
+
+function isHighColorCard(row) {
   const parsedColor = Number.parseInt(row?.Color, 10);
   return !Number.isNaN(parsedColor) && parsedColor > 10;
 }
@@ -1502,6 +1598,10 @@ function isNewCard(row) {
   return !row?.__hasSavedColorProgress || row.Color === "" || row.Color == null;
 }
 
+function isFlaggedCard(row) {
+  return row?.__isFlagged === true;
+}
+
 function shuffleRows(rows) {
   const shuffledRows = [...rows];
 
@@ -1567,7 +1667,7 @@ function applySavedColorProgress(rows, storageKey = CSV_COLOR_PROGRESS_KEY) {
   return rows.map((row) => {
     const savedProgress = progress[getColorProgressId(row)];
     if (savedProgress === undefined) {
-      return { ...row, __hasSavedColorProgress: false };
+      return { ...row, __hasSavedColorProgress: false, __isFlagged: false };
     }
 
     if (typeof savedProgress === "object" && savedProgress !== null) {
@@ -1576,10 +1676,11 @@ function applySavedColorProgress(rows, storageKey = CSV_COLOR_PROGRESS_KEY) {
         Color: String(savedProgress.colorValue ?? row.Color),
         "Lose Streak": String(savedProgress.loseStreak ?? row["Lose Streak"] ?? 0),
         __hasSavedColorProgress: true,
+        __isFlagged: savedProgress.isFlagged === true,
       };
     }
 
-    return { ...row, Color: String(savedProgress), __hasSavedColorProgress: true };
+    return { ...row, Color: String(savedProgress), __hasSavedColorProgress: true, __isFlagged: false };
   });
 }
 
@@ -1645,8 +1746,9 @@ function saveColorProgress(row, colorValue, storageKey = CSV_COLOR_PROGRESS_KEY,
   const progress = readColorProgress(storageKey);
   if (storageKey === CSV_COLOR_PROGRESS_KEY) {
     progress[progressId] = {
-      colorValue: String(colorValue),
+      colorValue: colorValue == null ? "" : String(colorValue),
       loseStreak: String(options.loseStreak ?? row?.["Lose Streak"] ?? 0),
+      isFlagged: Boolean(options.isFlagged ?? row?.__isFlagged),
     };
   } else {
     progress[progressId] = String(colorValue);

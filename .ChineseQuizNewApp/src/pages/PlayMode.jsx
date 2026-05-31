@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { loadAdverbRows, loadSentenceRows, loadSynonymRows, loadTranslateRows } from "../services/adverbCsv.js";
-import { filterCsvRows, getCsvFilterValues, loadCsvWords, loadEnglishToChineseRows } from "../services/csvWords.js";
+import { filterCsvRowsBySelections, getCsvFilterValues, loadCsvWords, loadEnglishToChineseRows } from "../services/csvWords.js";
+import { applyRemoteColorProgress, fetchRemoteColorProgress } from "../services/colorProgressTracking.js";
 import {
   formatFilterValuesParam,
   readChineseToEnglishSettings,
@@ -9,14 +10,20 @@ import {
   saveChineseToEnglishSettings,
   saveEnglishToChineseSettings,
 } from "../services/quizSettings.js";
+import { getColorProgressId } from "../services/progressIdentity.js";
+import { useSupabaseAuth } from "../services/supabaseAuth.js";
+
+const CSV_COLOR_PROGRESS_KEY = "chineseQuizNew.csvColorProgress.v1";
 
 export default function PlayMode() {
+  const { user, loading: authLoading } = useSupabaseAuth();
   const savedSettings = useMemo(() => readChineseToEnglishSettings(), []);
   const savedEnglishSettings = useMemo(() => readEnglishToChineseSettings(), []);
   const [selectedMode, setSelectedMode] = useState("");
   const [questionCount, setQuestionCount] = useState(savedSettings.questionCount);
-  const [filterType, setFilterType] = useState(savedSettings.filterType);
-  const [filterValues, setFilterValues] = useState(savedSettings.filterValues);
+  const [hskValues, setHskValues] = useState(savedSettings.hskValues);
+  const [daoValues, setDaoValues] = useState(savedSettings.daoValues);
+  const [includeFlagged, setIncludeFlagged] = useState(savedSettings.includeFlagged);
   const [rangeStart, setRangeStart] = useState(savedSettings.rangeStart);
   const [rangeEnd, setRangeEnd] = useState(savedSettings.rangeEnd);
   const [orderMode, setOrderMode] = useState(savedSettings.orderMode);
@@ -25,8 +32,8 @@ export default function PlayMode() {
   const [showChineseUsage, setShowChineseUsage] = useState(savedSettings.showChineseUsage);
   const [showMeaningCount, setShowMeaningCount] = useState(savedSettings.showMeaningCount);
   const [englishQuestionCount, setEnglishQuestionCount] = useState(savedEnglishSettings.questionCount);
-  const [englishFilterType, setEnglishFilterType] = useState(savedEnglishSettings.filterType);
-  const [englishFilterValues, setEnglishFilterValues] = useState(savedEnglishSettings.filterValues);
+  const [englishHskValues, setEnglishHskValues] = useState(savedEnglishSettings.hskValues);
+  const [englishDaoValues, setEnglishDaoValues] = useState(savedEnglishSettings.daoValues);
   const [englishRangeStart, setEnglishRangeStart] = useState(savedEnglishSettings.rangeStart);
   const [englishRangeEnd, setEnglishRangeEnd] = useState(savedEnglishSettings.rangeEnd);
   const [englishOrderMode, setEnglishOrderMode] = useState(savedEnglishSettings.orderMode);
@@ -54,34 +61,40 @@ export default function PlayMode() {
   const practiceRangeMax = Math.max(1, practiceRows.length);
   const safePracticeRangeStart = clampNumber(practiceRangeStart, 1, practiceRangeMax);
   const safePracticeRangeEnd = clampNumber(practiceRangeEnd || practiceRangeMax, safePracticeRangeStart, practiceRangeMax);
-  const filteredRows = useMemo(() => filterCsvRows(csvRows, filterType, filterValues), [csvRows, filterType, filterValues]);
-  const englishFilteredRows = useMemo(
-    () => filterCsvRows(englishRows, englishFilterType, englishFilterValues),
-    [englishRows, englishFilterType, englishFilterValues]
+  const filteredRows = useMemo(
+    () => filterCsvRowsBySelections(csvRows, { hskValues, daoValues, includeFlagged }),
+    [csvRows, daoValues, hskValues, includeFlagged]
   );
-  const filterValuesKey = `${filterType}:${formatFilterValuesParam(filterValues)}`;
-  const englishFilterValuesKey = `${englishFilterType}:${formatFilterValuesParam(englishFilterValues)}`;
+  const englishFilteredRows = useMemo(
+    () => filterCsvRowsBySelections(englishRows, { hskValues: englishHskValues, daoValues: englishDaoValues }),
+    [englishDaoValues, englishHskValues, englishRows]
+  );
+  const filterValuesKey = `${formatFilterValuesParam(hskValues)}:${formatFilterValuesParam(daoValues)}`;
+  const englishFilterValuesKey = `${formatFilterValuesParam(englishHskValues)}:${formatFilterValuesParam(englishDaoValues)}`;
   const previousFilterValuesKey = useRef(filterValuesKey);
   const previousEnglishFilterValuesKey = useRef(englishFilterValuesKey);
-  const availableFilterValues = useMemo(() => getCsvFilterValues(csvRows, filterType), [csvRows, filterType]);
-  const availableEnglishFilterValues = useMemo(
-    () => getCsvFilterValues(englishRows, englishFilterType),
-    [englishRows, englishFilterType]
-  );
+  const availableHskValues = useMemo(() => getCsvFilterValues(csvRows, "hsk"), [csvRows]);
+  const availableDaoValues = useMemo(() => getCsvFilterValues(csvRows, "dao"), [csvRows]);
+  const availableEnglishHskValues = useMemo(() => getCsvFilterValues(englishRows, "hsk"), [englishRows]);
+  const availableEnglishDaoValues = useMemo(() => getCsvFilterValues(englishRows, "dao"), [englishRows]);
   const englishRangeMax = Math.max(1, englishFilteredRows.length);
   const rangeMax = Math.max(1, filteredRows.length);
   const safeEnglishRangeStart = clampNumber(englishRangeStart, 1, englishRangeMax);
   const safeEnglishRangeEnd = clampNumber(englishRangeEnd || englishRangeMax, safeEnglishRangeStart, englishRangeMax);
   const safeRangeStart = clampNumber(rangeStart, 1, rangeMax);
   const safeRangeEnd = clampNumber(rangeEnd || rangeMax, safeRangeStart, rangeMax);
-  const englishQuizOptions = `count=${safeEnglishQuestionCount}&filter=${englishFilterType}&values=${encodeURIComponent(
-    formatFilterValuesParam(englishFilterValues)
+  const englishQuizOptions = `count=${safeEnglishQuestionCount}&hsk=${encodeURIComponent(
+    formatFilterValuesParam(englishHskValues)
+  )}&dao=${encodeURIComponent(
+    formatFilterValuesParam(englishDaoValues)
   )}&start=${safeEnglishRangeStart}&end=${safeEnglishRangeEnd}&order=${englishOrderMode}&timer=${safeEnglishTimerSeconds}&sentence=${
     showEnglishChineseSentence ? "1" : "0"
   }`;
-  const quizOptions = `count=${safeQuestionCount}&filter=${filterType}&values=${encodeURIComponent(
-    formatFilterValuesParam(filterValues)
-  )}&start=${safeRangeStart}&end=${safeRangeEnd}&order=${orderMode}&timer=${safeTimerSeconds}&pinyin=${showPinyin ? "1" : "0"}&usage=${
+  const quizOptions = `count=${safeQuestionCount}&hsk=${encodeURIComponent(
+    formatFilterValuesParam(hskValues)
+  )}&dao=${encodeURIComponent(
+    formatFilterValuesParam(daoValues)
+  )}&flagged=${includeFlagged ? "1" : "0"}&start=${safeRangeStart}&end=${safeRangeEnd}&order=${orderMode}&timer=${safeTimerSeconds}&pinyin=${showPinyin ? "1" : "0"}&usage=${
     showChineseUsage ? "1" : "0"
   }&meaningCount=${
     showMeaningCount ? "1" : "0"
@@ -108,7 +121,7 @@ export default function PlayMode() {
   }, [englishRows.length, selectedMode]);
 
   useEffect(() => {
-    if (selectedMode !== "chinese-to-english" || csvRows.length) {
+    if (selectedMode !== "chinese-to-english" || csvRows.length || authLoading) {
       return;
     }
 
@@ -116,7 +129,14 @@ export default function PlayMode() {
       setLoadingCsv(true);
       setCsvError("");
       try {
-        setCsvRows(await loadCsvWords());
+          const loadedRows = await loadCsvWords();
+          const rowsWithProgress = user?.id
+            ? applyRemoteColorProgress(
+                loadedRows,
+                await fetchRemoteColorProgress({ userId: user.id, storageKey: CSV_COLOR_PROGRESS_KEY })
+              )
+            : applySavedSetupColorProgress(loadedRows);
+          setCsvRows(rowsWithProgress);
       } catch (error) {
         setCsvError(error.message);
       } finally {
@@ -125,7 +145,7 @@ export default function PlayMode() {
     }
 
     loadSetupData();
-  }, [csvRows.length, selectedMode]);
+  }, [authLoading, csvRows.length, selectedMode, user?.id]);
 
   useEffect(() => {
     const loadPracticeRows = getPracticeRowsLoader(selectedMode);
@@ -204,8 +224,11 @@ export default function PlayMode() {
   useEffect(() => {
     saveChineseToEnglishSettings({
       questionCount,
-      filterType,
-      filterValues,
+      filterType: "hsk",
+      filterValues: hskValues,
+      hskValues,
+      daoValues,
+      includeFlagged,
       rangeStart,
       rangeEnd,
       orderMode,
@@ -214,20 +237,22 @@ export default function PlayMode() {
       showChineseUsage,
       showMeaningCount,
     });
-  }, [filterType, filterValues, orderMode, questionCount, rangeEnd, rangeStart, showChineseUsage, showMeaningCount, showPinyin, timerSeconds]);
+  }, [daoValues, hskValues, includeFlagged, orderMode, questionCount, rangeEnd, rangeStart, showChineseUsage, showMeaningCount, showPinyin, timerSeconds]);
 
   useEffect(() => {
     saveEnglishToChineseSettings({
       questionCount: englishQuestionCount,
-      filterType: englishFilterType,
-      filterValues: englishFilterValues,
+      filterType: "hsk",
+      filterValues: englishHskValues,
+      hskValues: englishHskValues,
+      daoValues: englishDaoValues,
       rangeStart: englishRangeStart,
       rangeEnd: englishRangeEnd,
       orderMode: englishOrderMode,
       timerSeconds: englishTimerSeconds,
       showChineseSentence: showEnglishChineseSentence,
     });
-  }, [englishFilterType, englishFilterValues, englishOrderMode, englishQuestionCount, englishRangeEnd, englishRangeStart, englishTimerSeconds, showEnglishChineseSentence]);
+  }, [englishDaoValues, englishHskValues, englishOrderMode, englishQuestionCount, englishRangeEnd, englishRangeStart, englishTimerSeconds, showEnglishChineseSentence]);
 
   function handleQuestionCountChange(event) {
     setQuestionCount(event.target.value.replace(/\D/g, ""));
@@ -278,21 +303,19 @@ export default function PlayMode() {
   }
 
   function toggleFilterValue(value) {
-    setFilterValues((currentValues) => toggleValue(currentValues, value, availableFilterValues));
+    setHskValues((currentValues) => toggleValue(currentValues, value, availableHskValues));
   }
 
   function toggleEnglishFilterValue(value) {
-    setEnglishFilterValues((currentValues) => toggleValue(currentValues, value, availableEnglishFilterValues));
+    setEnglishHskValues((currentValues) => toggleValue(currentValues, value, availableEnglishHskValues));
   }
 
-  function handleFilterTypeChange(event) {
-    setFilterType(event.target.value);
-    setFilterValues(["all"]);
+  function toggleDaoFilterValue(value) {
+    setDaoValues((currentValues) => toggleValue(currentValues, value, availableDaoValues));
   }
 
-  function handleEnglishFilterTypeChange(event) {
-    setEnglishFilterType(event.target.value);
-    setEnglishFilterValues(["all"]);
+  function toggleEnglishDaoFilterValue(value) {
+    setEnglishDaoValues((currentValues) => toggleValue(currentValues, value, availableEnglishDaoValues));
   }
 
   function toggleValue(currentValues, value, availableValues = []) {
@@ -300,7 +323,11 @@ export default function PlayMode() {
       return ["all"];
     }
 
-    const activeValues = currentValues.includes("all") ? availableValues : currentValues;
+    if (currentValues.includes("all")) {
+      return [value];
+    }
+
+    const activeValues = currentValues;
     const nextValues = activeValues.includes(value)
       ? activeValues.filter((currentValue) => currentValue !== value)
       : [...activeValues, value];
@@ -308,29 +335,47 @@ export default function PlayMode() {
     return nextValues;
   }
 
-  function renderFilterOptions({ type, values, availableValues, onTypeChange, onToggle, onSetValues }) {
-    const daoGroups = type === "dao" ? groupDaoValues(availableValues) : [];
+  function renderCombinedFilterOptions({
+    hskValues: currentHskValues,
+    daoValues: currentDaoValues,
+    availableHskValues: currentAvailableHskValues,
+    availableDaoValues: currentAvailableDaoValues,
+    onToggleHsk,
+    onSetHskValues,
+    onToggleDao,
+    onSetDaoValues,
+    includeFlagged: currentIncludeFlagged,
+    onIncludeFlaggedChange,
+    showFlaggedFilter = false,
+  }) {
+    const daoGroups = groupDaoValues(currentAvailableDaoValues);
 
     return (
       <>
-        <label className="question-count">
-          Filter by
-          <select value={type} onChange={onTypeChange}>
-            <option value="hsk">HSK</option>
-            <option value="dao">Dao</option>
-          </select>
-        </label>
-        {type === "dao" && daoGroups.length > 0 ? (
+        <fieldset className="band-options">
+          <legend>HSK bands</legend>
+          <div className="filter-bulk-actions">
+            <button type="button" onClick={() => onSetHskValues(["all"])}>Select all</button>
+            <button type="button" onClick={() => onSetHskValues([])}>Deselect all</button>
+          </div>
+          {currentAvailableHskValues.map((value) => (
+            <label key={value}>
+              <input type="checkbox" checked={currentHskValues.includes("all") || currentHskValues.includes(value)} onChange={() => onToggleHsk(value)} />
+              {formatFilterLabel(value)}
+            </label>
+          ))}
+        </fieldset>
+        {daoGroups.length > 0 && (
           <fieldset className="dao-group-options">
             <legend>Dao sets</legend>
             <div className="filter-bulk-actions">
-              <button type="button" onClick={() => onSetValues(["all"])}>Select all</button>
-              <button type="button" onClick={() => onSetValues([])}>Deselect all</button>
+              <button type="button" onClick={() => onSetDaoValues(["all"])}>Select all</button>
+              <button type="button" onClick={() => onSetDaoValues([])}>Deselect all</button>
             </div>
             {daoGroups.map((group) => {
-              const selectedCount = values.includes("all")
+              const selectedCount = currentDaoValues.includes("all")
                 ? group.values.length
-                : group.values.filter((value) => values.includes(value)).length;
+                : group.values.filter((value) => currentDaoValues.includes(value)).length;
               const isSelected = selectedCount === group.values.length;
 
               return (
@@ -339,7 +384,7 @@ export default function PlayMode() {
                     <input
                       type="checkbox"
                       checked={isSelected}
-                      onChange={() => onSetValues(toggleDaoGroup(values, group.values, availableValues))}
+                      onChange={() => onSetDaoValues(toggleDaoGroup(currentDaoValues, group.values, currentAvailableDaoValues))}
                     />
                     <span>{group.label}</span>
                   </label>
@@ -349,8 +394,8 @@ export default function PlayMode() {
                       <label key={value}>
                         <input
                           type="checkbox"
-                          checked={values.includes("all") || values.includes(value)}
-                          onChange={() => onToggle(value)}
+                          checked={currentDaoValues.includes("all") || currentDaoValues.includes(value)}
+                          onChange={() => onToggleDao(value)}
                         />
                         {formatFilterLabel(value)}
                       </label>
@@ -360,19 +405,18 @@ export default function PlayMode() {
               );
             })}
           </fieldset>
-        ) : (
+        )}
+        {showFlaggedFilter && (
           <fieldset className="band-options">
-          <legend>{type === "dao" ? "Dao sets" : "HSK bands"}</legend>
-          <div className="filter-bulk-actions">
-            <button type="button" onClick={() => onSetValues(["all"])}>Select all</button>
-            <button type="button" onClick={() => onSetValues([])}>Deselect all</button>
-          </div>
-          {availableValues.map((value) => (
-            <label key={value}>
-              <input type="checkbox" checked={values.includes("all") || values.includes(value)} onChange={() => onToggle(value)} />
-              {formatFilterLabel(value)}
+            <legend>Flagged cards</legend>
+            <label>
+              <input
+                type="checkbox"
+                checked={currentIncludeFlagged}
+                onChange={(event) => onIncludeFlaggedChange(event.target.checked)}
+              />
+              Include flagged cards
             </label>
-          ))}
           </fieldset>
         )}
       </>
@@ -486,13 +530,17 @@ export default function PlayMode() {
                 placeholder="20"
               />
             </label>
-            {renderFilterOptions({
-              type: englishFilterType,
-              values: englishFilterValues,
-              availableValues: availableEnglishFilterValues,
-              onTypeChange: handleEnglishFilterTypeChange,
-              onToggle: toggleEnglishFilterValue,
-              onSetValues: setEnglishFilterValues,
+            {renderCombinedFilterOptions({
+              hskValues: englishHskValues,
+              daoValues: englishDaoValues,
+              availableHskValues: availableEnglishHskValues,
+              availableDaoValues: availableEnglishDaoValues,
+              onToggleHsk: toggleEnglishFilterValue,
+              onSetHskValues: setEnglishHskValues,
+              onToggleDao: toggleEnglishDaoFilterValue,
+              onSetDaoValues: setEnglishDaoValues,
+              includeFlagged: false,
+              onIncludeFlaggedChange: () => {},
             })}
             {renderRangeOptions({
               start: englishRangeStart,
@@ -553,13 +601,18 @@ export default function PlayMode() {
                 placeholder="20"
               />
             </label>
-            {renderFilterOptions({
-              type: filterType,
-              values: filterValues,
-              availableValues: availableFilterValues,
-              onTypeChange: handleFilterTypeChange,
-              onToggle: toggleFilterValue,
-              onSetValues: setFilterValues,
+            {renderCombinedFilterOptions({
+              hskValues,
+              daoValues,
+              availableHskValues,
+              availableDaoValues,
+              onToggleHsk: toggleFilterValue,
+              onSetHskValues: setHskValues,
+              onToggleDao: toggleDaoFilterValue,
+              onSetDaoValues: setDaoValues,
+              includeFlagged,
+              onIncludeFlaggedChange: setIncludeFlagged,
+              showFlaggedFilter: true,
             })}
             {renderRangeOptions({
               start: rangeStart,
@@ -883,6 +936,10 @@ function groupDaoValues(values) {
 }
 
 function toggleDaoGroup(currentValues, groupValues, availableValues = []) {
+  if (currentValues.includes("all")) {
+    return groupValues;
+  }
+
   const activeValues = currentValues.includes("all") ? availableValues : currentValues;
   const isWholeGroupSelected = groupValues.every((value) => activeValues.includes(value));
 
@@ -892,4 +949,29 @@ function toggleDaoGroup(currentValues, groupValues, availableValues = []) {
   }
 
   return [...new Set([...activeValues, ...groupValues])];
+}
+
+function applySavedSetupColorProgress(rows) {
+  const progress = readSetupColorProgress();
+
+  return rows.map((row) => {
+    const savedProgress = progress[getColorProgressId(row)];
+    if (typeof savedProgress === "object" && savedProgress !== null) {
+      return {
+        ...row,
+        __isFlagged: savedProgress.isFlagged === true,
+      };
+    }
+
+    return { ...row, __isFlagged: false };
+  });
+}
+
+function readSetupColorProgress() {
+  try {
+    const savedProgress = window.localStorage.getItem(CSV_COLOR_PROGRESS_KEY);
+    return savedProgress ? JSON.parse(savedProgress) : {};
+  } catch {
+    return {};
+  }
 }

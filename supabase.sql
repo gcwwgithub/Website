@@ -4,6 +4,7 @@ create table if not exists public.chinese_quiz_color_progress (
   progress_id text not null, -- CSV ID column for the current game mode.
   color_value integer,
   lose_streak integer not null default 0,
+  is_flagged boolean not null default false,
   is_new boolean not null default true,
   updated_at timestamptz not null default now()
 );
@@ -13,6 +14,9 @@ alter table public.chinese_quiz_color_progress
 
 alter table public.chinese_quiz_color_progress
   add column if not exists lose_streak integer not null default 0;
+
+alter table public.chinese_quiz_color_progress
+  add column if not exists is_flagged boolean not null default false;
 
 do $$
 begin
