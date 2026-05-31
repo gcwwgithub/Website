@@ -189,7 +189,7 @@ function parseCsv(csvText, requiredColumns) {
 
 function normalizeParsedWord(word) {
   return {
-    Color: "",
+    Color: "5",
     Encountered: "0",
     "Lose Streak": "0",
     ...word,

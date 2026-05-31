@@ -527,10 +527,11 @@ export default function DailyQuiz() {
     function answerCsvQuestion(wasCorrect) {
       const shouldUpdateColor = !isReviewMode;
       const currentLoseStreak = getLoseStreakValue(csvRow);
-      const nextLoseStreak = shouldUpdateColor ? getNextLoseStreak(currentLoseStreak, wasCorrect) : currentLoseStreak;
-      const nextColor = shouldUpdateColor
-        ? updateChineseToEnglishColorValue(csvRow?.Color, wasCorrect, currentLoseStreak)
-        : csvRow?.Color;
+      const progressUpdate = shouldUpdateColor
+        ? getNextChineseToEnglishProgress(csvRow?.Color, wasCorrect, currentLoseStreak)
+        : { color: csvRow?.Color, loseStreak: currentLoseStreak };
+      const nextColor = progressUpdate.color;
+      const nextLoseStreak = progressUpdate.loseStreak;
       const answeredRow = csvRow && shouldUpdateColor
         ? { ...csvRow, Color: nextColor, "Lose Streak": String(nextLoseStreak) }
         : csvRow;
@@ -898,22 +899,24 @@ function CsvFlashcard({
       <div className="dictionary-card-top">
         <p className="eyebrow">{progressText}</p>
         {isNewCard(row) && <span className="new-card-badge">NEW</span>}
-        {onToggleFlag && (
-          <button
-            className={`flag-card-button ${isFlagged ? "active" : ""}`}
-            onClick={onToggleFlag}
-            type="button"
-            aria-pressed={isFlagged}
-          >
-            {isFlagged ? "Flagged" : "Flag"}
-          </button>
-        )}
         <p className="question-id">{getDisplayCardId(row)}</p>
-        {onUndo && (
-          <button className="undo-button" onClick={onUndo} disabled={!canUndo} aria-label="Undo">
-            <img src="data/undo.svg" alt="" aria-hidden="true" />
-          </button>
-        )}
+        <div className="card-top-actions">
+          {onToggleFlag && (
+            <button
+              className={`flag-card-button ${isFlagged ? "active" : ""}`}
+              onClick={onToggleFlag}
+              type="button"
+              aria-pressed={isFlagged}
+            >
+              {isFlagged ? "Flagged" : "Flag"}
+            </button>
+          )}
+          {onUndo && (
+            <button className="undo-button" onClick={onUndo} disabled={!canUndo} aria-label="Undo">
+              <img src="data/undo.svg" alt="" aria-hidden="true" />
+            </button>
+          )}
+        </div>
       </div>
       <TimerStatus
         isFlipped={isFlipped}
@@ -933,7 +936,7 @@ function CsvFlashcard({
           )}
         </div>
       )}
-      <ColorBadge colorValue={row.Color} />
+      <ColorBadge colorValue={row.Color} loseStreak={row["Lose Streak"]} />
 
       <div className="dictionary-body-grid">
         <div className="dictionary-section-stack">
@@ -1043,7 +1046,7 @@ function EnglishToChineseFlashcard({
           <p className="formal-note">{promptRow.Formal || row.Formal}</p>
         </div>
       )}
-      <ColorBadge colorValue={row.Color} />
+      <ColorBadge colorValue={row.Color} loseStreak={row["Lose Streak"]} />
 
       {isFlipped && (
         <div className="english-answer-block">
@@ -1308,16 +1311,22 @@ function hasBracketTarget(text) {
   return /\[[^\]]+\]/.test(text);
 }
 
-function ColorBadge({ colorValue }) {
+function ColorBadge({ colorValue, loseStreak }) {
   const rawLevel = Number.parseInt(colorValue, 10);
   const level = Math.max(1, Number.isNaN(rawLevel) ? 1 : rawLevel);
   const barLevel = Math.min(10, level);
+  const isOverLimit = level > 10;
+  const parsedLoseStreak = Number.parseInt(loseStreak, 10);
+  const streakValue = Number.isNaN(parsedLoseStreak) ? 0 : parsedLoseStreak;
   return (
-    <div className="severity-meter" aria-label={`Severity ${level} out of 10`}>
+    <div className={`severity-meter ${isOverLimit ? "over-limit" : ""}`} aria-label={`Severity ${level} out of 10`}>
       <div className="severity-track">
         <span style={{ width: `${barLevel * 10}%` }} />
       </div>
       <strong>{level}/10</strong>
+      <span className={`streak-pill ${streakValue < 0 ? "winning" : streakValue > 0 ? "losing" : ""}`}>
+        Streak {streakValue}
+      </span>
     </div>
   );
 }
@@ -1638,24 +1647,32 @@ function updateColorValue(colorValue, wasCorrect, options = {}) {
   return String(currentColor < 5 ? 7 : currentColor + 2);
 }
 
-function updateChineseToEnglishColorValue(colorValue, wasCorrect, loseStreak = 0) {
+function getNextChineseToEnglishProgress(colorValue, wasCorrect, loseStreak = 0) {
   const parsedColor = Number.parseInt(colorValue, 10);
   const currentColor = Number.isNaN(parsedColor) ? 1 : parsedColor;
+  const currentLoseStreak = Number.isNaN(Number.parseInt(loseStreak, 10)) ? 0 : Number.parseInt(loseStreak, 10);
 
   if (wasCorrect) {
-    return String(Math.max(1, currentColor - 1));
+    const nextLoseStreak = currentLoseStreak > 0 ? 0 : currentLoseStreak - 1;
+    const streakColorAdjustment = currentColor < 5 ? 0 : Math.min(0, nextLoseStreak);
+    const nextColor = Math.max(1, currentColor - 1 + streakColorAdjustment);
+    return {
+      color: String(nextColor),
+      loseStreak: nextLoseStreak,
+    };
   }
 
-  return String(currentColor + 2 + getLoseStreakValue({ "Lose Streak": loseStreak }));
-}
-
-function getNextLoseStreak(currentLoseStreak, wasCorrect) {
-  return wasCorrect ? 0 : currentLoseStreak + 1;
+  const wrongAnswerBaseColor = Math.max(5, currentColor);
+  const nextLoseStreak = currentLoseStreak < 0 ? 1 : currentLoseStreak + 1;
+  return {
+    color: String(wrongAnswerBaseColor + 2 + Math.max(0, nextLoseStreak - 1)),
+    loseStreak: nextLoseStreak,
+  };
 }
 
 function getLoseStreakValue(row) {
   const parsedLoseStreak = Number.parseInt(row?.["Lose Streak"], 10);
-  return Number.isNaN(parsedLoseStreak) ? 0 : Math.max(0, parsedLoseStreak);
+  return Number.isNaN(parsedLoseStreak) ? 0 : parsedLoseStreak;
 }
 
 const CSV_COLOR_PROGRESS_KEY = "chineseQuizNew.csvColorProgress.v1";

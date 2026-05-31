@@ -157,7 +157,7 @@ function normalizeColorValue(colorValue) {
 
 function normalizeLoseStreak(loseStreak) {
   const parsedLoseStreak = Number.parseInt(loseStreak, 10);
-  return Number.isNaN(parsedLoseStreak) ? 0 : Math.max(0, parsedLoseStreak);
+  return Number.isNaN(parsedLoseStreak) ? 0 : parsedLoseStreak;
 }
 
 function getGameMode(storageKey) {

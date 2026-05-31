@@ -1236,17 +1236,17 @@ form {
   justify-self: start;
 }
 
-.undo-button {
+.card-top-actions {
   grid-column: 3;
-  grid-row: 1;
+  grid-row: 1 / span 2;
   align-self: center;
   justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
 }
 
 .flag-card-button {
-  grid-column: 3;
-  grid-row: 2;
-  justify-self: end;
   min-height: 1.75rem;
   border: 1px solid rgba(251, 191, 36, 0.42);
   border-radius: 999px;
@@ -1265,7 +1265,7 @@ form {
 
 .severity-meter {
   display: grid;
-  grid-template-columns: minmax(8rem, 12rem) auto;
+  grid-template-columns: minmax(8rem, 12rem) auto auto;
   align-items: center;
   justify-content: start;
   gap: 0.6rem;
@@ -1290,6 +1290,33 @@ form {
 .severity-meter strong {
   color: #dbe6f3;
   font-size: 0.9rem;
+}
+
+.severity-meter.over-limit strong {
+  color: #ef4444;
+}
+
+.streak-pill {
+  width: fit-content;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.1);
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 850;
+  padding: 0.25rem 0.6rem;
+}
+
+.streak-pill.winning {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.12);
+  color: #86efac;
+}
+
+.streak-pill.losing {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
 }
 
 .card-badge-row {

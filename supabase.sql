@@ -2,7 +2,7 @@ create table if not exists public.chinese_quiz_color_progress (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   progress_id text not null, -- CSV ID column for the current game mode.
-  color_value integer,
+  color_value integer default 5,
   lose_streak integer not null default 0,
   is_flagged boolean not null default false,
   is_new boolean not null default true,
@@ -14,6 +14,9 @@ alter table public.chinese_quiz_color_progress
 
 alter table public.chinese_quiz_color_progress
   add column if not exists lose_streak integer not null default 0;
+
+alter table public.chinese_quiz_color_progress
+  alter column color_value set default 5;
 
 alter table public.chinese_quiz_color_progress
   add column if not exists is_flagged boolean not null default false;
