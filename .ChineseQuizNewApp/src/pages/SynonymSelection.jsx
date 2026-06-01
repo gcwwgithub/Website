@@ -15,10 +15,10 @@ import {
   applySavedColorProgress,
   buildReviewAgainParams,
   buildPracticeSession,
+  getNextPracticeProgress,
   isReviewAgainMode,
   normalizeOrderMode,
   saveColorProgress,
-  updateColorValue,
 } from "../utils/practiceProgress.js";
 
 const SYNONYM_COLOR_PROGRESS_KEY = "chineseQuizNew.synonymColorProgress.v1";
@@ -51,7 +51,7 @@ export default function SynonymSelection() {
   const isComplete = sessionRows.length > 0 && questionIndex >= sessionRows.length;
   const isReviewAgain = isReviewAgainMode(orderMode);
 
-  function saveSupabaseProgress(row, colorValue) {
+  function saveSupabaseProgress(row, colorValue, loseStreak) {
     if (!user?.id || !row) {
       return;
     }
@@ -61,6 +61,7 @@ export default function SynonymSelection() {
       storageKey: SYNONYM_COLOR_PROGRESS_KEY,
       row,
       colorValue,
+      loseStreak,
     }).catch((trackingError) => {
       console.warn("Could not save Supabase synonym progress.", trackingError);
     });
@@ -142,13 +143,15 @@ export default function SynonymSelection() {
 
     if (currentRow && isAnswered) {
       const wasCorrect = selected === currentRow["Chinese Word"];
-      const nextColor = updateColorValue(currentRow.Color, wasCorrect);
-      const answeredRow = { ...currentRow, Color: nextColor };
+      const nextProgress = getNextPracticeProgress(currentRow.Color, wasCorrect, currentRow["Lose Streak"]);
+      const nextColor = nextProgress.color;
+      const nextLoseStreak = nextProgress.loseStreak;
+      const answeredRow = { ...currentRow, Color: nextColor, "Lose Streak": String(nextLoseStreak) };
       if (!isReviewAgain) {
-        saveColorProgress(currentRow, nextColor, SYNONYM_COLOR_PROGRESS_KEY);
-        saveSupabaseProgress(answeredRow, nextColor);
-        nextRows = replaceRowColor(rows, currentRow.__rowNumber, nextColor);
-        nextSessionRows = replaceRowColor(sessionRows, currentRow.__rowNumber, nextColor);
+        saveColorProgress(answeredRow, nextColor, SYNONYM_COLOR_PROGRESS_KEY, { loseStreak: nextLoseStreak });
+        saveSupabaseProgress(answeredRow, nextColor, nextLoseStreak);
+        nextRows = replaceRowProgress(rows, currentRow.__rowNumber, nextColor, nextLoseStreak);
+        nextSessionRows = replaceRowProgress(sessionRows, currentRow.__rowNumber, nextColor, nextLoseStreak);
         setRows(nextRows);
         setSessionRows(nextSessionRows);
       }
@@ -283,7 +286,7 @@ export default function SynonymSelection() {
         <h2 className={getPromptSizeClass(currentRow["Chinese Sentence"])}>
           <span className="adverb-prompt-text">{currentRow["Chinese Sentence"]}</span>
         </h2>
-        <ColorBadge colorValue={currentRow.Color} />
+        <ColorBadge colorValue={currentRow.Color} loseStreak={currentRow["Lose Streak"]} />
         <TimerStatus
           isFlipped={isAnswered}
           timerSeconds={isReviewAgain ? 0 : timerSeconds}
@@ -389,8 +392,12 @@ function fillBlank(sentence, answer) {
   return sentence.replace("____", answer);
 }
 
-function replaceRowColor(rows, rowNumber, colorValue) {
-  return rows.map((row) => (row.__rowNumber === rowNumber ? { ...row, Color: colorValue } : row));
+function replaceRowProgress(rows, rowNumber, colorValue, loseStreak) {
+  return rows.map((row) =>
+    row.__rowNumber === rowNumber
+      ? { ...row, Color: colorValue, "Lose Streak": String(loseStreak) }
+      : row
+  );
 }
 
 function EmphasizedText({ text, target }) {

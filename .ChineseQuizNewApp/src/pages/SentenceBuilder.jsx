@@ -15,10 +15,10 @@ import {
   applySavedColorProgress,
   buildReviewAgainParams,
   buildPracticeSession,
+  getNextPracticeProgress,
   isReviewAgainMode,
   normalizeOrderMode,
   saveColorProgress,
-  updateColorValue,
 } from "../utils/practiceProgress.js";
 
 const SENTENCE_COLOR_PROGRESS_KEY = "chineseQuizNew.sentenceBuilderColorProgress.v1";
@@ -55,7 +55,7 @@ export default function SentenceBuilder() {
   const canSubmitAnswer = Boolean(answerTiles.length) && availableTiles.length === 0;
   const isReviewAgain = isReviewAgainMode(orderMode);
 
-  function saveSupabaseProgress(row, colorValue) {
+  function saveSupabaseProgress(row, colorValue, loseStreak) {
     if (!user?.id || !row) {
       return;
     }
@@ -65,6 +65,7 @@ export default function SentenceBuilder() {
       storageKey: SENTENCE_COLOR_PROGRESS_KEY,
       row,
       colorValue,
+      loseStreak,
     }).catch((trackingError) => {
       console.warn("Could not save Supabase sentence-builder progress.", trackingError);
     });
@@ -286,12 +287,15 @@ export default function SentenceBuilder() {
 
     if (currentQuestion && result) {
       const wasCorrect = result === "correct";
-      const nextColor = updateColorValue(currentQuestion.Color, wasCorrect);
+      const nextProgress = getNextPracticeProgress(currentQuestion.Color, wasCorrect, currentQuestion["Lose Streak"]);
+      const nextColor = nextProgress.color;
+      const nextLoseStreak = nextProgress.loseStreak;
+      const answeredRow = { ...currentQuestion, Color: nextColor, "Lose Streak": String(nextLoseStreak) };
       if (!isReviewAgain) {
-        saveColorProgress(currentQuestion, nextColor, SENTENCE_COLOR_PROGRESS_KEY);
-        saveSupabaseProgress({ ...currentQuestion, Color: nextColor }, nextColor);
-        setRows((current) => replaceRowColor(current, currentQuestion.__rowNumber, nextColor));
-        nextSessionRows = replaceRowColor(sessionRows, currentQuestion.__rowNumber, nextColor);
+        saveColorProgress(answeredRow, nextColor, SENTENCE_COLOR_PROGRESS_KEY, { loseStreak: nextLoseStreak });
+        saveSupabaseProgress(answeredRow, nextColor, nextLoseStreak);
+        setRows((current) => replaceRowProgress(current, currentQuestion.__rowNumber, nextColor, nextLoseStreak));
+        nextSessionRows = replaceRowProgress(sessionRows, currentQuestion.__rowNumber, nextColor, nextLoseStreak);
         setSessionRows(nextSessionRows);
       }
       setScore((current) => ({
@@ -300,7 +304,7 @@ export default function SentenceBuilder() {
       }));
 
       if (!wasCorrect) {
-        setMistakes((current) => [...current, { ...currentQuestion, Color: nextColor, submittedAnswer }]);
+        setMistakes((current) => [...current, { ...answeredRow, submittedAnswer }]);
       }
     }
 
@@ -418,7 +422,7 @@ export default function SentenceBuilder() {
           <p className="question-id">{currentQuestion.id || "?"}</p>
           <p className="eyebrow game-name">Sentence Builder</p>
         </div>
-        <ColorBadge colorValue={currentQuestion.Color} />
+        <ColorBadge colorValue={currentQuestion.Color} loseStreak={currentQuestion["Lose Streak"]} />
         <TimerStatus
           isFlipped={Boolean(result)}
           timerSeconds={isReviewAgain ? 0 : timerSeconds}
@@ -544,6 +548,7 @@ function setQuestion(sourceRow, setCurrentQuestion, setAvailableTiles, setAnswer
     id: sourceRow.__rowNumber,
     __rowNumber: sourceRow.__rowNumber,
     Color: sourceRow.Color,
+    "Lose Streak": sourceRow["Lose Streak"],
     alternateAnswers: sourceRow.alternateAnswers || [],
     sentence: sourceRow.parts.join(""),
   });
@@ -690,8 +695,12 @@ function findTargetTileRow(pointerY, rows) {
   }, null)?.row;
 }
 
-function replaceRowColor(rows, rowNumber, colorValue) {
-  return rows.map((row) => (row.__rowNumber === rowNumber ? { ...row, Color: colorValue } : row));
+function replaceRowProgress(rows, rowNumber, colorValue, loseStreak) {
+  return rows.map((row) =>
+    row.__rowNumber === rowNumber
+      ? { ...row, Color: colorValue, "Lose Streak": String(loseStreak) }
+      : row
+  );
 }
 
 function applyRange(rows, start, end) {

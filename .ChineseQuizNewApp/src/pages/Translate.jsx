@@ -15,10 +15,10 @@ import {
   applySavedColorProgress,
   buildReviewAgainParams,
   buildPracticeSession,
+  getNextPracticeProgress,
   isReviewAgainMode,
   normalizeOrderMode,
   saveColorProgress,
-  updateColorValue,
 } from "../utils/practiceProgress.js";
 
 const TRANSLATE_COLOR_PROGRESS_KEY = "chineseQuizNew.translateColorProgress.v1";
@@ -53,7 +53,7 @@ export default function Translate() {
   const canSubmit = Boolean(answer.trim()) && !result;
   const isReviewAgain = isReviewAgainMode(orderMode);
 
-  function saveSupabaseProgress(row, colorValue) {
+  function saveSupabaseProgress(row, colorValue, loseStreak) {
     if (!user?.id || !row) {
       return;
     }
@@ -63,6 +63,7 @@ export default function Translate() {
       storageKey: TRANSLATE_COLOR_PROGRESS_KEY,
       row,
       colorValue,
+      loseStreak,
     }).catch((trackingError) => {
       console.warn("Could not save Supabase translate progress.", trackingError);
     });
@@ -161,13 +162,17 @@ export default function Translate() {
 
     if (currentQuestion && result) {
       const wasCorrect = result === "correct";
-      const nextColor = updateColorValue(currentQuestion.Color, wasCorrect);
+      const nextProgress = getNextPracticeProgress(currentQuestion.Color, wasCorrect, currentQuestion["Lose Streak"]);
+      const nextColor = nextProgress.color;
+      const nextLoseStreak = nextProgress.loseStreak;
+      const answeredRow = { ...currentQuestion, Color: nextColor, "Lose Streak": String(nextLoseStreak) };
       setHistory((current) => [
         ...current,
         {
           index: questionIndex,
           row: currentQuestion,
           previousColor: currentQuestion.Color,
+          previousLoseStreak: currentQuestion["Lose Streak"],
           type: wasCorrect ? "correct" : "wrong",
           answer,
           submittedAnswer,
@@ -176,10 +181,10 @@ export default function Translate() {
         },
       ]);
       if (!isReviewAgain) {
-        saveColorProgress(currentQuestion, nextColor, TRANSLATE_COLOR_PROGRESS_KEY);
-        saveSupabaseProgress({ ...currentQuestion, Color: nextColor }, nextColor);
-        setRows((current) => replaceRowColor(current, currentQuestion.__rowNumber, nextColor));
-        nextSessionRows = replaceRowColor(sessionRows, currentQuestion.__rowNumber, nextColor);
+        saveColorProgress(answeredRow, nextColor, TRANSLATE_COLOR_PROGRESS_KEY, { loseStreak: nextLoseStreak });
+        saveSupabaseProgress(answeredRow, nextColor, nextLoseStreak);
+        setRows((current) => replaceRowProgress(current, currentQuestion.__rowNumber, nextColor, nextLoseStreak));
+        nextSessionRows = replaceRowProgress(sessionRows, currentQuestion.__rowNumber, nextColor, nextLoseStreak);
         setSessionRows(nextSessionRows);
       }
       setScore((current) => ({
@@ -190,7 +195,7 @@ export default function Translate() {
       if (!wasCorrect) {
         setMistakes((current) => [
           ...current,
-          { ...currentQuestion, Color: nextColor, submittedAnswer },
+          { ...answeredRow, submittedAnswer },
         ]);
       }
     }
@@ -232,15 +237,21 @@ export default function Translate() {
     answerRef.current = lastAction.answer || "";
 
     if (lastAction.previousColor !== undefined && !isReviewAgain) {
-      saveColorProgress(lastAction.row, lastAction.previousColor, TRANSLATE_COLOR_PROGRESS_KEY);
+      saveColorProgress(lastAction.row, lastAction.previousColor, TRANSLATE_COLOR_PROGRESS_KEY, {
+        loseStreak: lastAction.previousLoseStreak,
+      });
       setRows((current) =>
         current.map((row, rowIndex) =>
-          rowIndex === lastAction.index ? { ...row, Color: lastAction.previousColor } : row
+          rowIndex === lastAction.index
+            ? { ...row, Color: lastAction.previousColor, "Lose Streak": lastAction.previousLoseStreak ?? row["Lose Streak"] }
+            : row
         )
       );
       setSessionRows((current) =>
         current.map((row, rowIndex) =>
-          rowIndex === lastAction.index ? { ...row, Color: lastAction.previousColor } : row
+          rowIndex === lastAction.index
+            ? { ...row, Color: lastAction.previousColor, "Lose Streak": lastAction.previousLoseStreak ?? row["Lose Streak"] }
+            : row
         )
       );
     }
@@ -370,7 +381,7 @@ export default function Translate() {
             </button>
           </div>
         </div>
-        <ColorBadge colorValue={currentQuestion.Color} />
+        <ColorBadge colorValue={currentQuestion.Color} loseStreak={currentQuestion["Lose Streak"]} />
         <TimerStatus
           isFlipped={Boolean(result)}
           timerSeconds={isReviewAgain ? 0 : timerSeconds}
@@ -435,8 +446,12 @@ function normalizeChineseAnswer(value = "") {
     .toLowerCase();
 }
 
-function replaceRowColor(rows, rowNumber, colorValue) {
-  return rows.map((row) => (row.__rowNumber === rowNumber ? { ...row, Color: colorValue } : row));
+function replaceRowProgress(rows, rowNumber, colorValue, loseStreak) {
+  return rows.map((row) =>
+    row.__rowNumber === rowNumber
+      ? { ...row, Color: colorValue, "Lose Streak": String(loseStreak) }
+      : row
+  );
 }
 
 function applyRange(rows, start, end) {

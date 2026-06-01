@@ -21,37 +21,65 @@ export function normalizeOrderMode(orderMode) {
 }
 
 export function updateColorValue(colorValue, wasCorrect) {
+  return getNextPracticeProgress(colorValue, wasCorrect, 0).color;
+}
+
+export function getNextPracticeProgress(colorValue, wasCorrect, loseStreak = 0) {
   const parsedColor = Number.parseInt(colorValue, 10);
-  const currentColor = Number.isNaN(parsedColor) ? 1 : parsedColor;
+  const currentColor = Number.isNaN(parsedColor) ? 5 : parsedColor;
+  const parsedLoseStreak = Number.parseInt(loseStreak, 10);
+  const currentLoseStreak = Number.isNaN(parsedLoseStreak) ? 0 : parsedLoseStreak;
 
   if (wasCorrect) {
-    return String(Math.max(1, currentColor - 1));
+    const nextLoseStreak = currentLoseStreak > 0 ? 0 : currentLoseStreak - 1;
+    const streakColorAdjustment = currentColor < 5 ? 0 : Math.min(0, nextLoseStreak);
+    return {
+      color: String(Math.max(1, currentColor - 1 + streakColorAdjustment)),
+      loseStreak: nextLoseStreak,
+    };
   }
 
-  return String(currentColor < 5 ? 7 : currentColor + 2);
+  const wrongAnswerBaseColor = Math.max(5, currentColor);
+  const nextLoseStreak = currentLoseStreak < 0 ? 1 : currentLoseStreak + 1;
+  return {
+    color: String(wrongAnswerBaseColor + 2 + Math.max(0, nextLoseStreak - 1)),
+    loseStreak: nextLoseStreak,
+  };
 }
 
 export function applySavedColorProgress(rows, storageKey) {
   const progress = readColorProgress(storageKey);
 
   return rows.map((row) => {
-    const savedColor = progress[getColorProgressId(row)];
-    if (savedColor === undefined) {
+    const savedProgress = progress[getColorProgressId(row)];
+    if (savedProgress === undefined) {
       return { ...row, __hasSavedColorProgress: false };
     }
 
-    return { ...row, Color: String(savedColor), __hasSavedColorProgress: true };
+    if (typeof savedProgress === "object" && savedProgress !== null) {
+      return {
+        ...row,
+        Color: String(savedProgress.colorValue ?? row.Color),
+        "Lose Streak": String(savedProgress.loseStreak ?? row["Lose Streak"] ?? 0),
+        __hasSavedColorProgress: true,
+      };
+    }
+
+    return { ...row, Color: String(savedProgress), __hasSavedColorProgress: true };
   });
 }
 
-export function saveColorProgress(row, colorValue, storageKey) {
+export function saveColorProgress(row, colorValue, storageKey, options = {}) {
   const progressId = getColorProgressId(row);
   if (!progressId) {
     return;
   }
 
   const progress = readColorProgress(storageKey);
-  progress[progressId] = String(colorValue);
+  progress[progressId] = {
+    colorValue: String(colorValue),
+    loseStreak: String(options.loseStreak ?? row?.["Lose Streak"] ?? 0),
+  };
 
   try {
     window.localStorage.setItem(storageKey, JSON.stringify(progress));

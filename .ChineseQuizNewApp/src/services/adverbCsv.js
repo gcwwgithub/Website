@@ -90,7 +90,8 @@ export async function loadSentenceRows() {
       return {
         __rowNumber: index + (hasHeader ? 2 : 1),
         ID: idIndex >= 0 ? columns[idIndex]?.trim() || "" : "",
-        Color: colorIndex >= 0 ? columns[colorIndex]?.trim() || "1" : "1",
+        Color: colorIndex >= 0 ? columns[colorIndex]?.trim() || "5" : "5",
+        "Lose Streak": "0",
         alternateAnswers: alternateIndexes
           .map((columnIndex) => columns[columnIndex]?.trim())
           .filter(isUsableAlternateAnswer),
@@ -116,7 +117,8 @@ export async function loadTranslateRows() {
 
       return {
         ...row,
-        Color: row.Color || "1",
+        Color: row.Color || "5",
+        "Lose Streak": row["Lose Streak"] || "0",
         acceptedAnswers,
       };
     })
@@ -177,13 +179,21 @@ function parseCsv(csvText, requiredColumns = REQUIRED_COLUMNS) {
     throw new Error(`Adverb CSV is missing required columns: ${missingColumns.join(", ")}`);
   }
 
-  return dataRows.map((dataRow, dataRowIndex) =>
-    normalizedHeaders.reduce((word, header, index) => {
+  return dataRows.map((dataRow, dataRowIndex) => {
+    const row = normalizedHeaders.reduce((word, header, index) => {
       word[header] = dataRow[index]?.trim() ?? "";
       word.__rowNumber = dataRowIndex + 2;
       return word;
-    }, {})
-  );
+    }, {});
+
+    return {
+      Color: "5",
+      "Lose Streak": "0",
+      ...row,
+      Color: row.Color || "5",
+      "Lose Streak": row["Lose Streak"] || "0",
+    };
+  });
 }
 
 function hasAdverbQuestion(row) {
