@@ -17,6 +17,7 @@ import {
 } from "../services/colorProgressTracking.js";
 import { getColorProgressId } from "../services/progressIdentity.js";
 import { useSupabaseAuth } from "../services/supabaseAuth.js";
+import { getNextPracticeProgress } from "../utils/practiceProgress.js";
 
 export default function DailyQuiz() {
   const [searchParams] = useSearchParams();
@@ -72,13 +73,14 @@ export default function DailyQuiz() {
   const [loading, setLoading] = useState(true);
   const isDailyReview = orderMode === "daily-review";
   const isReviewMode = orderMode === "daily-review" || orderMode === "review-again";
+  const shouldTrackAnswerProgress = orderMode !== "review-again";
 
   function trackColorProgress(row, storageKey, colorValue, loseStreak, options = {}) {
     if (!user?.id || !row) {
-      return;
+      return Promise.resolve();
     }
 
-    saveRemoteColorProgress({
+    return saveRemoteColorProgress({
       userId: user.id,
       row,
       storageKey,
@@ -263,14 +265,21 @@ export default function DailyQuiz() {
     const isCsvComplete = csvRows.length > 0 && csvIndex >= csvRows.length;
 
     function answerEnglishQuestion(wasCorrect) {
-      const shouldUpdateColor = !isReviewMode;
-      const nextColor = shouldUpdateColor
-        ? updateColorValue(csvRow?.Color, wasCorrect, { isSeenBefore: csvRow?.__hasSavedColorProgress })
-        : csvRow?.Color;
-      const answeredRow = csvRow && shouldUpdateColor ? { ...csvRow, Color: nextColor } : csvRow;
+      const shouldUpdateColor = shouldTrackAnswerProgress;
+      const currentLoseStreak = getLoseStreakValue(csvRow);
+      const progressUpdate = shouldUpdateColor
+        ? getNextPracticeProgress(csvRow?.Color, wasCorrect, currentLoseStreak)
+        : { color: csvRow?.Color, loseStreak: currentLoseStreak };
+      const nextColor = progressUpdate.color;
+      const nextLoseStreak = progressUpdate.loseStreak;
+      const answeredRow = csvRow && shouldUpdateColor
+        ? { ...csvRow, Color: nextColor, "Lose Streak": String(nextLoseStreak) }
+        : csvRow;
       if (answeredRow && shouldUpdateColor) {
-        saveColorProgress(answeredRow, nextColor, ENGLISH_COLOR_PROGRESS_KEY);
-        trackColorProgress(answeredRow, ENGLISH_COLOR_PROGRESS_KEY, nextColor);
+        saveColorProgress(answeredRow, nextColor, ENGLISH_COLOR_PROGRESS_KEY, {
+          loseStreak: nextLoseStreak,
+        });
+        trackColorProgress(answeredRow, ENGLISH_COLOR_PROGRESS_KEY, nextColor, nextLoseStreak);
       }
 
       setCsvHistory((current) => [
@@ -279,14 +288,13 @@ export default function DailyQuiz() {
           index: csvIndex,
           row: answeredRow,
           previousColor: shouldUpdateColor ? csvRow?.Color : undefined,
+          previousLoseStreak: shouldUpdateColor ? csvRow?.["Lose Streak"] : undefined,
           type: wasCorrect ? "correct" : "wrong",
           wasFlipped: isCsvFlipped,
           wasAutoFlipped,
         },
       ]);
-      setCsvRows((current) =>
-        current.map((row, rowIndex) => (rowIndex === csvIndex ? answeredRow : row))
-      );
+      setCsvRows((current) => replaceMatchingProgressRows(current, csvIndex, answeredRow));
       setCsvResults((current) => ({
         correct: current.correct + (wasCorrect ? 1 : 0),
         wrong: current.wrong + (wasCorrect ? 0 : 1),
@@ -343,11 +351,15 @@ export default function DailyQuiz() {
       setIsCsvFlipped(lastAction.wasFlipped);
       setWasAutoFlipped(lastAction.wasAutoFlipped || false);
       if (lastAction.previousColor !== undefined) {
-        saveColorProgress(lastAction.row, lastAction.previousColor, ENGLISH_COLOR_PROGRESS_KEY);
+        saveColorProgress(lastAction.row, lastAction.previousColor, ENGLISH_COLOR_PROGRESS_KEY, {
+          loseStreak: lastAction.previousLoseStreak,
+        });
         setCsvRows((current) =>
-          current.map((row, rowIndex) =>
-            rowIndex === lastAction.index ? { ...row, Color: lastAction.previousColor } : row
-          )
+          replaceMatchingProgressRows(current, lastAction.index, {
+            ...lastAction.row,
+            Color: lastAction.previousColor,
+            "Lose Streak": lastAction.previousLoseStreak ?? lastAction.row?.["Lose Streak"],
+          })
         );
       }
 
@@ -525,7 +537,7 @@ export default function DailyQuiz() {
     const isCsvComplete = csvRows.length > 0 && csvIndex >= csvRows.length;
 
     function answerCsvQuestion(wasCorrect) {
-      const shouldUpdateColor = !isReviewMode;
+      const shouldUpdateColor = shouldTrackAnswerProgress;
       const currentLoseStreak = getLoseStreakValue(csvRow);
       const progressUpdate = shouldUpdateColor
         ? getNextChineseToEnglishProgress(csvRow?.Color, wasCorrect, currentLoseStreak)
@@ -1632,42 +1644,8 @@ function getSelectionWeight(colorValue) {
   return normalizedColor ** 3;
 }
 
-function updateColorValue(colorValue, wasCorrect, options = {}) {
-  const parsedColor = Number.parseInt(colorValue, 10);
-  const currentColor = Number.isNaN(parsedColor) ? 1 : parsedColor;
-
-  if (wasCorrect) {
-    return String(Math.max(1, currentColor - 1));
-  }
-
-  if (options.isSeenBefore && currentColor < 5 && currentColor < 10) {
-    return "10";
-  }
-
-  return String(currentColor < 5 ? 7 : currentColor + 2);
-}
-
 function getNextChineseToEnglishProgress(colorValue, wasCorrect, loseStreak = 0) {
-  const parsedColor = Number.parseInt(colorValue, 10);
-  const currentColor = Number.isNaN(parsedColor) ? 1 : parsedColor;
-  const currentLoseStreak = Number.isNaN(Number.parseInt(loseStreak, 10)) ? 0 : Number.parseInt(loseStreak, 10);
-
-  if (wasCorrect) {
-    const nextLoseStreak = currentLoseStreak > 0 ? 0 : currentLoseStreak - 1;
-    const streakColorAdjustment = currentColor < 5 ? 0 : Math.min(0, nextLoseStreak);
-    const nextColor = Math.max(1, currentColor - 1 + streakColorAdjustment);
-    return {
-      color: String(nextColor),
-      loseStreak: nextLoseStreak,
-    };
-  }
-
-  const wrongAnswerBaseColor = Math.max(5, currentColor);
-  const nextLoseStreak = currentLoseStreak < 0 ? 1 : currentLoseStreak + 1;
-  return {
-    color: String(wrongAnswerBaseColor + 2 + Math.max(0, nextLoseStreak - 1)),
-    loseStreak: nextLoseStreak,
-  };
+  return getNextPracticeProgress(colorValue, wasCorrect, loseStreak);
 }
 
 function getLoseStreakValue(row) {
@@ -1761,15 +1739,11 @@ function saveColorProgress(row, colorValue, storageKey = CSV_COLOR_PROGRESS_KEY,
   }
 
   const progress = readColorProgress(storageKey);
-  if (storageKey === CSV_COLOR_PROGRESS_KEY) {
-    progress[progressId] = {
-      colorValue: colorValue == null ? "" : String(colorValue),
-      loseStreak: String(options.loseStreak ?? row?.["Lose Streak"] ?? 0),
-      isFlagged: Boolean(options.isFlagged ?? row?.__isFlagged),
-    };
-  } else {
-    progress[progressId] = String(colorValue);
-  }
+  progress[progressId] = {
+    colorValue: colorValue == null ? "" : String(colorValue),
+    loseStreak: String(options.loseStreak ?? row?.["Lose Streak"] ?? 0),
+    isFlagged: Boolean(options.isFlagged ?? row?.__isFlagged),
+  };
 
   try {
     window.localStorage.setItem(storageKey, JSON.stringify(progress));
@@ -1851,4 +1825,17 @@ function removeLastMatchingRow(rows, rowToRemove) {
   }
 
   return rows.filter((_, index) => index !== targetIndex);
+}
+
+function replaceMatchingProgressRows(rows, fallbackIndex, replacementRow) {
+  if (!replacementRow) {
+    return rows;
+  }
+
+  const replacementId = getColorProgressId(replacementRow);
+  return rows.map((row, rowIndex) => {
+    const rowId = getColorProgressId(row);
+    const isSameProgressRow = replacementId && rowId === replacementId;
+    return isSameProgressRow || rowIndex === fallbackIndex ? replacementRow : row;
+  });
 }
