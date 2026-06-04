@@ -1812,10 +1812,10 @@ function readDailyReviewSet(reviewSetKey) {
 
 function normalizeOrderMode(orderMode, mode = "chinese-to-english") {
   if (mode === "english-to-chinese" && orderMode === "daily-review") {
-    return "random";
+    return "weighted";
   }
 
-  return ["random", "weighted", "in-order", "daily-review", "review-again"].includes(orderMode) ? orderMode : "random";
+  return ["weighted", "random", "in-order", "daily-review", "review-again"].includes(orderMode) ? orderMode : "weighted";
 }
 
 function removeLastMatchingRow(rows, rowToRemove) {

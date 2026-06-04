@@ -17,7 +17,7 @@ export function buildPracticeSession(rows, count, orderMode, reviewSetKey = "") 
 }
 
 export function normalizeOrderMode(orderMode) {
-  return ["random", "weighted", "in-order", "review-again"].includes(orderMode) ? orderMode : "random";
+  return ["weighted", "random", "in-order", "review-again"].includes(orderMode) ? orderMode : "weighted";
 }
 
 export function updateColorValue(colorValue, wasCorrect) {

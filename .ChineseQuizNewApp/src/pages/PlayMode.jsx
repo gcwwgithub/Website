@@ -7,8 +7,10 @@ import {
   formatFilterValuesParam,
   readChineseToEnglishSettings,
   readEnglishToChineseSettings,
+  readPracticeModeSettings,
   saveChineseToEnglishSettings,
   saveEnglishToChineseSettings,
+  savePracticeModeSettings,
 } from "../services/quizSettings.js";
 import { getColorProgressId } from "../services/progressIdentity.js";
 import { useSupabaseAuth } from "../services/supabaseAuth.js";
@@ -19,6 +21,7 @@ export default function PlayMode() {
   const { user, loading: authLoading } = useSupabaseAuth();
   const savedSettings = useMemo(() => readChineseToEnglishSettings(), []);
   const savedEnglishSettings = useMemo(() => readEnglishToChineseSettings(), []);
+  const savedPracticeSettings = useMemo(() => readPracticeModeSettings("adverb-game"), []);
   const [selectedMode, setSelectedMode] = useState("");
   const [questionCount, setQuestionCount] = useState(savedSettings.questionCount);
   const [hskValues, setHskValues] = useState(savedSettings.hskValues);
@@ -39,12 +42,12 @@ export default function PlayMode() {
   const [englishOrderMode, setEnglishOrderMode] = useState(savedEnglishSettings.orderMode);
   const [englishTimerSeconds, setEnglishTimerSeconds] = useState(savedEnglishSettings.timerSeconds);
   const [showEnglishChineseSentence, setShowEnglishChineseSentence] = useState(savedEnglishSettings.showChineseSentence);
-  const [practiceQuestionCount, setPracticeQuestionCount] = useState("20");
-  const [practiceRangeStart, setPracticeRangeStart] = useState("1");
-  const [practiceRangeEnd, setPracticeRangeEnd] = useState("");
-  const [practiceOrderMode, setPracticeOrderMode] = useState("random");
-  const [practiceTimerSeconds, setPracticeTimerSeconds] = useState("0");
-  const [showAdverbChineseSentence, setShowAdverbChineseSentence] = useState(false);
+  const [practiceQuestionCount, setPracticeQuestionCount] = useState(savedPracticeSettings.questionCount);
+  const [practiceRangeStart, setPracticeRangeStart] = useState(savedPracticeSettings.rangeStart);
+  const [practiceRangeEnd, setPracticeRangeEnd] = useState(savedPracticeSettings.rangeEnd);
+  const [practiceOrderMode, setPracticeOrderMode] = useState(savedPracticeSettings.orderMode);
+  const [practiceTimerSeconds, setPracticeTimerSeconds] = useState(savedPracticeSettings.timerSeconds);
+  const [showAdverbChineseSentence, setShowAdverbChineseSentence] = useState(savedPracticeSettings.showChineseSentence);
   const [practiceRows, setPracticeRows] = useState([]);
   const [englishRows, setEnglishRows] = useState([]);
   const [csvRows, setCsvRows] = useState([]);
@@ -73,6 +76,7 @@ export default function PlayMode() {
   const englishFilterValuesKey = `${formatFilterValuesParam(englishHskValues)}:${formatFilterValuesParam(englishDaoValues)}`;
   const previousFilterValuesKey = useRef(filterValuesKey);
   const previousEnglishFilterValuesKey = useRef(englishFilterValuesKey);
+  const activePracticeSettingsMode = useRef("");
   const availableHskValues = useMemo(() => getCsvFilterValues(csvRows, "hsk"), [csvRows]);
   const availableDaoValues = useMemo(() => getCsvFilterValues(csvRows, "dao"), [csvRows]);
   const availableEnglishHskValues = useMemo(() => getCsvFilterValues(englishRows, "hsk"), [englishRows]);
@@ -184,6 +188,21 @@ export default function PlayMode() {
   }, [selectedMode]);
 
   useEffect(() => {
+    if (!isPracticeMode(selectedMode)) {
+      return;
+    }
+
+    const savedPracticeModeSettings = readPracticeModeSettings(selectedMode);
+    setPracticeQuestionCount(savedPracticeModeSettings.questionCount);
+    setPracticeRangeStart(savedPracticeModeSettings.rangeStart);
+    setPracticeRangeEnd(savedPracticeModeSettings.rangeEnd);
+    setPracticeOrderMode(savedPracticeModeSettings.orderMode);
+    setPracticeTimerSeconds(savedPracticeModeSettings.timerSeconds);
+    setShowAdverbChineseSentence(savedPracticeModeSettings.showChineseSentence);
+    activePracticeSettingsMode.current = "";
+  }, [selectedMode]);
+
+  useEffect(() => {
     if (!englishRangeEnd && englishRangeMax > 1) {
       setEnglishRangeEnd(String(englishRangeMax));
     }
@@ -253,6 +272,34 @@ export default function PlayMode() {
       showChineseSentence: showEnglishChineseSentence,
     });
   }, [englishDaoValues, englishHskValues, englishOrderMode, englishQuestionCount, englishRangeEnd, englishRangeStart, englishTimerSeconds, showEnglishChineseSentence]);
+
+  useEffect(() => {
+    if (!isPracticeMode(selectedMode)) {
+      return;
+    }
+
+    if (activePracticeSettingsMode.current !== selectedMode) {
+      activePracticeSettingsMode.current = selectedMode;
+      return;
+    }
+
+    savePracticeModeSettings(selectedMode, {
+      questionCount: practiceQuestionCount,
+      rangeStart: practiceRangeStart,
+      rangeEnd: practiceRangeEnd,
+      orderMode: practiceOrderMode,
+      timerSeconds: practiceTimerSeconds,
+      showChineseSentence: showAdverbChineseSentence,
+    });
+  }, [
+    practiceOrderMode,
+    practiceQuestionCount,
+    practiceRangeEnd,
+    practiceRangeStart,
+    practiceTimerSeconds,
+    selectedMode,
+    showAdverbChineseSentence,
+  ]);
 
   function handleQuestionCountChange(event) {
     setQuestionCount(event.target.value.replace(/\D/g, ""));
@@ -551,8 +598,8 @@ export default function PlayMode() {
             <label className="question-count">
               Question order
               <select value={englishOrderMode} onChange={(event) => setEnglishOrderMode(event.target.value)}>
-                <option value="random">Random</option>
                 <option value="weighted">Weighted random</option>
+                <option value="random">Random</option>
                 <option value="in-order">In order</option>
               </select>
             </label>
@@ -623,8 +670,8 @@ export default function PlayMode() {
             <label className="question-count">
               Question order
               <select value={orderMode} onChange={(event) => setOrderMode(event.target.value)}>
-                <option value="random">Random</option>
                 <option value="weighted">Weighted random</option>
+                <option value="random">Random</option>
                 <option value="in-order">In order</option>
                 <option value="daily-review">Daily Review</option>
               </select>
@@ -815,8 +862,8 @@ function PracticeModeStart({
       <label className="question-count">
         Question order
         <select value={orderMode} onChange={onOrderModeChange}>
-          <option value="random">Random</option>
           <option value="weighted">Weighted random</option>
+          <option value="random">Random</option>
           <option value="in-order">In order</option>
         </select>
       </label>
@@ -905,6 +952,10 @@ function getPracticeRowsLoader(mode) {
     return loadTranslateRows;
   }
   return null;
+}
+
+function isPracticeMode(mode) {
+  return Boolean(getPracticeRowsLoader(mode));
 }
 
 function clampNumber(value, min, max) {

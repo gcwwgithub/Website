@@ -1,5 +1,6 @@
 const CHINESE_TO_ENGLISH_SETTINGS_KEY = "chineseQuizNew.chineseToEnglishSettings.v1";
 const ENGLISH_TO_CHINESE_SETTINGS_KEY = "chineseQuizNew.englishToChineseSettings.v1";
+const PRACTICE_MODE_SETTINGS_PREFIX = "chineseQuizNew.practiceModeSettings";
 
 export const HSK_BANDS = ["Band1", "Band2", "Band3", "Band4", "Band5", "Band6", "Band7", "Unknown"];
 
@@ -13,7 +14,7 @@ export const DEFAULT_CHINESE_TO_ENGLISH_SETTINGS = {
   includeFlagged: false,
   rangeStart: "1",
   rangeEnd: "",
-  orderMode: "random",
+  orderMode: "weighted",
   timerSeconds: "0",
   showPinyin: true,
   showChineseUsage: true,
@@ -28,9 +29,18 @@ export const DEFAULT_ENGLISH_TO_CHINESE_SETTINGS = {
   daoValues: ["all"],
   rangeStart: "1",
   rangeEnd: "",
-  orderMode: "random",
+  orderMode: "weighted",
   timerSeconds: "0",
   showChineseSentence: true,
+};
+
+export const DEFAULT_PRACTICE_MODE_SETTINGS = {
+  questionCount: "20",
+  rangeStart: "1",
+  rangeEnd: "",
+  orderMode: "weighted",
+  timerSeconds: "0",
+  showChineseSentence: false,
 };
 
 export function readChineseToEnglishSettings() {
@@ -75,6 +85,30 @@ export function saveEnglishToChineseSettings(settings) {
     window.localStorage.setItem(
       ENGLISH_TO_CHINESE_SETTINGS_KEY,
       JSON.stringify(normalizeEnglishSettings(settings))
+    );
+  } catch {
+    // The quiz still works if local storage is unavailable.
+  }
+}
+
+export function readPracticeModeSettings(mode) {
+  try {
+    const savedSettings = window.localStorage.getItem(getPracticeModeSettingsKey(mode));
+    if (!savedSettings) {
+      return DEFAULT_PRACTICE_MODE_SETTINGS;
+    }
+
+    return normalizePracticeModeSettings(JSON.parse(savedSettings));
+  } catch {
+    return DEFAULT_PRACTICE_MODE_SETTINGS;
+  }
+}
+
+export function savePracticeModeSettings(mode, settings) {
+  try {
+    window.localStorage.setItem(
+      getPracticeModeSettingsKey(mode),
+      JSON.stringify(normalizePracticeModeSettings(settings))
     );
   } catch {
     // The quiz still works if local storage is unavailable.
@@ -151,12 +185,26 @@ function normalizeEnglishSettings(settings = {}) {
   };
 }
 
+function normalizePracticeModeSettings(settings = {}) {
+  return {
+    ...DEFAULT_PRACTICE_MODE_SETTINGS,
+    ...settings,
+    orderMode: normalizePracticeOrderMode(settings.orderMode),
+    timerSeconds: normalizeTimerSeconds(settings.timerSeconds),
+    showChineseSentence: settings.showChineseSentence === true,
+  };
+}
+
 function normalizeOrderMode(orderMode) {
-  return ["random", "weighted", "in-order", "daily-review"].includes(orderMode) ? orderMode : "random";
+  return ["weighted", "random", "in-order", "daily-review"].includes(orderMode) ? orderMode : "weighted";
 }
 
 function normalizeEnglishOrderMode(orderMode) {
-  return ["random", "weighted", "in-order"].includes(orderMode) ? orderMode : "random";
+  return ["weighted", "random", "in-order"].includes(orderMode) ? orderMode : "weighted";
+}
+
+function normalizePracticeOrderMode(orderMode) {
+  return ["weighted", "random", "in-order"].includes(orderMode) ? orderMode : "weighted";
 }
 
 function normalizeTimerSeconds(timerSeconds) {
@@ -178,4 +226,8 @@ function normalizeFilterValues(values) {
   }
 
   return values.filter(Boolean);
+}
+
+function getPracticeModeSettingsKey(mode) {
+  return `${PRACTICE_MODE_SETTINGS_PREFIX}.${mode || "default"}.v1`;
 }
