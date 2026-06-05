@@ -1519,6 +1519,14 @@ form {
   grid-template-columns: 1fr;
 }
 
+.card-actions.review-navigation-actions {
+  grid-template-columns: 1fr;
+}
+
+.review-navigation-actions button {
+  width: 100%;
+}
+
 .secondary-action {
   background: #1f2937;
   color: #e5e7eb;

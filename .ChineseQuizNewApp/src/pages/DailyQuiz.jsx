@@ -617,6 +617,12 @@ export default function DailyQuiz() {
       setCsvIndex((current) => current + 1);
     }
 
+    function previousCsvReviewCard() {
+      setIsCsvFlipped(false);
+      setWasAutoFlipped(false);
+      setCsvIndex((current) => Math.max(0, current - 1));
+    }
+
     function undoLastAction() {
       const lastAction = csvHistory[csvHistory.length - 1];
       if (!lastAction) {
@@ -842,8 +848,11 @@ export default function DailyQuiz() {
                   onToggleFlag={toggleCsvFlag}
                 />
                 {isReviewMode ? (
-                  <div className="card-actions single-action">
+                  <div className={`card-actions ${isDailyReview && csvIndex > 0 ? "review-navigation-actions" : "single-action"}`}>
                     <button onClick={nextCsvReviewCard}>Next</button>
+                    {isDailyReview && csvIndex > 0 && (
+                      <button className="secondary-action" onClick={previousCsvReviewCard}>Back</button>
+                    )}
                   </div>
                 ) : !isCsvFlipped ? (
                   <div className="card-actions">
@@ -1010,6 +1019,7 @@ function EnglishToChineseFlashcard({
   onUndo,
 }) {
   const promptRow = row.__selectedEnglishToChinesePrompt || {};
+  const isPromptFromEnglishCsv = Boolean(row.__selectedEnglishToChinesePrompt);
   const englishPrompt = promptRow["English Words"] || row["English Words"];
   const chineseSentence = getFirstValue(promptRow, [
     "Chinese Sentence",
@@ -1025,6 +1035,9 @@ function EnglishToChineseFlashcard({
     "Sentence pinyin",
     "pinyin sentence",
   ]);
+  const englishUsageSentence = !isPromptFromEnglishCsv
+    ? getFirstValue(row, ["English Usage in a sentence", "English Usage in a Sentence", "English Sentence"])
+    : "";
   const visibleSentence = isFlipped
     ? revealSentenceTarget(chineseSentence, row["Chinese Words"])
     : hideSentenceTarget(chineseSentence, row["Chinese Words"]);
@@ -1081,6 +1094,7 @@ function EnglishToChineseFlashcard({
               {isFlipped ? highlightSentenceTarget(chineseSentence, row["Chinese Words"]) : visibleSentence}
             </p>
             {sentencePinyin && <p className="pinyin-line">{sentencePinyin}</p>}
+            {isFlipped && englishUsageSentence && <p className="sentence-translation">{englishUsageSentence}</p>}
             {isFlipped && row.Notes && <NotesBlock notes={row.Notes} />}
           </div>
           <IconAudioButton
