@@ -52,6 +52,7 @@ type PlaybackMode = "selection" | "page" | null;
 type LookupState = "idle" | "loading" | "found" | "missing" | "error";
 type LookupMode = "detail" | "sentence";
 type PanelTab = "lookup" | "edit" | "settings";
+type ThemeMode = "paper" | "light" | "dark";
 type PageNavigationState = { phase: "idle" | "loading" | "loaded"; direction: "previous" | "next" | null; label: string };
 type SentenceRange = { start: number; end: number; source: string };
 type CsvField = { label: string; value: string };
@@ -243,6 +244,22 @@ function csvEscape(value: string) {
   return /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
 }
 
+function hexToRgb(hex: string) {
+  const match = /^#?([0-9a-f]{6})$/i.exec(hex);
+  if (!match) return { red: 240, green: 202, blue: 104 };
+  const value = Number.parseInt(match[1], 16);
+  return {
+    red: (value >> 16) & 255,
+    green: (value >> 8) & 255,
+    blue: value & 255,
+  };
+}
+
+function rgbToHex(red: number, green: number, blue: number) {
+  const clamp = (value: number) => Math.max(0, Math.min(255, Math.round(value || 0)));
+  return `#${[clamp(red), clamp(green), clamp(blue)].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+}
+
 function downloadText(filename: string, text: string, type: string) {
   const url = URL.createObjectURL(new Blob([text], { type }));
   const link = document.createElement("a");
@@ -352,7 +369,7 @@ async function fetchFirstText(urls: string[]) {
   throw new Error("No matching file was found.");
 }
 
-function Icon({ name }: { name: "upload" | "database" | "play" | "pause" | "back" | "forward" | "book" | "audio" | "settings" }) {
+function Icon({ name }: { name: "upload" | "database" | "play" | "pause" | "back" | "forward" | "book" | "audio" | "settings" | "copy" }) {
   const paths = {
     upload: "M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v5h14v-5",
     database: "M4 6c0-2 3.6-3 8-3s8 1 8 3-3.6 3-8 3-8-1-8-3Zm0 0v6c0 2 3.6 3 8 3s8-1 8-3V6m-16 6v6c0 2 3.6 3 8 3s8-1 8-3v-6",
@@ -363,6 +380,7 @@ function Icon({ name }: { name: "upload" | "database" | "play" | "pause" | "back
     book: "M4 5.5A3.5 3.5 0 0 1 7.5 2H12v17H7.5A3.5 3.5 0 0 0 4 22V5.5Zm16 0A3.5 3.5 0 0 0 16.5 2H12v17h4.5A3.5 3.5 0 0 1 20 22V5.5Z",
     audio: "M4 9v6h4l5 4V5L8 9H4Zm12.5-.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12",
     settings: "M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Zm0-12v2m0 13v2m8.5-8.5h-2m-13 0h-2m14.5-6.5-1.4 1.4M6.9 17.1l-1.4 1.4m0-13 1.4 1.4m10.2 10.2 1.4 1.4",
+    copy: "M8 8h10v12H8V8Zm-3 8H4V4h10v1",
   };
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d={paths[name]} /></svg>;
 }
@@ -382,6 +400,8 @@ export default function Home() {
   const [showPinyin, setShowPinyin] = useState(true);
   const [rate, setRate] = useState(0.8);
   const [highlightColor, setHighlightColor] = useState("#f0ca68");
+  const [themeMode, setThemeMode] = useState<ThemeMode>("paper");
+  const [clipboardMessage, setClipboardMessage] = useState("");
   const [playback, setPlayback] = useState<PlaybackState>("idle");
   const [playbackMode, setPlaybackMode] = useState<PlaybackMode>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -457,6 +477,7 @@ export default function Home() {
   const progress = book.sections.length
     ? Math.round(((sectionIndex + 1) / book.sections.length) * 100)
     : 0;
+  const highlightRgb = useMemo(() => hexToRgb(highlightColor), [highlightColor]);
 
   useEffect(() => {
     const loadDatabases = async () => {
@@ -491,17 +512,18 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(window.localStorage.getItem(READER_SETTINGS_KEY) || "null") as { rate?: number; highlightColor?: string } | null;
+      const saved = JSON.parse(window.localStorage.getItem(READER_SETTINGS_KEY) || "null") as { rate?: number; highlightColor?: string; themeMode?: ThemeMode } | null;
       if (typeof saved?.rate === "number") setRate(Math.max(0.5, Math.min(1.5, saved.rate)));
       if (typeof saved?.highlightColor === "string" && /^#[0-9a-f]{6}$/i.test(saved.highlightColor)) setHighlightColor(saved.highlightColor);
+      if (saved?.themeMode === "paper" || saved?.themeMode === "light" || saved?.themeMode === "dark") setThemeMode(saved.themeMode);
     } catch {
       // Keep defaults when settings are absent or malformed.
     }
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(READER_SETTINGS_KEY, JSON.stringify({ rate, highlightColor }));
-  }, [highlightColor, rate]);
+    window.localStorage.setItem(READER_SETTINGS_KEY, JSON.stringify({ rate, highlightColor, themeMode }));
+  }, [highlightColor, rate, themeMode]);
 
   useEffect(() => {
     const loadCatalog = async () => {
@@ -760,6 +782,40 @@ export default function Home() {
     play(currentText.slice(start), start, "page");
   };
 
+  const selectedSentenceText = () => {
+    if (!lookupText || selectionStart < 0) return "";
+    if (lookupMode === "sentence") return lookupText;
+    const { start, end } = sentenceRangeAt(currentText, selectionStart);
+    return currentText.slice(start, end).trim();
+  };
+
+  const copyText = async (text: string, label: string) => {
+    if (!text.trim()) return;
+    try {
+      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+      else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+      }
+      setClipboardMessage(`${label} copied`);
+      window.setTimeout(() => setClipboardMessage(""), 1800);
+    } catch {
+      setClipboardMessage("Copy unavailable");
+      window.setTimeout(() => setClipboardMessage(""), 1800);
+    }
+  };
+
+  const changeHighlightRgb = (channel: "red" | "green" | "blue", value: number) => {
+    const next = { ...highlightRgb, [channel]: value };
+    setHighlightColor(rgbToHex(next.red, next.green, next.blue));
+  };
+
   const changeRate = (next: number) => {
     setRate(next);
     if (!playbackMode) return;
@@ -778,6 +834,7 @@ export default function Home() {
     }
     stop();
     setSelectionMessage("");
+    setClipboardMessage("");
     setLookupMode(mode);
     setLookupText(clean);
     setSelectionStart(start + text.indexOf(clean));
@@ -1006,7 +1063,7 @@ export default function Home() {
   }
 
   return (
-    <main className="reader-app" style={{ "--highlight": highlightColor } as CSSProperties}>
+    <main className={`reader-app theme-${themeMode}`} style={{ "--highlight": highlightColor } as CSSProperties}>
       <header className="topbar">
         <div className="topbar-left">
           <button className="reader-mark shelf-mark" type="button" onClick={() => setView("shelf")} aria-label="Back to shelf">语</button>
@@ -1055,9 +1112,24 @@ export default function Home() {
               <h1>Reader settings</h1>
               <div className="settings-panel">
                 <label className="setting-row"><span>Audio speed <strong>{rate.toFixed(1)}×</strong></span><input type="range" min="0.5" max="1.5" step="0.1" value={rate} onChange={(event) => changeRate(Number(event.target.value))} /></label>
-                <label className="setting-row"><span>Highlight color</span><input type="color" value={highlightColor} onChange={(event) => setHighlightColor(event.target.value)} /></label>
+                <div className="setting-row"><span>Reader theme <strong>{themeMode === "paper" ? "Yuliu Paper" : themeMode === "light" ? "Light" : "Dark"}</strong></span><div className="theme-options">
+                  {[
+                    ["paper", "Yuliu Paper"],
+                    ["light", "Light"],
+                    ["dark", "Dark"],
+                  ].map(([value, label]) => <button key={value} className={themeMode === value ? "active" : ""} type="button" onClick={() => setThemeMode(value as ThemeMode)}>{label}</button>)}
+                </div></div>
+                <label className="setting-row"><span>Highlight color <strong>{highlightColor.toUpperCase()}</strong></span><input type="color" value={highlightColor} onChange={(event) => setHighlightColor(event.target.value)} /></label>
                 <div className="color-swatches">
                   {["#f0ca68", "#82d6bd", "#93c5fd", "#fca5a5", "#c4b5fd"].map((color) => <button key={color} type="button" style={{ backgroundColor: color }} className={highlightColor === color ? "active" : ""} onClick={() => setHighlightColor(color)} aria-label={`Use highlight color ${color}`} />)}
+                </div>
+                <div className="advanced-color">
+                  <span>Advanced RGB</span>
+                  {[
+                    ["red", "R", highlightRgb.red],
+                    ["green", "G", highlightRgb.green],
+                    ["blue", "B", highlightRgb.blue],
+                  ].map(([channel, label, value]) => <label key={channel}><b>{label}</b><input type="number" min="0" max="255" value={value} onChange={(event) => changeHighlightRgb(channel as "red" | "green" | "blue", Number(event.target.value))} /></label>)}
                 </div>
               </div>
               <DatabaseStatus total={databaseTotal} message={databaseMessage} clearing={clearingDatabase} onClear={() => void clearDatabase()} compact />
@@ -1077,9 +1149,13 @@ export default function Home() {
                 <div className="selection-label"><span>FULL SENTENCE</span><button type="button" onClick={() => setShowPinyin((value) => !value)}>{showPinyin ? "Hide pinyin" : "Show pinyin"}</button></div>
                 <div className="selection-heading">
                   <h1>{lookupText}</h1>
-                  <button className="selection-audio" type="button" onClick={() => togglePlayback("selection")} aria-label={playbackMode === "selection" && playback === "playing" ? "Pause sentence" : "Read sentence"}><Icon name={playbackMode === "selection" && playback === "playing" ? "pause" : "play"} /></button>
+                  <div className="selection-actions">
+                    <button className="selection-audio" type="button" onClick={() => togglePlayback("selection")} aria-label={playbackMode === "selection" && playback === "playing" ? "Pause sentence" : "Read sentence"}><Icon name={playbackMode === "selection" && playback === "playing" ? "pause" : "play"} /></button>
+                    <button className="selection-copy" type="button" onClick={() => void copyText(lookupText, "Sentence")} aria-label="Copy selected sentence"><Icon name="copy" /></button>
+                  </div>
                 </div>
                 {showPinyin && <p className="selection-pinyin sentence-pinyin">{pinyin(lookupText, { toneType: "symbol", toneSandhi: true })}</p>}
+                {clipboardMessage && <p className="clipboard-status">{clipboardMessage}</p>}
                 <div className={`match-status ${lookupState}`}><i /><span>{lookupState === "found" ? "Sentence translation" : lookupState === "loading" ? "Searching sentence database…" : lookupState === "error" ? "Database unavailable" : "No sentence translation found"}</span></div>
                 {lookupState === "found" ? <div className="sentence-translation">{entry?.meaning}</div> : lookupState === "missing" ? <p className="sentence-missing">Import this sentence using the sentence JSON format. Sentence entries contain only the original Chinese and its English translation.</p> : null}
                 <p className="save-note">Highlight 1–8 characters if you want detailed word or phrase fields.</p>
@@ -1092,9 +1168,14 @@ export default function Home() {
               <div className="selection-label"><span>{panelTab === "edit" ? "EDIT WORD / PHRASE" : "SELECTED TEXT"}</span><button type="button" onClick={() => setShowPinyin((value) => !value)}>{showPinyin ? "Hide pinyin" : "Show pinyin"}</button></div>
               <div className="selection-heading">
                 <h1>{lookupText}</h1>
-                <button className="selection-audio" type="button" onClick={() => togglePlayback("selection")} aria-label={playbackMode === "selection" && playback === "playing" ? "Pause selection" : "Read selection"}><Icon name={playbackMode === "selection" && playback === "playing" ? "pause" : "play"} /></button>
+                <div className="selection-actions">
+                  <button className="selection-audio" type="button" onClick={() => togglePlayback("selection")} aria-label={playbackMode === "selection" && playback === "playing" ? "Pause selection" : "Read selection"}><Icon name={playbackMode === "selection" && playback === "playing" ? "pause" : "play"} /></button>
+                  <button className="selection-copy" type="button" onClick={() => void copyText(lookupText, "Word")} aria-label="Copy selected word or phrase"><Icon name="copy" /></button>
+                  <button className="selection-copy wide" type="button" onClick={() => void copyText(selectedSentenceText(), "Sentence")}>Sentence</button>
+                </div>
               </div>
               {showPinyin && <p className="selection-pinyin">{entry?.pinyin || pinyin(lookupText, { toneType: "symbol", toneSandhi: true })}</p>}
+              {clipboardMessage && <p className="clipboard-status">{clipboardMessage}</p>}
 
               {panelTab === "lookup" ? <>
               <div className={`match-status ${lookupState}`}>
