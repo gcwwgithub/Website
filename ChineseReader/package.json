@@ -1,0 +1,37 @@
+{
+  "name": "chinese-reader",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "books": "node scripts/generate-books-manifest.mjs",
+    "predev": "npm run books",
+    "dev": "next dev",
+    "prebuild": "npm run books",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --ignore-pattern .next"
+  },
+  "dependencies": {
+    "jszip": "3.10.1",
+    "next": "16.2.6",
+    "pdfjs-dist": "5.4.296",
+    "pinyin-pro": "3.27.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3"
+  },
+  "type": "module",
+  "displayName": "Chinese Reader"
+}
