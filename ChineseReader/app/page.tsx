@@ -38,7 +38,7 @@ type TranslationEntry = {
   meaning: string;
   pinyin?: string;
   notes?: string;
-  kind?: "word" | "phrase" | "sentence";
+  kind?: "word" | "phrase" | "sentence" | "term";
   synonyms?: string[] | string;
   translations?: string[] | string;
   contexts?: string[] | string;
@@ -63,6 +63,7 @@ const READER_SETTINGS_KEY = "chinese-reader-settings";
 const BOOKS_MANIFEST_URL = "books/manifest.json";
 const SENTENCE_DATABASE_URLS = ["data/translations.json", "data/translation.json"];
 const WORD_DATABASE_URLS = ["data/CN.csv", "data/CV.csv"];
+const TERM_DATABASE_URLS = ["data/terms.json", "data/names.json"];
 const DISPLAY_CSV_FIELDS = [
   "English Words",
   "Chinese Usage in a Sentence",
@@ -155,7 +156,15 @@ function cleanImportedRows(raw: unknown): TranslationEntry[] {
     entries?: unknown;
     meanings?: unknown;
     sentences?: unknown;
+    terms?: unknown;
+    names?: unknown;
+    places?: unknown;
   };
+  const mappedRows = !Array.isArray(raw) && raw && typeof raw === "object"
+    ? Object.entries(raw as Record<string, unknown>)
+      .filter(([key, value]) => !["translations", "entries", "meanings", "sentences", "terms", "names", "places"].includes(key) && typeof value === "string")
+      .map(([source, meaning]) => ({ source, meaning, kind: "term" }))
+    : [];
   const rows = Array.isArray(raw)
     ? raw
     : Array.isArray(container?.translations)
@@ -166,7 +175,13 @@ function cleanImportedRows(raw: unknown): TranslationEntry[] {
           ? container.meanings
           : Array.isArray(container?.sentences)
             ? container.sentences
-            : [];
+            : Array.isArray(container?.terms)
+              ? container.terms
+              : Array.isArray(container?.names)
+                ? container.names
+                : Array.isArray(container?.places)
+                  ? container.places
+                  : mappedRows;
 
   return rows.flatMap((value) => {
     const item = value as Record<string, unknown>;
@@ -179,14 +194,18 @@ function cleanImportedRows(raw: unknown): TranslationEntry[] {
       }
       return clean.split("|").map((entry) => entry.trim()).filter(Boolean);
     };
-    const source = String(item.source ?? item.chinese ?? item.text ?? item["Chinese Words"] ?? item["chinese words"] ?? "").trim();
+    const source = String(item.source ?? item.chinese ?? item.word ?? item.term ?? item.name ?? item.place ?? item.text ?? item["Chinese Words"] ?? item["chinese words"] ?? "").trim();
     const isSentenceFile = Array.isArray(container?.sentences);
+    const isTermRow = "term" in item || "name" in item || "place" in item || String(item.kind ?? "").toLowerCase() === "term";
+    const isTermFile = Array.isArray(container?.terms) || Array.isArray(container?.names) || Array.isArray(container?.places) || mappedRows.length > 0 || isTermRow;
     const meaning = String(item.meaning ?? item.translation ?? item.english ?? item["English Words"] ?? item["english words"] ?? "").trim();
     if (!source || (isSentenceFile && !meaning)) return [];
-    if (!isSentenceFile && [...source].length > DETAIL_CHARACTER_LIMIT) return [];
+    if (!isSentenceFile && !isTermFile && [...source].length > DETAIL_CHARACTER_LIMIT) return [];
     const rawKind = String(item.kind ?? "").toLowerCase();
     const kind: TranslationEntry["kind"] =
       isSentenceFile ? "sentence" :
+      isTermFile || rawKind === "term" || rawKind === "name" || rawKind === "place"
+        ? "term" :
       rawKind === "word"
         ? rawKind
         : "phrase";
@@ -401,6 +420,8 @@ export default function Home() {
   const [rate, setRate] = useState(0.8);
   const [highlightColor, setHighlightColor] = useState("#f0ca68");
   const [themeMode, setThemeMode] = useState<ThemeMode>("paper");
+  const [readerFontSize, setReaderFontSize] = useState(25);
+  const [readerPinyinSize, setReaderPinyinSize] = useState(9);
   const [clipboardMessage, setClipboardMessage] = useState("");
   const [playback, setPlayback] = useState<PlaybackState>("idle");
   const [playbackMode, setPlaybackMode] = useState<PlaybackMode>(null);
@@ -500,11 +521,19 @@ export default function Home() {
         messages.push("CN.csv was not found.");
       }
 
+      try {
+        const { text } = await fetchFirstText(TERM_DATABASE_URLS);
+        const raw = JSON.parse(text);
+        loadedEntries.push(...cleanImportedRows(raw).filter((entry) => entry.kind === "term"));
+      } catch {
+        // Terms/names JSON is optional.
+      }
+
       const localEntries = loadTranslationDatabase().filter((entry) => entry.kind !== "sentence");
       const merged = mergeTranslationEntries([...loadedEntries, ...localEntries]);
       setDatabaseEntries(merged);
       setDatabaseTotal(merged.length);
-      setDatabaseMessage(messages.length ? messages.join(" ") : "Loaded sentence translations from translations.json and word/phrase details from CN.csv.");
+      setDatabaseMessage(messages.length ? messages.join(" ") : "Loaded sentence translations, CN.csv details, and terms JSON entries.");
     };
 
     void loadDatabases();
@@ -512,18 +541,20 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(window.localStorage.getItem(READER_SETTINGS_KEY) || "null") as { rate?: number; highlightColor?: string; themeMode?: ThemeMode } | null;
+      const saved = JSON.parse(window.localStorage.getItem(READER_SETTINGS_KEY) || "null") as { rate?: number; highlightColor?: string; themeMode?: ThemeMode; readerFontSize?: number; readerPinyinSize?: number } | null;
       if (typeof saved?.rate === "number") setRate(Math.max(0.5, Math.min(1.5, saved.rate)));
       if (typeof saved?.highlightColor === "string" && /^#[0-9a-f]{6}$/i.test(saved.highlightColor)) setHighlightColor(saved.highlightColor);
       if (saved?.themeMode === "paper" || saved?.themeMode === "light" || saved?.themeMode === "dark") setThemeMode(saved.themeMode);
+      if (typeof saved?.readerFontSize === "number") setReaderFontSize(Math.max(18, Math.min(38, saved.readerFontSize)));
+      if (typeof saved?.readerPinyinSize === "number") setReaderPinyinSize(Math.max(7, Math.min(16, saved.readerPinyinSize)));
     } catch {
       // Keep defaults when settings are absent or malformed.
     }
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(READER_SETTINGS_KEY, JSON.stringify({ rate, highlightColor, themeMode }));
-  }, [highlightColor, rate, themeMode]);
+    window.localStorage.setItem(READER_SETTINGS_KEY, JSON.stringify({ rate, highlightColor, themeMode, readerFontSize, readerPinyinSize }));
+  }, [highlightColor, rate, readerFontSize, readerPinyinSize, themeMode]);
 
   useEffect(() => {
     const loadCatalog = async () => {
@@ -951,7 +982,7 @@ export default function Home() {
   };
 
   const exportCsv = () => {
-    const rows = databaseEntries.filter((item) => item.kind !== "sentence");
+    const rows = databaseEntries.filter((item) => item.kind !== "sentence" && item.kind !== "term");
     const headers = Array.from(new Set(rows.flatMap((item) => item.csvFields?.map((field) => field.label) ?? [])));
     const csvHeaders = headers.length ? headers : ["Chinese Words", "pinyin", "English Words", "Chinese Usage in a Sentence", "English Usage in a sentence", "_Formal", "Notes", "_HSK", "_Dao", "ID"];
     const csv = [
@@ -961,11 +992,18 @@ export default function Home() {
     downloadText("CN.csv", `${csv}\n`, "text/csv;charset=utf-8");
   };
 
-  const exportJson = () => {
+  const exportSentenceJson = () => {
     const sentences = databaseEntries
       .filter((item) => item.kind === "sentence")
       .map((item) => ({ source: item.source, translation: item.meaning }));
     downloadText("translations.json", `${JSON.stringify({ sentences }, null, 2)}\n`, "application/json;charset=utf-8");
+  };
+
+  const exportTermsJson = () => {
+    const terms = databaseEntries
+      .filter((item) => item.kind === "term")
+      .map((item) => ({ chinese: item.source, english: item.meaning }));
+    downloadText("terms.json", `${JSON.stringify({ terms }, null, 2)}\n`, "application/json;charset=utf-8");
   };
 
   const importDatabase = async (file?: File) => {
@@ -1063,13 +1101,11 @@ export default function Home() {
   }
 
   return (
-    <main className={`reader-app theme-${themeMode}`} style={{ "--highlight": highlightColor } as CSSProperties}>
+    <main className={`reader-app theme-${themeMode}`} style={{ "--highlight": highlightColor, "--reader-font-size": `${readerFontSize}px`, "--reader-pinyin-size": `${readerPinyinSize}px` } as CSSProperties}>
       <header className="topbar">
         <div className="topbar-left">
           <button className="reader-mark shelf-mark" type="button" onClick={() => setView("shelf")} aria-label="Back to shelf">语</button>
           <button type="button" onClick={() => databaseInput.current?.click()} disabled={importing}><Icon name="database" /> {importing ? "Importing…" : "Import database"}</button>
-          <button type="button" onClick={exportCsv}><Icon name="database" /> Export CSV</button>
-          <button type="button" onClick={exportJson}><Icon name="database" /> Export JSON</button>
           <RouteLink className="topbar-link" href="/help" loadingLabel="Opening help">? Help</RouteLink>
           <input ref={databaseInput} type="file" accept=".json,.csv,application/json,text/csv" hidden onChange={(event) => void importDatabase(event.target.files?.[0])} />
         </div>
@@ -1112,6 +1148,8 @@ export default function Home() {
               <h1>Reader settings</h1>
               <div className="settings-panel">
                 <label className="setting-row"><span>Audio speed <strong>{rate.toFixed(1)}×</strong></span><input type="range" min="0.5" max="1.5" step="0.1" value={rate} onChange={(event) => changeRate(Number(event.target.value))} /></label>
+                <label className="setting-row"><span>Word font size <strong>{readerFontSize}px</strong></span><input type="range" min="18" max="38" step="1" value={readerFontSize} onChange={(event) => setReaderFontSize(Number(event.target.value))} /></label>
+                <label className="setting-row"><span>Pinyin font size <strong>{readerPinyinSize}px</strong></span><input type="range" min="7" max="16" step="1" value={readerPinyinSize} onChange={(event) => setReaderPinyinSize(Number(event.target.value))} /></label>
                 <div className="setting-row"><span>Reader theme <strong>{themeMode === "paper" ? "Yuliu Paper" : themeMode === "light" ? "Light" : "Dark"}</strong></span><div className="theme-options">
                   {[
                     ["paper", "Yuliu Paper"],
@@ -1130,6 +1168,12 @@ export default function Home() {
                     ["green", "G", highlightRgb.green],
                     ["blue", "B", highlightRgb.blue],
                   ].map(([channel, label, value]) => <label key={channel}><b>{label}</b><input type="number" min="0" max="255" value={value} onChange={(event) => changeHighlightRgb(channel as "red" | "green" | "blue", Number(event.target.value))} /></label>)}
+                </div>
+                <div className="export-options">
+                  <span>Export database</span>
+                  <button type="button" onClick={exportCsv}><Icon name="database" /> CN.csv</button>
+                  <button type="button" onClick={exportSentenceJson}><Icon name="database" /> Sentences JSON</button>
+                  <button type="button" onClick={exportTermsJson}><Icon name="database" /> Terms JSON</button>
                 </div>
               </div>
               <DatabaseStatus total={databaseTotal} message={databaseMessage} clearing={clearingDatabase} onClear={() => void clearDatabase()} compact />
@@ -1189,6 +1233,7 @@ export default function Home() {
                   return <div key={label}><b>{displayCsvLabel(label)}</b><span>{value}</span>{isChineseUsageField(label) && value.trim() ? <button className="field-audio" type="button" onClick={() => play(value, -1, "selection")} aria-label="Read Chinese usage sentence"><Icon name="audio" /></button> : null}</div>;
                 })}
               </div> : null}
+              {entry?.kind === "term" && !entry.csvFields?.length ? <div className="term-translation"><b>Term translation</b><span>{entry.meaning}</span></div> : null}
               <button className="save-meaning" type="button" onClick={() => { if (!translationsList.some((value) => value.trim())) setTranslationsList([meaningDraft]); setPanelTab("edit"); }}>Edit all details</button>
               <p className="save-note">Edits are saved in this browser until you export an updated CN.csv.</p>
 

@@ -83,14 +83,14 @@ svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width:
 .page-meta { max-width: 1000px; margin: 0 auto 18px; display: flex; align-items: baseline; justify-content: space-between; color: #7c7d74; }
 .page-meta span { font-size: 9px; font-weight: 700; letter-spacing: .15em; }
 .page-meta strong { font: 18px Georgia, "Songti SC", serif; color: #2d302b; }
-.continuous-text { max-width: 1000px; margin: 0 auto; white-space: pre-wrap; user-select: text; cursor: text; font: 25px/1.72 "STKaiti", "KaiTi", "Songti SC", "Microsoft YaHei", serif; letter-spacing: .018em; }
+.continuous-text { max-width: 1000px; margin: 0 auto; white-space: pre-wrap; user-select: text; cursor: text; font: var(--reader-font-size, 25px)/1.72 "STKaiti", "KaiTi", "Songti SC", "Microsoft YaHei", serif; letter-spacing: .018em; }
 .continuous-text span::selection { color: #111; background: #82d6bd; }
 .continuous-text.pinyin-mode { line-height: 2.25; }
-.pinyin-mode .page-character[data-pinyin] { position: relative; display: inline-block; min-width: 1.38em; padding-top: 12px; text-align: center; line-height: 1.05; vertical-align: baseline; }
-.pinyin-mode .page-character[data-pinyin]::before { content: attr(data-pinyin); position: absolute; left: 50%; bottom: calc(100% - 11px); color: var(--green-dark); font: 9px/1 Arial, sans-serif; letter-spacing: 0; white-space: nowrap; transform: translateX(-50%); pointer-events: none; user-select: none; }
+.pinyin-mode .page-character[data-pinyin] { position: relative; display: inline-block; min-width: 1.38em; padding-top: calc(var(--reader-pinyin-size, 9px) + 3px); text-align: center; line-height: 1.05; vertical-align: baseline; }
+.pinyin-mode .page-character[data-pinyin]::before { content: attr(data-pinyin); position: absolute; left: 50%; bottom: calc(100% - var(--reader-pinyin-size, 9px) - 2px); color: var(--green-dark); font: var(--reader-pinyin-size, 9px)/1 Arial, sans-serif; letter-spacing: 0; white-space: nowrap; transform: translateX(-50%); pointer-events: none; user-select: none; }
 .continuous-text .spoken-character { margin: 0 -1px; padding: 1px; border-radius: 3px; background: var(--highlight); color: #151714; box-shadow: 0 0 0 2px rgba(240,202,104,.35); }
 .continuous-text .selected-sentence { background: rgba(40,167,134,.12); box-shadow: inset 0 -2px var(--green); }
-.continuous-text.pinyin-mode .spoken-character { padding-top: 12px; }
+.continuous-text.pinyin-mode .spoken-character { padding-top: calc(var(--reader-pinyin-size, 9px) + 3px); }
 .epub-illustration { width: min(100%, 760px); margin: 32px auto; padding: 12px; border: 1px solid rgba(146,141,124,.28); background: rgba(255,255,255,.35); break-inside: avoid; text-align: center; user-select: none; }
 .epub-illustration img { display: block; width: auto; max-width: 100%; max-height: min(72vh, 920px); margin: 0 auto; object-fit: contain; }
 .empty-page { max-width: 800px; margin: 70px auto; color: var(--muted); text-align: center; font-size: 14px; }
@@ -200,6 +200,11 @@ svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width:
 .advanced-color>span { color: #555851; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .advanced-color label { display: grid; gap: 5px; color: #666860; font-size: 9px; font-weight: 800; }
 .advanced-color input { width: 100%; height: 34px; padding: 0 8px; border: 1px solid #cfcbc0; border-radius: 4px; background: rgba(255,255,255,.58); }
+.export-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-top: 8px; }
+.export-options>span { grid-column: 1 / -1; color: #555851; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.export-options button { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid #cfcbc0; border-radius: 5px; background: rgba(255,255,255,.42); color: #555851; font-size: 10px; font-weight: 800; }
+.export-options button:hover { border-color: var(--green); background: var(--green); color: white; }
+.export-options svg { width: 15px; height: 15px; }
 .detail-list { min-width: 0; margin: 0; padding: 0; border: 0; }
 .detail-list legend, .detail-field>span { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #555851; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .detail-row { display: grid; grid-template-columns: 1fr 28px; gap: 7px; margin-bottom: 7px; align-items: start; }
@@ -213,6 +218,9 @@ svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width:
 .inline-audio svg { width: 14px; height: 14px; }
 .detail-image { width: 100%; max-height: 220px; object-fit: contain; border: 1px solid #d4d0c4; border-radius: 5px; background: white; }
 .sentence-translation { margin-top: 18px; padding: 24px; border-left: 4px solid var(--green); background: white; color: #2e332f; font: 21px/1.65 Georgia, serif; }
+.term-translation { display: grid; gap: 8px; margin: 16px 0; padding: 18px; border-left: 4px solid var(--green); background: white; color: #2e332f; }
+.term-translation b { color: var(--green-dark); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.term-translation span { font: 19px/1.5 Georgia, serif; }
 .sentence-missing { color: #686b64; font-size: 13px; line-height: 1.7; }
 .sentence-explanation h1 { font-size: 27px; line-height: 1.6; }
 .sentence-pinyin { margin-top: -8px; font-size: 13px; line-height: 1.75; }
@@ -241,12 +249,14 @@ svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width:
 .reader-app.theme-dark .sentence-translation,
 .reader-app.theme-dark .setting-row,
 .reader-app.theme-dark .advanced-color>span,
+.reader-app.theme-dark .export-options>span,
 .reader-app.theme-dark .advanced-color label { color: var(--ink); }
 .reader-app.theme-dark .topbar-left button,
 .reader-app.theme-dark .topbar-right button,
 .reader-app.theme-dark .topbar-link,
 .reader-app.theme-dark .panel-tabs,
 .reader-app.theme-dark .theme-options button,
+.reader-app.theme-dark .export-options button,
 .reader-app.theme-dark .database-note>button { background: rgba(255,255,255,.08); color: var(--ink); }
 .reader-app.theme-dark .topbar-left button:hover,
 .reader-app.theme-dark .topbar-right button:hover,
@@ -267,9 +277,11 @@ svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width:
 .reader-app.theme-dark .csv-fields b { color: var(--muted); }
 .reader-app.theme-dark .database-note,
 .reader-app.theme-dark .csv-fields,
+.reader-app.theme-dark .term-translation,
 .reader-app.theme-dark .matched-notes,
 .reader-app.theme-dark .advanced-color { border-color: var(--line); background: rgba(255,255,255,.05); }
 .reader-app.theme-dark .sentence-translation,
+.reader-app.theme-dark .term-translation,
 .reader-app.theme-dark .explanation textarea,
 .reader-app.theme-dark .detail-row input,
 .reader-app.theme-dark .detail-field input,
@@ -345,7 +357,7 @@ svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width:
   .reader-layout { height: auto; min-height: calc(100vh - 48px); display: block; }
   .book-side { min-height: calc(100vh - 48px); border-right: 0; border-bottom: 1px solid var(--line); }
   .book-page { padding: 28px 22px 55px; }
-  .continuous-text { font-size: 21px; line-height: 1.8; }
+  .continuous-text { line-height: 1.8; }
   .epub-illustration { margin-block: 24px; padding: 8px; }
   .page-meta strong { font-size: 15px; }
   .reader-footer { padding: 0 15px; }

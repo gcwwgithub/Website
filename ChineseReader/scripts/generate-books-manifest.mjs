@@ -48,7 +48,7 @@ await writeFile(manifestPath, `${JSON.stringify(books, null, 2)}\n`, "utf8");
 console.log(`Generated ${path.relative(process.cwd(), manifestPath)} with ${books.length} book${books.length === 1 ? "" : "s"}.`);
 
 await mkdir(publicDataDirectory, { recursive: true });
-for (const file of ["CN.csv", "CV.csv", "translations.json", "translation.json"]) {
+for (const file of ["CN.csv", "CV.csv", "translations.json", "translation.json", "terms.json", "names.json"]) {
   try {
     await copyFile(path.join(sourceDataDirectory, file), path.join(publicDataDirectory, file));
     console.log(`Copied ${path.join("data", file)} to ${path.join("public", "data", file)}.`);
