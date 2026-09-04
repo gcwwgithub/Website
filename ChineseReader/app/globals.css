@@ -16,9 +16,9 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; background: var(--paper); color: var(--ink); }
 body { font-family: Arial, "Microsoft YaHei", "PingFang SC", sans-serif; }
-button, textarea, input { color: inherit; font: inherit; }
+button, textarea, input, select { color: inherit; font: inherit; }
 button { cursor: pointer; }
-button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 3px solid var(--highlight); outline-offset: 2px; }
+button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--highlight); outline-offset: 2px; }
 button:disabled { cursor: default; opacity: .28; }
 svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -83,14 +83,21 @@ svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width:
 .page-meta { max-width: 1000px; margin: 0 auto 18px; display: flex; align-items: baseline; justify-content: space-between; color: #7c7d74; }
 .page-meta span { font-size: 9px; font-weight: 700; letter-spacing: .15em; }
 .page-meta strong { font: 18px Georgia, "Songti SC", serif; color: #2d302b; }
-.continuous-text { max-width: 1000px; margin: 0 auto; white-space: pre-wrap; user-select: text; cursor: text; font: var(--reader-font-size, 25px)/1.72 "STKaiti", "KaiTi", "Songti SC", "Microsoft YaHei", serif; letter-spacing: .018em; }
+.reader-text-stage { position: relative; max-width: 1000px; margin: 0 auto; }
+.continuous-text { position: relative; z-index: 2; white-space: pre-wrap; user-select: text; cursor: text; font: var(--reader-font-size, 25px)/1.72 "STKaiti", "KaiTi", "Songti SC", "Microsoft YaHei", serif; letter-spacing: .018em; }
 .continuous-text span::selection { color: #111; background: #82d6bd; }
 .continuous-text.pinyin-mode { line-height: 2.25; }
+.page-character { position: relative; }
+.character-glyph { position: relative; z-index: 2; }
 .pinyin-mode .page-character[data-pinyin] { position: relative; display: inline-block; min-width: 1.38em; padding-top: calc(var(--reader-pinyin-size, 9px) + 3px); text-align: center; line-height: 1.05; vertical-align: baseline; }
-.pinyin-mode .page-character[data-pinyin]::before { content: attr(data-pinyin); position: absolute; left: 50%; bottom: calc(100% - var(--reader-pinyin-size, 9px) - 2px); color: var(--green-dark); font: var(--reader-pinyin-size, 9px)/1 Arial, sans-serif; letter-spacing: 0; white-space: nowrap; transform: translateX(-50%); pointer-events: none; user-select: none; }
-.continuous-text .spoken-character { margin: 0 -1px; padding: 1px; border-radius: 3px; background: var(--highlight); color: #151714; box-shadow: 0 0 0 2px rgba(240,202,104,.35); }
-.continuous-text .selected-sentence { background: rgba(40,167,134,.12); box-shadow: inset 0 -2px var(--green); }
+.pinyin-mode .page-character[data-pinyin]::before { content: attr(data-pinyin); position: absolute; left: 50%; bottom: calc(100% - var(--reader-pinyin-size, 9px) - 2px); z-index: 16; color: var(--green-dark); font: var(--reader-pinyin-size, 9px)/1 Arial, sans-serif; letter-spacing: 0; white-space: nowrap; transform: translateX(-50%); pointer-events: none; user-select: none; }
+.continuous-text .spoken-character { margin: 0 -1px; padding: 1px; border-radius: 3px; background: var(--highlight); color: #151714; box-shadow: 0 0 0 2px rgba(var(--highlight-rgb, 240, 202, 104), .35); }
+.reader-app[data-highlight-mode="all"] .continuous-text .selected-sentence { background: rgba(var(--highlight-rgb, 240, 202, 104), .34); box-shadow: inset 0 -2px var(--highlight); }
 .continuous-text.pinyin-mode .spoken-character { padding-top: calc(var(--reader-pinyin-size, 9px) + 3px); }
+.dictionary-highlight-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; user-select: none; }
+.dictionary-highlight-rect { position: absolute; border: 2px solid transparent; border-radius: 5px; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); }
+.dictionary-highlight-cn { background: var(--dictionary-cn-highlight, #eaf268); border-color: var(--dictionary-cn-border, #707908); }
+.dictionary-highlight-term { background: var(--dictionary-term-highlight, #93c5fd); border-color: var(--dictionary-term-border, #194e96); border-style: dashed; }
 .epub-illustration { width: min(100%, 760px); margin: 32px auto; padding: 12px; border: 1px solid rgba(146,141,124,.28); background: rgba(255,255,255,.35); break-inside: avoid; text-align: center; user-select: none; }
 .epub-illustration img { display: block; width: auto; max-width: 100%; max-height: min(72vh, 920px); margin: 0 auto; object-fit: contain; }
 .empty-page { max-width: 800px; margin: 70px auto; color: var(--muted); text-align: center; font-size: 14px; }
@@ -190,16 +197,19 @@ svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width:
 .setting-row strong { color: var(--green-dark); }
 .setting-row input[type="range"] { width: 100%; accent-color: var(--green); }
 .setting-row input[type="color"] { width: 70px; height: 38px; padding: 3px; border: 1px solid #cfcbc0; border-radius: 5px; background: rgba(255,255,255,.5); }
+.setting-row select { width: 100%; height: 38px; padding: 0 10px; border: 1px solid #cfcbc0; border-radius: 5px; background: rgba(255,255,255,.5); color: #555851; font-size: 11px; font-weight: 800; }
 .theme-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
 .theme-options button { min-height: 36px; border: 1px solid #cfcbc0; border-radius: 5px; background: rgba(255,255,255,.42); color: #555851; font-size: 10px; font-weight: 800; }
 .theme-options button.active { border-color: var(--green); background: var(--green); color: white; }
-.color-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
-.color-swatches button { width: 32px; height: 32px; border: 2px solid rgba(0,0,0,.08); border-radius: 50%; }
-.color-swatches button.active { border-color: #30322e; box-shadow: 0 0 0 3px rgba(40,167,134,.16); }
-.advanced-color { display: grid; grid-template-columns: 1fr repeat(3, minmax(58px, 72px)); gap: 8px; align-items: end; padding: 14px; border: 1px solid #d5d1c5; border-radius: 7px; background: rgba(255,255,255,.34); }
-.advanced-color>span { color: #555851; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
-.advanced-color label { display: grid; gap: 5px; color: #666860; font-size: 9px; font-weight: 800; }
-.advanced-color input { width: 100%; height: 34px; padding: 0 8px; border: 1px solid #cfcbc0; border-radius: 4px; background: rgba(255,255,255,.58); }
+.dictionary-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: -12px; opacity: .42; }
+.dictionary-legend.active { opacity: 1; }
+.dictionary-legend span { display: inline-flex; align-items: center; gap: 7px; color: #62645e; font-size: 10px; font-weight: 800; }
+.dictionary-swatch { width: 18px; height: 18px; border: 2px solid rgba(0,0,0,.16); border-radius: 4px; }
+.dictionary-swatch.cn { background: var(--dictionary-cn-highlight, #eaf268); }
+.dictionary-swatch.term { background: var(--dictionary-term-highlight, #93c5fd); }
+.dictionary-swatch.cn { border-color: var(--dictionary-cn-border, #707908); }
+.dictionary-swatch.term { border-color: var(--dictionary-term-border, #194e96); border-style: dashed; }
+.dictionary-color-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: -6px; }
 .export-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-top: 8px; }
 .export-options>span { grid-column: 1 / -1; color: #555851; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .export-options button { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid #cfcbc0; border-radius: 5px; background: rgba(255,255,255,.42); color: #555851; font-size: 10px; font-weight: 800; }
@@ -248,9 +258,8 @@ svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width:
 .reader-app.theme-dark .csv-fields>div,
 .reader-app.theme-dark .sentence-translation,
 .reader-app.theme-dark .setting-row,
-.reader-app.theme-dark .advanced-color>span,
 .reader-app.theme-dark .export-options>span,
-.reader-app.theme-dark .advanced-color label { color: var(--ink); }
+.reader-app.theme-dark .setting-row { color: var(--ink); }
 .reader-app.theme-dark .topbar-left button,
 .reader-app.theme-dark .topbar-right button,
 .reader-app.theme-dark .topbar-link,
@@ -278,15 +287,15 @@ svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width:
 .reader-app.theme-dark .database-note,
 .reader-app.theme-dark .csv-fields,
 .reader-app.theme-dark .term-translation,
-.reader-app.theme-dark .matched-notes,
-.reader-app.theme-dark .advanced-color { border-color: var(--line); background: rgba(255,255,255,.05); }
+.reader-app.theme-dark .matched-notes { border-color: var(--line); background: rgba(255,255,255,.05); }
 .reader-app.theme-dark .sentence-translation,
 .reader-app.theme-dark .term-translation,
 .reader-app.theme-dark .explanation textarea,
 .reader-app.theme-dark .detail-row input,
 .reader-app.theme-dark .detail-field input,
-.reader-app.theme-dark .advanced-color input,
+.reader-app.theme-dark .setting-row select,
 .reader-app.theme-dark .setting-row input[type="color"] { border-color: var(--line); background: #111411; color: var(--ink); }
+.reader-app.theme-dark .dictionary-legend span { color: var(--muted); }
 .reader-app.theme-dark .panel-tabs button.active,
 .reader-app.theme-dark .theme-options button.active { background: var(--green); color: #07110d; }
 .reader-app.theme-dark .selection-copy { background: rgba(71,198,163,.14); border-color: rgba(71,198,163,.35); color: var(--green-dark); }
@@ -364,6 +373,7 @@ svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width:
   .progress-label { margin-right: 12px; }
   .explain-side { min-height: 480px; }
   .explain-empty, .explanation { padding: 28px 24px 50px; }
+  .dictionary-color-controls { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

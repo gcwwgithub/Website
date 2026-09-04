@@ -181,6 +181,10 @@
       "english": "Neun"
     },
     {
+      "chinese": "九条光",
+      "english": "Kujō Hikari"
+    },
+    {
       "chinese": "艾茵",
       "english": "Ein"
     },
@@ -269,6 +273,10 @@
       "english": "Ten Demons"
     },
     {
+      "chinese": "法之女神",
+      "english": "Goddess of Law"
+    },
+    {
       "chinese": "阿路克雷西亚帝国",
       "english": "Alcresia Empire"
     },
@@ -284,21 +292,25 @@
       "chinese": "海德拉",
       "english": "Hydra"
     },
-        {
+    {
       "chinese": "人界",
       "english": "Human Realm"
     },
-        {
+    {
       "chinese": "神界",
       "english": "God Realm"
     },
-        {
+    {
       "chinese": "魔界",
       "english": "Demon Realm"
     },
-        {
+    {
       "chinese": "托里尼亚",
       "english": "Trinia"
+    },
+    {
+      "chinese": "王都",
+      "english": "Royal Capital"
     },
     {
       "chinese": "阿哈特",
@@ -819,6 +831,18 @@
     {
       "chinese": "茨威",
       "english": "Zwei"
+    },
+    {
+      "chinese": "茨威",
+      "english": "Zwei"
+    },
+    {
+      "chinese": "探索魔法",
+      "english": "Search Magic"
+    },
+    {
+      "chinese": "状态保存魔法",
+      "english": "Status Preservation Magic"
     }
   ]
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { pinyin } from "pinyin-pro";
 import { parseBookFile, type ParsedBook } from "./lib/file-readers";
 import { RouteLink } from "./components/route-link";
@@ -44,6 +44,7 @@ type TranslationEntry = {
   contexts?: string[] | string;
   imageUrl?: string;
   updatedAt?: string;
+  databaseSource?: DatabaseSource;
   csvFields?: { label: string; value: string }[];
 };
 
@@ -53,10 +54,15 @@ type LookupState = "idle" | "loading" | "found" | "missing" | "error";
 type LookupMode = "detail" | "sentence";
 type PanelTab = "lookup" | "edit" | "settings";
 type ThemeMode = "paper" | "light" | "dark";
+type HighlightMode = "all" | "none" | "database";
+type DatabaseSource = "sentence" | "cn" | "term";
 type PageNavigationState = { phase: "idle" | "loading" | "loaded"; direction: "previous" | "next" | null; label: string };
 type SentenceRange = { start: number; end: number; source: string };
 type CsvField = { label: string; value: string };
+type DictionaryHighlight = { start: number; end: number; source: Extract<DatabaseSource, "cn" | "term">; layer: number };
+type DictionaryHighlightRect = DictionaryHighlight & { id: string; left: number; top: number; width: number; height: number; isFirstSegment: boolean };
 const DETAIL_CHARACTER_LIMIT = 8;
+const MAX_DICTIONARY_HIGHLIGHT_LAYERS = 6;
 const TRANSLATION_STORAGE_KEY = "chinese-reader-translations";
 const READER_PROGRESS_KEY = "chinese-reader-current-book";
 const READER_SETTINGS_KEY = "chinese-reader-settings";
@@ -150,7 +156,7 @@ function parseCsv(text: string) {
   });
 }
 
-function cleanImportedRows(raw: unknown): TranslationEntry[] {
+function cleanImportedRows(raw: unknown, databaseSource?: DatabaseSource): TranslationEntry[] {
   const container = raw as {
     translations?: unknown;
     entries?: unknown;
@@ -219,6 +225,7 @@ function cleanImportedRows(raw: unknown): TranslationEntry[] {
       contexts: readList(item.contexts ?? item["Chinese Usage in a Sentence"] ?? item["chinese usage in a sentence"] ?? item["English Usage in a sentence"] ?? item["english usage in a sentence"]),
       imageUrl: String(item.imageUrl ?? item.image_url ?? item["image_url"] ?? "").trim(),
       kind,
+      databaseSource: databaseSource ?? (kind === "sentence" ? "sentence" : kind === "term" ? "term" : "cn"),
       csvFields: Array.isArray(item.csvFields) ? item.csvFields as { label: string; value: string }[] : undefined,
     }];
   });
@@ -274,11 +281,6 @@ function hexToRgb(hex: string) {
   };
 }
 
-function rgbToHex(red: number, green: number, blue: number) {
-  const clamp = (value: number) => Math.max(0, Math.min(255, Math.round(value || 0)));
-  return `#${[clamp(red), clamp(green), clamp(blue)].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
-}
-
 function downloadText(filename: string, text: string, type: string) {
   const url = URL.createObjectURL(new Blob([text], { type }));
   const link = document.createElement("a");
@@ -302,13 +304,25 @@ function saveTranslationDatabase(entries: TranslationEntry[]) {
   window.localStorage.setItem(TRANSLATION_STORAGE_KEY, JSON.stringify(entries));
 }
 
+function inferDatabaseSource(kind: TranslationEntry["kind"]) {
+  return kind === "sentence" ? "sentence" : kind === "term" ? "term" : "cn";
+}
+
 function mergeTranslationEntries(entries: TranslationEntry[]) {
   const byKey = new Map<string, TranslationEntry>();
   entries.forEach((entry) => {
     const normalized = entry.normalized || normalizeLookup(entry.source);
     const kind = entry.kind || ([...entry.source].length === 1 ? "word" : "phrase");
     if (!entry.source.trim()) return;
-    byKey.set(`${normalized}:${kind}`, { ...entry, normalized, kind });
+    const key = `${normalized}:${kind}`;
+    const previous = byKey.get(key);
+    byKey.set(key, {
+      ...previous,
+      ...entry,
+      normalized,
+      kind,
+      databaseSource: entry.databaseSource ?? previous?.databaseSource ?? inferDatabaseSource(kind),
+    });
   });
   return Array.from(byKey.values());
 }
@@ -334,6 +348,7 @@ function upsertTranslationEntries(entries: TranslationEntry[]) {
       translations: JSON.stringify(readSavedList(entry.translations).length ? readSavedList(entry.translations) : [meaning]),
       contexts: JSON.stringify(readSavedList(entry.contexts)),
       kind,
+      databaseSource: entry.databaseSource ?? inferDatabaseSource(kind),
       updatedAt: now,
     });
   });
@@ -388,6 +403,40 @@ async function fetchFirstText(urls: string[]) {
   throw new Error("No matching file was found.");
 }
 
+function buildDictionaryHighlights(sentence: string, entries: TranslationEntry[]): DictionaryHighlight[] {
+  const matches: Omit<DictionaryHighlight, "layer">[] = [];
+  const seen = new Set<string>();
+
+  entries.forEach((entry) => {
+    const sourceType = entry.databaseSource === "term" ? "term" : entry.databaseSource === "cn" ? "cn" : null;
+    if (!sourceType || entry.kind === "sentence") return;
+    const source = entry.source.trim();
+    if (!source || !/\p{Script=Han}/u.test(source)) return;
+    let searchFrom = 0;
+    while (searchFrom < sentence.length) {
+      const start = sentence.indexOf(source, searchFrom);
+      if (start < 0) break;
+      const end = start + source.length;
+      const key = `${sourceType}:${start}:${end}:${source}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        matches.push({ start, end, source: sourceType });
+      }
+      searchFrom = start + Math.max(1, source.length);
+    }
+  });
+
+  const occupancy = new Array(sentence.length).fill(0);
+  return matches
+    .sort((left, right) => (left.end - left.start) - (right.end - right.start) || left.start - right.start)
+    .flatMap((match) => {
+      const layer = Math.max(...occupancy.slice(match.start, match.end), 0);
+      if (layer >= MAX_DICTIONARY_HIGHLIGHT_LAYERS) return [];
+      for (let index = match.start; index < match.end; index += 1) occupancy[index] = Math.max(occupancy[index], layer + 1);
+      return [{ ...match, layer }];
+    });
+}
+
 function Icon({ name }: { name: "upload" | "database" | "play" | "pause" | "back" | "forward" | "book" | "audio" | "settings" | "copy" }) {
   const paths = {
     upload: "M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v5h14v-5",
@@ -419,6 +468,11 @@ export default function Home() {
   const [showPinyin, setShowPinyin] = useState(true);
   const [rate, setRate] = useState(0.8);
   const [highlightColor, setHighlightColor] = useState("#f0ca68");
+  const [highlightMode, setHighlightMode] = useState<HighlightMode>("all");
+  const [dictionaryCnColor, setDictionaryCnColor] = useState("#eaf268");
+  const [dictionaryTermColor, setDictionaryTermColor] = useState("#93c5fd");
+  const [dictionaryCnBorderColor, setDictionaryCnBorderColor] = useState("#707908");
+  const [dictionaryTermBorderColor, setDictionaryTermBorderColor] = useState("#194e96");
   const [themeMode, setThemeMode] = useState<ThemeMode>("paper");
   const [readerFontSize, setReaderFontSize] = useState(25);
   const [readerPinyinSize, setReaderPinyinSize] = useState(9);
@@ -447,6 +501,7 @@ export default function Home() {
   const [lookupVersion, setLookupVersion] = useState(0);
   const [pageNavigation, setPageNavigation] = useState<PageNavigationState>({ phase: "idle", direction: null, label: "" });
   const [sentenceSources, setSentenceSources] = useState<string[]>([]);
+  const [dictionaryHighlightRects, setDictionaryHighlightRects] = useState<DictionaryHighlightRect[]>([]);
   const databaseInput = useRef<HTMLInputElement>(null);
   const readerText = useRef<HTMLDivElement>(null);
   const fallbackTimer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -495,6 +550,10 @@ export default function Home() {
     });
     return labels;
   }, [currentText, showPinyin]);
+  const dictionaryHighlights = useMemo(() => {
+    if (highlightMode !== "database" || lookupMode !== "sentence" || selectionStart < 0 || !lookupText) return [] as DictionaryHighlight[];
+    return buildDictionaryHighlights(lookupText, databaseEntries);
+  }, [databaseEntries, highlightMode, lookupMode, lookupText, selectionStart]);
   const progress = book.sections.length
     ? Math.round(((sectionIndex + 1) / book.sections.length) * 100)
     : 0;
@@ -508,7 +567,7 @@ export default function Home() {
       try {
         const { text } = await fetchFirstText(SENTENCE_DATABASE_URLS);
         const raw = JSON.parse(text);
-        loadedEntries.push(...cleanImportedRows(raw).filter((entry) => entry.kind === "sentence"));
+        loadedEntries.push(...cleanImportedRows(raw, "sentence").filter((entry) => entry.kind === "sentence"));
       } catch {
         messages.push("translations.json was not found.");
       }
@@ -516,7 +575,7 @@ export default function Home() {
       try {
         const { text } = await fetchFirstText(WORD_DATABASE_URLS);
         const rows = parseCsv(text);
-        loadedEntries.push(...cleanImportedRows(rows).filter((entry) => entry.kind !== "sentence"));
+        loadedEntries.push(...cleanImportedRows(rows, "cn").filter((entry) => entry.kind !== "sentence"));
       } catch {
         messages.push("CN.csv was not found.");
       }
@@ -524,7 +583,7 @@ export default function Home() {
       try {
         const { text } = await fetchFirstText(TERM_DATABASE_URLS);
         const raw = JSON.parse(text);
-        loadedEntries.push(...cleanImportedRows(raw).filter((entry) => entry.kind === "term"));
+        loadedEntries.push(...cleanImportedRows(raw, "term").filter((entry) => entry.kind === "term"));
       } catch {
         // Terms/names JSON is optional.
       }
@@ -541,9 +600,14 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(window.localStorage.getItem(READER_SETTINGS_KEY) || "null") as { rate?: number; highlightColor?: string; themeMode?: ThemeMode; readerFontSize?: number; readerPinyinSize?: number } | null;
+      const saved = JSON.parse(window.localStorage.getItem(READER_SETTINGS_KEY) || "null") as { rate?: number; highlightColor?: string; highlightMode?: HighlightMode; dictionaryCnColor?: string; dictionaryTermColor?: string; dictionaryCnBorderColor?: string; dictionaryTermBorderColor?: string; themeMode?: ThemeMode; readerFontSize?: number; readerPinyinSize?: number } | null;
       if (typeof saved?.rate === "number") setRate(Math.max(0.5, Math.min(1.5, saved.rate)));
       if (typeof saved?.highlightColor === "string" && /^#[0-9a-f]{6}$/i.test(saved.highlightColor)) setHighlightColor(saved.highlightColor);
+      if (saved?.highlightMode === "all" || saved?.highlightMode === "none" || saved?.highlightMode === "database") setHighlightMode(saved.highlightMode);
+      if (typeof saved?.dictionaryCnColor === "string" && /^#[0-9a-f]{6}$/i.test(saved.dictionaryCnColor)) setDictionaryCnColor(saved.dictionaryCnColor);
+      if (typeof saved?.dictionaryTermColor === "string" && /^#[0-9a-f]{6}$/i.test(saved.dictionaryTermColor)) setDictionaryTermColor(saved.dictionaryTermColor);
+      if (typeof saved?.dictionaryCnBorderColor === "string" && /^#[0-9a-f]{6}$/i.test(saved.dictionaryCnBorderColor)) setDictionaryCnBorderColor(saved.dictionaryCnBorderColor);
+      if (typeof saved?.dictionaryTermBorderColor === "string" && /^#[0-9a-f]{6}$/i.test(saved.dictionaryTermBorderColor)) setDictionaryTermBorderColor(saved.dictionaryTermBorderColor);
       if (saved?.themeMode === "paper" || saved?.themeMode === "light" || saved?.themeMode === "dark") setThemeMode(saved.themeMode);
       if (typeof saved?.readerFontSize === "number") setReaderFontSize(Math.max(18, Math.min(38, saved.readerFontSize)));
       if (typeof saved?.readerPinyinSize === "number") setReaderPinyinSize(Math.max(7, Math.min(16, saved.readerPinyinSize)));
@@ -553,8 +617,71 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(READER_SETTINGS_KEY, JSON.stringify({ rate, highlightColor, themeMode, readerFontSize, readerPinyinSize }));
-  }, [highlightColor, rate, readerFontSize, readerPinyinSize, themeMode]);
+    window.localStorage.setItem(READER_SETTINGS_KEY, JSON.stringify({ rate, highlightColor, highlightMode, dictionaryCnColor, dictionaryTermColor, dictionaryCnBorderColor, dictionaryTermBorderColor, themeMode, readerFontSize, readerPinyinSize }));
+  }, [dictionaryCnBorderColor, dictionaryCnColor, dictionaryTermBorderColor, dictionaryTermColor, highlightColor, highlightMode, rate, readerFontSize, readerPinyinSize, themeMode]);
+
+  useLayoutEffect(() => {
+    const container = readerText.current;
+    if (!container || !dictionaryHighlights.length || selectionStart < 0) {
+      setDictionaryHighlightRects([]);
+      return;
+    }
+
+    let frame = 0;
+    const draw = () => {
+      const containerBox = container.getBoundingClientRect();
+      const nextRects = dictionaryHighlights.flatMap((highlight) => {
+        const glyphRects: DOMRect[] = [];
+        for (let offset = highlight.start; offset < highlight.end; offset += 1) {
+          const glyph = container.querySelector<HTMLElement>(`[data-character-index="${selectionStart + offset}"] .character-glyph`);
+          if (glyph) glyphRects.push(glyph.getBoundingClientRect());
+        }
+        if (!glyphRects.length) return [] as DictionaryHighlightRect[];
+
+        const lines: DOMRect[][] = [];
+        glyphRects.forEach((rect) => {
+          const line = lines.find((items) => Math.abs(items[0].top - rect.top) < 6);
+          if (line) line.push(rect);
+          else lines.push([rect]);
+        });
+
+        return lines.map((line, lineIndex) => {
+          const left = Math.min(...line.map((rect) => rect.left));
+          const right = Math.max(...line.map((rect) => rect.right));
+          const top = Math.min(...line.map((rect) => rect.top));
+          const bottom = Math.max(...line.map((rect) => rect.bottom));
+          const paddingX = 3 + highlight.layer * 3;
+          const paddingTop = showPinyin ? highlight.layer * 2 : 2 + highlight.layer * 3;
+          const paddingBottom = showPinyin ? 3 + highlight.layer * 3 : 3 + highlight.layer * 3;
+          return {
+            ...highlight,
+            id: `${highlight.source}-${highlight.start}-${highlight.end}-${highlight.layer}-${lineIndex}`,
+            left: left - containerBox.left - paddingX,
+            top: top - containerBox.top - paddingTop,
+            width: right - left + paddingX * 2,
+            height: bottom - top + paddingTop + paddingBottom,
+            isFirstSegment: lineIndex === 0,
+          };
+        });
+      });
+      setDictionaryHighlightRects(nextRects);
+    };
+
+    const scheduleDraw = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(draw);
+    };
+
+    scheduleDraw();
+    const observer = new ResizeObserver(scheduleDraw);
+    observer.observe(container);
+    window.addEventListener("resize", scheduleDraw);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("resize", scheduleDraw);
+    };
+  }, [dictionaryHighlights, readerFontSize, readerPinyinSize, selectionStart, showPinyin]);
 
   useEffect(() => {
     const loadCatalog = async () => {
@@ -842,9 +969,21 @@ export default function Home() {
     }
   };
 
-  const changeHighlightRgb = (channel: "red" | "green" | "blue", value: number) => {
-    const next = { ...highlightRgb, [channel]: value };
-    setHighlightColor(rgbToHex(next.red, next.green, next.blue));
+  const changeSelectionHighlightColor = (color: string) => {
+    setHighlightColor(color);
+    setHighlightMode("all");
+  };
+
+  const changeDictionaryHighlightColor = (source: Extract<DatabaseSource, "cn" | "term">, color: string) => {
+    if (source === "cn") setDictionaryCnColor(color);
+    else setDictionaryTermColor(color);
+    setHighlightMode("database");
+  };
+
+  const changeDictionaryBorderColor = (source: Extract<DatabaseSource, "cn" | "term">, color: string) => {
+    if (source === "cn") setDictionaryCnBorderColor(color);
+    else setDictionaryTermBorderColor(color);
+    setHighlightMode("database");
   };
 
   const changeRate = (next: number) => {
@@ -1101,7 +1240,20 @@ export default function Home() {
   }
 
   return (
-    <main className={`reader-app theme-${themeMode}`} style={{ "--highlight": highlightColor, "--reader-font-size": `${readerFontSize}px`, "--reader-pinyin-size": `${readerPinyinSize}px` } as CSSProperties}>
+    <main
+      className={`reader-app theme-${themeMode}`}
+      data-highlight-mode={highlightMode}
+      style={{
+        "--highlight": highlightColor,
+        "--highlight-rgb": `${highlightRgb.red}, ${highlightRgb.green}, ${highlightRgb.blue}`,
+        "--dictionary-cn-highlight": dictionaryCnColor,
+        "--dictionary-cn-border": dictionaryCnBorderColor,
+        "--dictionary-term-highlight": dictionaryTermColor,
+        "--dictionary-term-border": dictionaryTermBorderColor,
+        "--reader-font-size": `${readerFontSize}px`,
+        "--reader-pinyin-size": `${readerPinyinSize}px`,
+      } as CSSProperties}
+    >
       <header className="topbar">
         <div className="topbar-left">
           <button className="reader-mark shelf-mark" type="button" onClick={() => setView("shelf")} aria-label="Back to shelf">语</button>
@@ -1123,12 +1275,40 @@ export default function Home() {
           <div className="book-page">
             {pageNavigation.phase !== "idle" && <div className={`page-load-indicator ${pageNavigation.phase}`} role="status" aria-live="polite"><span className="page-load-spinner" />{pageNavigation.label}</div>}
             <div className="page-meta"><span>{book.format}</span><strong>{currentSection?.title}</strong></div>
-            <div className={`continuous-text ${showPinyin ? "pinyin-mode" : ""}`} ref={readerText} onMouseUp={captureSelection} onTouchEnd={() => window.setTimeout(captureSelection, 30)}>
-              {pageCharacters.map((character, index) => <Fragment key={index}>
-                {(pageImages.get(index) ?? []).map((image) => <EpubIllustration key={image.id} src={image.src} alt={image.alt} />)}
-                <span className={`page-character ${activePageIndex === index ? "spoken-character" : ""} ${lookupMode === "sentence" && index >= selectionStart && index < selectionStart + lookupText.length ? "selected-sentence" : ""}`} data-pinyin={pagePinyin[index] || undefined} onClick={() => selectSentenceAt(index)}>{character}</span>
-              </Fragment>)}
-              {(pageImages.get(currentText.length) ?? []).map((image) => <EpubIllustration key={image.id} src={image.src} alt={image.alt} />)}
+            <div className="reader-text-stage">
+              <div className={`continuous-text ${showPinyin ? "pinyin-mode" : ""}`} ref={readerText} onMouseUp={captureSelection} onTouchEnd={() => window.setTimeout(captureSelection, 30)}>
+                {dictionaryHighlightRects.length ? <span className="dictionary-highlight-overlay" aria-hidden="true">
+                  {dictionaryHighlightRects
+                    .slice()
+                    .sort((left, right) => right.layer - left.layer)
+                    .map((highlight) => <span
+                      key={highlight.id}
+                      className={`dictionary-highlight-rect dictionary-highlight-${highlight.source}`}
+                      style={{
+                        left: `${highlight.left}px`,
+                        top: `${highlight.top}px`,
+                        width: `${highlight.width}px`,
+                        height: `${highlight.height}px`,
+                        zIndex: MAX_DICTIONARY_HIGHLIGHT_LAYERS - highlight.layer,
+                      }}
+                    />)}
+                </span> : null}
+                {pageCharacters.map((character, index) => {
+                  const isSelectedSentence = lookupMode === "sentence" && index >= selectionStart && index < selectionStart + lookupText.length;
+                  return <Fragment key={index}>
+                    {(pageImages.get(index) ?? []).map((image) => <EpubIllustration key={image.id} src={image.src} alt={image.alt} />)}
+                    <span
+                      className={`page-character ${activePageIndex === index ? "spoken-character" : ""} ${isSelectedSentence && highlightMode === "all" ? "selected-sentence" : ""}`}
+                      data-character-index={index}
+                      data-pinyin={pagePinyin[index] || undefined}
+                      onClick={() => selectSentenceAt(index)}
+                    >
+                      <span className="character-glyph">{character}</span>
+                    </span>
+                  </Fragment>;
+                })}
+                {(pageImages.get(currentText.length) ?? []).map((image) => <EpubIllustration key={image.id} src={image.src} alt={image.alt} />)}
+              </div>
             </div>
             {!currentText && !currentSection?.images?.length && <div className="empty-page">No selectable Chinese text or illustrations were found on this page.</div>}
           </div>
@@ -1157,18 +1337,22 @@ export default function Home() {
                     ["dark", "Dark"],
                   ].map(([value, label]) => <button key={value} className={themeMode === value ? "active" : ""} type="button" onClick={() => setThemeMode(value as ThemeMode)}>{label}</button>)}
                 </div></div>
-                <label className="setting-row"><span>Highlight color <strong>{highlightColor.toUpperCase()}</strong></span><input type="color" value={highlightColor} onChange={(event) => setHighlightColor(event.target.value)} /></label>
-                <div className="color-swatches">
-                  {["#f0ca68", "#82d6bd", "#93c5fd", "#fca5a5", "#c4b5fd"].map((color) => <button key={color} type="button" style={{ backgroundColor: color }} className={highlightColor === color ? "active" : ""} onClick={() => setHighlightColor(color)} aria-label={`Use highlight color ${color}`} />)}
+                <label className="setting-row"><span>Sentence highlight <strong>{highlightMode === "all" ? "Highlight all" : highlightMode === "none" ? "No highlight" : "CN + names"}</strong></span><select value={highlightMode} onChange={(event) => setHighlightMode(event.target.value as HighlightMode)}>
+                  <option value="all">Highlight all</option>
+                  <option value="none">No highlight</option>
+                  <option value="database">CN + names only</option>
+                </select></label>
+                <div className={`dictionary-legend ${highlightMode === "database" ? "active" : ""}`} aria-hidden={highlightMode !== "database"}>
+                  <span><i className="dictionary-swatch cn" />CN.csv</span>
+                  <span><i className="dictionary-swatch term" />names.json</span>
                 </div>
-                <div className="advanced-color">
-                  <span>Advanced RGB</span>
-                  {[
-                    ["red", "R", highlightRgb.red],
-                    ["green", "G", highlightRgb.green],
-                    ["blue", "B", highlightRgb.blue],
-                  ].map(([channel, label, value]) => <label key={channel}><b>{label}</b><input type="number" min="0" max="255" value={value} onChange={(event) => changeHighlightRgb(channel as "red" | "green" | "blue", Number(event.target.value))} /></label>)}
+                <div className="dictionary-color-controls">
+                  <label className="setting-row"><span>CN fill <strong>{dictionaryCnColor.toUpperCase()}</strong></span><input type="color" value={dictionaryCnColor} onChange={(event) => changeDictionaryHighlightColor("cn", event.target.value)} /></label>
+                  <label className="setting-row"><span>CN border <strong>{dictionaryCnBorderColor.toUpperCase()}</strong></span><input type="color" value={dictionaryCnBorderColor} onChange={(event) => changeDictionaryBorderColor("cn", event.target.value)} /></label>
+                  <label className="setting-row"><span>Names fill <strong>{dictionaryTermColor.toUpperCase()}</strong></span><input type="color" value={dictionaryTermColor} onChange={(event) => changeDictionaryHighlightColor("term", event.target.value)} /></label>
+                  <label className="setting-row"><span>Names border <strong>{dictionaryTermBorderColor.toUpperCase()}</strong></span><input type="color" value={dictionaryTermBorderColor} onChange={(event) => changeDictionaryBorderColor("term", event.target.value)} /></label>
                 </div>
+                <label className="setting-row"><span>Highlight all color <strong>{highlightColor.toUpperCase()}</strong></span><input type="color" value={highlightColor} onChange={(event) => changeSelectionHighlightColor(event.target.value)} /></label>
                 <div className="export-options">
                   <span>Export database</span>
                   <button type="button" onClick={exportCsv}><Icon name="database" /> CN.csv</button>

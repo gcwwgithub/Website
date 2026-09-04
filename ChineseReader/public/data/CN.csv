@@ -1107,7 +1107,10 @@ adverb: quite / fairly",他的水平相当于专业选手，而且表现相当�
 verb (rare/colloquial): to train (as a coach)",教练每天都安排我们进行严格训练。,The coach makes us follow strict training every day.,,,Band3,3.4,990
 牌子,páizi,noun: brand / sign / label,这家店的牌子很有名，门口的牌子也很显眼。,"This brand is well known, and its sign at the door is very noticeable.",,,Band3,3.4,991
 深刻,shēnkè,adjective: profound / deep,这本书对我产生了深刻的影响。,This book had a profound impact on me.,,,Band3,3.4,993
-体现,tǐxiàn,verb: to embody / to reflect,这个设计充分体现了以人为本的理念。,This design fully embodies the people-oriented philosophy.,,,Band3,3.4,994
+体现,tǐxiàn,"verb: to embody / to reflect / to demonstrate
+noun: embodiment / manifestation","这个决定体现了公司的价值观。
+这种行为是责任感的体现。","This decision reflects the company's values.
+This kind of behavior is a manifestation of a sense of responsibility.",Neutral Formal,"As a verb, it means that something expresses or demonstrates a quality or idea. As a noun, it commonly appears in the pattern 是……的体现, meaning “is an embodiment/manifestation of…”.",Band3,3.4,994
 自动,zìdòng,adjective/adverb: automatic / voluntarily,门会自动打开，他也自动提出了帮助。,"The door will open automatically, and he also volunteered to help.",,,Band3,3.4,995
 临时,línshí,adjective/adverb: temporary; at the last minute,我们临时改变了计划。,We changed the plan at the last minute.,,,Band4,3.4,997
 项目,xiàngmù,noun: project; item,这个项目已经完成了。,This project has already been completed.,,,Band4,3.4,998
@@ -6838,7 +6841,6 @@ adjective: hesitant",他在门口踌躇了片刻，最后还是走了进去。,"
 男高中生,nán gāozhōngshēng,noun: male high-school student,那名男高中生正在准备升学考试。,That male high-school student is preparing for his entrance examinations.,Everyday,,,,
 嘀咕着,dígu zhe,verb phrase: muttering; grumbling under one’s breath,他低着头嘀咕着什么，我没有听清。,"He was muttering something with his head lowered, but I could not hear clearly.",Everyday,,,,
 事发突然,shìfā tūrán,fixed phrase: the incident happened suddenly; this is all very sudden,事发突然，大家一时都不知道该怎么办。,It all happened so suddenly that no one knew what to do at first.,Fixed Expression,,,,
-,,,,,_Formal,,,,
 事发,shìfā,"verb: for an incident to occur
 noun modifier: incident-related",事发时，他正好在附近。,He happened to be nearby when the incident occurred.,Neutral Formal,"Common in news and police-report language, especially 事发时 and 事发地点.",,,
 在所难免,zàisuǒnánmiǎn,idiom: unavoidable; only to be expected,第一次上台紧张是在所难免的。,Feeling nervous the first time you go on stage is only to be expected.,Fixed Expression,Typically used as 是在所难免的.,,,
@@ -7113,7 +7115,7 @@ He looked extremely imposing.",Literary,Describes commanding dignity that inspir
 细致入微,xìzhì rùwēi,fixed expression: meticulous / extremely attentive to detail,她对客人的照顾细致入微。,Her care for the guests was meticulous and attentive to every detail.,Fixed Expression,Describes exceptional attention to even very small details.,,,
 吐露,tǔlù,verb: to reveal / to confide / to express,她终于向朋友吐露了自己的心声。,She finally confided her true feelings to her friend.,Literary,"Often used with 心声, 真情, or feelings that were previously hidden.",,,
 接待室,jiēdàishì,noun: reception room,客人被带到接待室等候。,The guest was taken to the reception room to wait.,Neutral Formal,A room used for receiving visitors.,,,
-森精,sēnjīng,noun: forest spirit,传说这片森林里生活着森精。,"According to legend, forest spirits live in these woods.",Literary,Fantasy term; exact creature may depend on the setting.,,,
+森精,sēnjīng,noun: elf / forest spirit,森精一族长期居住在这片森林深处。,The elves have lived deep within this forest for generations.,Literary,“Elf” is the translation used for 森精 based on ACG terminology.,,,
 矮人,ǎirén,noun: dwarf,那名矮人是一位技艺高超的铁匠。,The dwarf is a highly skilled blacksmith.,Literary,Common fantasy-race term.,,,
 环状,huánzhuàng,adjective: ring-shaped / circular,魔法阵呈现出复杂的环状结构。,The magic circle has a complex ring-shaped structure.,Technical,Used to describe something arranged in the form of a ring.,,,
 目视,mùshì,verb: to observe visually / to inspect by sight,工作人员通过目视确认设备是否受损。,The staff visually inspected the equipment for damage.,Technical,"Common in inspection, engineering, military, and procedural contexts.",,,
@@ -7414,7 +7416,16 @@ This book received many positive reviews and comments.",Neutral Formal,Can mean 
 noun: stinging pain","伤口突然刺痛了一下。
 手臂传来一阵刺痛。","The wound suddenly stung.
 A sharp pain ran through his arm.",Everyday,Can describe physical pain or figurative emotional pain.,,,
-待,dāi,verb: to stay / to remain,我今天想待在家里。,I want to stay at home today.,Everyday,"When meaning “to stay,” 待 is pronounced dāi.",,,
+待,"dāi
+dài","verb (dāi): to stay / to remain
+verb (dài): to wait / to await
+verb (dài): to treat / to deal with someone","我今天想待在家里。
+请稍待，我马上回来。
+他一直待我很好。","I want to stay at home today.
+Please wait a moment; I'll be right back.
+He has always treated me well.",Everyday,"When pronounced dāi, 待 means to stay or remain somewhere.
+When pronounced dài, it can mean to wait or await something, or to treat someone in a certain way.
+The “treat” meaning is fully normal modern Chinese, as in 他待我很好 (He treats me very well).",,,
 待下去,dāi xiàqu,verb: to continue staying / to remain,我已经没有办法继续待下去了。,I can't keep staying here any longer.,Everyday,下去 indicates continuing an action or state.,,,
 遭报应,zāo bàoyìng,verb: to receive retribution / to get one's comeuppance,做了那么多坏事，他迟早会遭报应。,"After doing so many bad things, he'll get his comeuppance sooner or later.",Everyday,Usually implies punishment caused by one's own wrongdoing.,,,
 烦恼,fánnǎo,"noun: worry / trouble
@@ -7441,3 +7452,397 @@ A serious misunderstanding developed between the two.",Neutral Formal,"Can refer
 版,bǎn,noun: version / edition,我买的是这本书的新版。,I bought the new edition of this book.,Everyday,"Common in 新版, 旧版, 电影版, and 限定版.",,,
 软,ruǎn,adjective: soft,这个面包又香又软。,This bread is fragrant and soft.,Everyday,"Can describe texture, physical flexibility, or figuratively a weak/soft stance.",,,
 法式,fǎshì,adjective: French-style / French,晚餐准备了几道法式料理。,Several French-style dishes were prepared for dinner.,Everyday,"Common before food, clothing, architecture, and other styles associated with France.",,,
+发,fā,"verb: to send / to issue / to distribute
+measure word: shot / round","文件我已经发了。
+再来一发。","I already sent the file.
+One more shot.",Everyday,"The verb 发 can independently mean to send, issue, or distribute something. As a measure word, it counts shots, bullets, or artillery rounds, as in 一发 and 三发子弹. 发 also has the pronunciation fà meaning hair, but bare 发 is uncommon for everyday “hair”; 头发 is normally used instead.",,,
+脸颊,liǎn jiá,Noun: cheek,她的脸颊因为寒冷而泛起了红晕。,Her cheeks flushed red from the cold.,Literary,"This term is standard and widely used in Singaporean Mandarin Chinese, commonly found in CN.csv.",,,
+发热,fā rè,"Noun: fever
+
+Verb: to emit heat, to have a fever",机器运转过度开始发热，让他急得满身是汗，甚至怀疑自己是不是也发热了。,"The machine started to emit heat from overworking, making him sweat so anxiously that he wondered if he had a fever too.",Technical,"This term is standard and widely used in Singaporean Mandarin Chinese, though ""发烧"" is more common for a medical fever in casual speech.",,,
+稍稍,shāo shāo,"Adverb: slightly, a little",经过短暂的休息，他紧绷的神经稍稍放松了一些。,"After a short rest, his tense nerves relaxed slightly.",Literary,"This term is used in Singaporean Mandarin Chinese, but ""稍微"" (shāo wēi) is often preferred in daily colloquial conversations.",,,
+错开,cuòkāi,verb: to stagger / to offset / to avoid overlapping,我们把出发时间错开，以免遇上人群。,We staggered our departure times to avoid the crowd.,Everyday,"Used for times, positions, schedules, or objects arranged so they do not overlap.",,,
+搭话,dāhuà,verb: to strike up a conversation / to speak to someone,他犹豫了一会儿，才主动上前搭话。,He hesitated for a moment before going over to strike up a conversation.,Everyday,Usually means initiating casual conversation with someone.,,,
+犯傻,fànshǎ,verb: to act foolishly / to do something stupid,别在这种时候犯傻。,Don't do anything stupid at a time like this.,Everyday,Colloquial; often used when someone behaves irrationally or foolishly.,,,
+退下,tuìxià,verb: to withdraw / to leave / to stand down,国王挥了挥手，让侍从退下。,The king waved his hand and told the attendants to leave.,Protocol,Common command from someone of higher status to a subordinate in historical or fantasy settings.,,,
+依旧,yījiù,adverb: still / as before,多年过去了，这座城市依旧十分繁华。,"Many years have passed, but the city is still prosperous.",Neutral Formal,"Similar to 仍然, often with a slightly more written tone.",,,
+召集,zhàojí,verb: to summon / to gather,国王召集了所有大臣商议此事。,The king summoned all the ministers to discuss the matter.,Neutral Formal,Usually involves someone intentionally gathering a group together.,,,
+召集而来,zhàojí ér lái,phrase: summoned here / gathered by being summoned,这些骑士都是为了会议而被召集而来的。,These knights were all summoned here for the meeting.,Neutral Formal,而来 indicates arriving as the result of the preceding action.,,,
+岗位,gǎngwèi,noun: post / position / job,每个人都必须坚守自己的岗位。,Everyone must remain at their post.,Neutral Formal,"Common in workplaces, organizations, and duty assignments.",,,
+正题,zhèngtí,noun: main topic / main point,闲聊就到这里，我们进入正题吧。,That's enough small talk; let's get to the main point.,Neutral Formal,Common expression: 进入正题.,,,
+拔剑,bájiàn,verb: to draw a sword,骑士立刻拔剑挡在公主面前。,The knight immediately drew his sword and stood in front of the princess.,Literary,"Common in historical, martial-arts, and fantasy settings.",,,
+等同,děngtóng,verb: to equate / to be equivalent to,不能把失败等同于没有能力。,Failure cannot be equated with a lack of ability.,Neutral Formal,Common pattern: 等同于.,,,
+相向,xiāngxiàng,adverb: toward each other / facing one another,两名骑士拔剑相向。,The two knights drew their swords against each other.,Literary,Usually used in phrases describing two sides confronting or moving toward each other.,,,
+强有力,qiángyǒulì,adjective: powerful / forceful / strong,这是支持他观点的强有力证据。,This is strong evidence supporting his argument.,Neutral Formal,"Common with 证据, 支持, 措施, and leadership.",,,
+挥,huī,verb: to wave / to swing / to brandish,"她向我挥了挥手。
+骑士挥剑砍向魔物。","She waved her hand at me.
+The knight swung his sword at the monster.",Everyday,The object determines the action: 挥手 means to wave a hand; 挥剑 means to swing or brandish a sword.,,,
+聚集,jùjí,"verb: to gather / to assemble
+noun: gathering / concentration","人群逐渐聚集在广场上。
+魔力的聚集引起了异常现象。","The crowd gradually gathered in the square.
+The concentration of magical power caused an abnormal phenomenon.",Neutral Formal,"Can describe people gathering or substances, energy, or resources becoming concentrated.",,,
+聚集而来,jùjí ér lái,phrase: to gather and come / to come together,听到钟声后，人们从四面八方聚集而来。,"After hearing the bell, people came gathering from all directions.",Neutral Formal,而来 emphasizes movement toward a place as a result of gathering.,,,
+此意,cǐyì,noun: this meaning / this intention,我并无此意，请不要误会。,"That was not my intention, so please don't misunderstand.",Neutral Formal,此意 can refer to either an intended meaning or an intention.,,,
+恶作剧,èzuòjù,noun: prank / practical joke,这只不过是孩子们的恶作剧。,It was nothing more than a prank by the children.,Everyday,"Usually playful, although the prank may still cause trouble.",,,
+偏见,piānjiàn,noun: prejudice / bias,不要因为身份不同就对别人抱有偏见。,Don't be prejudiced against others simply because of their status.,Neutral Formal,Common pattern: 对……抱有偏见.,,,
+细致,xìzhì,adjective: meticulous / detailed / careful,她做事一直非常细致。,She has always been very meticulous in her work.,Neutral Formal,Can describe careful work or something containing fine detail.,,,
+入微,rùwēi,adjective: extremely detailed / penetrating into fine details,他的观察细致入微。,His observations are extremely detailed.,Literary,Rarely used alone; most commonly appears in 细致入微 or 体贴入微.,,,
+平凡,píngfán,adjective: ordinary / commonplace,他只是一个平凡的普通人。,He is merely an ordinary person.,Everyday,"Usually contrasts with exceptional, special, or extraordinary.",,,
+素材,sùcái,noun: material / source material / asset,这些照片可以作为设计素材使用。,These photographs can be used as design material.,Neutral Formal,"Common in writing, art, design, games, and media production.",,,
+品质,pǐnzhì,noun: quality / character,"这件商品的品质很好。
+她拥有善良正直的品质。","This product is of very good quality.
+She possesses kind and upright qualities.",Neutral Formal,Can refer to the quality of goods or a person's moral qualities.,,,
+评论家,pínglùnjiā,noun: critic / commentator,这部作品得到了许多评论家的称赞。,The work received praise from many critics.,Neutral Formal,"Common for art, literature, film, politics, and cultural commentary.",,,
+雇,gù,verb: to hire / to employ,我雇了一个人帮忙搬东西。,I hired someone to help move the things.,Everyday,"Can stand alone as a verb, although 雇用 and 雇佣 are more formal.",,,
+相对,xiāngduì,"adjective: relative
+adverb: comparatively / relatively","这个数值是相对的，不是绝对的。
+这里的生活相对安静。","This value is relative, not absolute.
+Life here is relatively quiet.",Neutral Formal,"As an adverb, it commonly means comparatively or relatively.",,,
+较小,jiàoxiǎo,adjective: relatively small / smaller,这个房间的面积较小。,This room is relatively small.,Neutral Formal,较 means comparatively; common in written comparison.,,,
+保养到位,bǎoyǎng dàowèi,phrase: properly maintained / well maintained,这辆车虽然很旧，但因为保养到位，看起来依然很好。,"The car is old, but because it has been properly maintained, it still looks good.",Everyday,到位 means something has been done adequately or properly.,,,
+连同,liántóng,preposition: together with / along with,请把这封信连同文件一起交给他。,Please give him this letter along with the documents.,Neutral Formal,Connects something with another item that is included together.,,,
+铺开,pūkāi,verb: to spread out / to unfold / to roll out,"她把地图铺开在桌上。
+计划很快在全国铺开。","She spread the map out on the table.
+The plan was quickly rolled out nationwide.",Everyday,Can describe physically spreading something or figuratively expanding an activity.,,,
+标记,biāojì,"noun: mark / marker / label
+verb: to mark / to label","地图上有一个红色标记。
+请把重要的位置标记出来。","There is a red marker on the map.
+Please mark the important locations.",Neutral Formal,"Common in software, maps, documents, and physical objects.",,,
+西班牙,Xībānyá,proper noun: Spain,她计划明年去西班牙旅行。,She plans to travel to Spain next year.,Everyday,Country name.,,,
+中央,zhōngyāng,"noun: center / central area
+adjective: central","广场中央有一座雕像。
+这是中央大厅。","There is a statue in the center of the square.
+This is the central hall.",Neutral Formal,Can describe a physical center or a central governing authority depending on context.,,,
+主要,zhǔyào,"adjective: main / primary
+adverb: mainly / primarily","这是主要原因。
+这里主要居住着人族。","This is the main reason.
+This area is inhabited primarily by humans.",Neutral Formal,Very common in both speech and writing.,,,
+描绘,miáohuì,verb: to depict / to portray / to describe,这幅画描绘了古代王国的景象。,This painting depicts a scene from the ancient kingdom.,Neutral Formal,Can refer to visual depiction or descriptive writing.,,,
+统称,tǒngchēng,"verb: to collectively call
+noun: collective term","这些种族统称为魔族。
+“魔族”是这些种族的统称。","These races are collectively called demons.
+'Demon race' is the collective term for these races.",Neutral Formal,Common when several different things share one general name.,,,
+定居,dìngjū,verb: to settle / to take up residence,他们最终决定在这个城市定居。,They eventually decided to settle in this city.,Neutral Formal,Implies establishing a permanent or long-term residence.,,,
+次元,cìyuán,noun: dimension,传送门连接着两个不同的次元。,The portal connects two different dimensions.,Technical,"In ACG and science-fiction contexts, commonly refers to alternate dimensions or worlds.",,,
+之,zhī,"particle: of
+pronoun: it / them / that","这是王族之剑。
+我对此一无所知，更无法解释之。","This is the sword of the royal family.
+I know nothing about this, much less can I explain it.",Literary,Highly common in written and literary Chinese. As a particle it resembles 的; as a pronoun it can replace a previously mentioned object.,,,
+开来,kāilái,complement: outward / apart / into a wider state,魔法阵从中心逐渐扩展开来。,The magic circle gradually expanded outward from the center.,Neutral Formal,"Normally not a standalone word. It follows verbs such as 展开, 铺开, 扩散, or 传播 to emphasize development or spreading outward.",,,
+规模,guīmó,noun: scale / size,这座城市的规模比想象中大得多。,The scale of this city is much larger than expected.,Neutral Formal,"Common for organizations, projects, populations, buildings, and events.",,,
+传送门,chuánsòngmén,noun: portal / teleportation gate,魔导师打开了一道通往王都的传送门。,The mage opened a portal leading to the royal capital.,Literary,"Common fantasy, sci-fi, and gaming term.",,,
+传送,chuánsòng,verb: to transmit / to transport / to teleport,魔法阵可以把人传送到远方。,The magic circle can teleport people to distant places.,Technical,"In fantasy, usually means teleportation; in technology it can mean transmission.",,,
+干涉,gānshè,verb: to interfere / to intervene,不要随意干涉别人的决定。,Do not interfere with other people's decisions.,Neutral Formal,"Can refer to personal interference, politics, physics, or external intervention.",,,
+次元壁,cìyuánbì,noun: dimensional barrier / wall between dimensions,强大的力量打破了两个世界之间的次元壁。,The tremendous power broke through the dimensional barrier between the two worlds.,Literary,"Common ACG term for a boundary separating different dimensions, fictional worlds, or sometimes fiction and reality.",,,
+纳税,nàshuì,verb: to pay taxes,所有符合条件的居民都必须依法纳税。,All eligible residents must pay taxes according to the law.,Official,Common taxation and administrative term.,,,
+顶点,dǐngdiǎn,noun: peak / apex / highest point,他终于站在了剑术界的顶点。,He finally reached the pinnacle of the swordsmanship world.,Neutral Formal,Can be a literal geometric point or figuratively the highest position or level.,,,
+注视,zhùshì,verb: to gaze at / to watch attentively,她静静地注视着远处的城堡。,She quietly gazed at the distant castle.,Neutral Formal,Stronger and more sustained than 看.,,,
+远古,yuǎngǔ,noun: ancient times / remote antiquity,传说这种魔法来自远古时代。,Legend says this magic comes from ancient times.,Literary,Refers to an extremely distant period in the past.,,,
+行使,xíngshǐ,verb: to exercise / to wield,国王有权行使自己的权力。,The king has the right to exercise his authority.,Neutral Formal,"Common with 权力, 权利, 职权, and voting rights.",,,
+一模一样,yìmú yíyàng,fixed expression: exactly the same / identical,这两把剑看起来一模一样。,These two swords look exactly the same.,Fixed Expression,Emphasizes complete similarity.,,,
+想象,xiǎngxiàng,"verb: to imagine
+noun: imagination","我无法想象那里的生活。
+现实和我的想象完全不同。","I can't imagine what life there is like.
+Reality was completely different from what I had imagined.",Everyday,Can refer to the act of imagining or the mental image produced.,,,
+智力,zhìlì,noun: intelligence / intellectual ability,这种魔物拥有接近人类的智力。,This monster possesses intelligence close to that of a human.,Neutral Formal,Refers to mental and reasoning ability.,,,
+定义,dìngyì,"verb: to define
+noun: definition","我们需要先定义这个概念。
+这个词的定义并不明确。","We first need to define this concept.
+The definition of this word is not clear.",Technical,"Common in academic, technical, and explanatory contexts.",,,
+粗暴,cūbào,adjective: rough / crude / violent,他的处理方式太过粗暴。,His way of handling the situation was too crude.,Neutral Formal,Can describe physical behaviour or an overly simplistic method.,,,
+无故,wúgù,adverb: for no reason / without cause,他不会无故攻击别人。,He wouldn't attack someone for no reason.,Neutral Formal,More written than 没有理由.,,,
+终究,zhōngjiū,adverb: ultimately / in the end / after all,秘密终究还是被发现了。,The secret was ultimately discovered.,Neutral Formal,Emphasizes an eventual result despite what happened beforehand.,,,
+抽,chōu,"verb: to pull out / to draw
+verb: to strike / to whip
+verb: to extract","他从盒子里抽出一张纸。
+她气得抽了他一下。
+机器会把空气抽出去。","He pulled a sheet of paper out of the box.
+She was so angry that she smacked him.
+The machine will pump the air out.",Everyday,"Has several common standalone senses involving pulling, striking, or drawing something out.",,,
+趟,tàng,measure word: trip / journey / occasion,我明天还要去一趟王宫。,I have to make another trip to the royal palace tomorrow.,Everyday,Counts journeys or trips to and from a place.,,,
+区分,qūfēn,verb: to distinguish / to differentiate,我已经分不清该如何区分两者了。,I can no longer tell how to distinguish the two.,Neutral Formal,"Common with differences, categories, and concepts.",,,
+抽时间,chōu shíjiān,verb phrase: to make time / to find time,我会抽时间去看你的。,I'll make time to visit you.,Everyday,抽 here means to take or set aside from one's available time.,,,
+毁灭,huǐmiè,"verb: to destroy / to annihilate
+noun: destruction","这股力量足以毁灭整个城市。
+战争给王国带来了毁灭。","This power is enough to destroy the entire city.
+The war brought destruction to the kingdom.",Neutral Formal,Stronger than ordinary 破坏.,,,
+青春期,qīngchūnqī,noun: puberty / adolescence,他正处于青春期。,He is going through adolescence.,Technical,Refers to the developmental period between childhood and adulthood.,,,
+黑历史,hēilìshǐ,noun: embarrassing past / dark history,那件事已经成了他不愿提起的黑历史。,That incident has become an embarrassing part of his past that he doesn't want to mention.,Internet Slang,Often humorously refers to embarrassing things someone did in the past.,,,
+仗,zhàng,"noun: battle / fight
+verb: to rely on / to depend on","这场仗打了整整三天。
+他仗着自己的地位欺负别人。","This battle lasted for three whole days.
+He relies on his status to bully others.",Everyday,"As a noun, common in 打仗 and 一场仗. As a verb, often appears as 仗着.",,,
+论,lùn,"verb: to discuss / to evaluate
+preposition: in terms of / judging by
+noun: theory / argument","我们先不论谁对谁错。
+论实力，他比我强得多。
+这篇文章提出了一套新的理论。","Let's not discuss who is right or wrong for now.
+In terms of ability, he is far stronger than me.
+This article presents a new theory.",Neutral Formal,Highly productive written word. As a noun it often appears in titles or compounds rather than completely alone.,,,
+小人物,xiǎorénwù,noun: nobody / insignificant person / ordinary person,我只不过是个不起眼的小人物。,I'm just an insignificant nobody.,Everyday,Often self-deprecating; contrasts with powerful or important people.,,,
+粮食,liángshi,noun: grain / food supplies,军队必须确保有足够的粮食。,The army must ensure it has enough food supplies.,Everyday,Usually refers to staple grains or stored food supplies.,,,
+冲突,chōngtū,"noun: conflict / clash
+verb: to conflict / to clash","两国之间爆发了冲突。
+这两个安排在时间上发生了冲突。","A conflict broke out between the two countries.
+These two arrangements conflict in timing.",Neutral Formal,"Can be physical, political, personal, or scheduling-related.",,,
+认知,rènzhī,"noun: cognition / understanding
+verb: to perceive / to understand","这超出了我的认知。
+人们逐渐认知到问题的严重性。","This is beyond my understanding.
+People gradually came to understand the seriousness of the problem.",Technical,Common in psychology and analytical writing; noun usage is especially common.,,,
+似乎,sìhū,adverb: seemingly / apparently / it seems,她似乎已经知道真相了。,She seems to already know the truth.,Neutral Formal,Common in both speech and writing.,,,
+野心,yěxīn,noun: ambition,他一直有统治整个大陆的野心。,He has always had the ambition to rule the entire continent.,Neutral Formal,Often implies a large or potentially excessive ambition.,,,
+立于,lìyú,verb: to stand at / to be situated at,那座城堡立于山顶之上。,The castle stands atop the mountain.,Literary,Written expression; 站在 or 位于 is more conversational depending on context.,,,
+总数,zǒngshù,noun: total / total number,参加者的总数超过了一千人。,The total number of participants exceeded one thousand.,Neutral Formal,Used for the complete numerical amount.,,,
+规模,guīmó,noun: scale / size,这场战争的规模远超预想。,The scale of this war far exceeded expectations.,Neutral Formal,"Common for projects, organizations, wars, populations, and events.",,,
+分母,fēnmǔ,noun: denominator,这个分数的分母是十。,The denominator of this fraction is ten.,Technical,Mathematical term; opposite of 分子.,,,
+支持者,zhīchízhě,noun: supporter,那位王子拥有许多支持者。,That prince has many supporters.,Neutral Formal,"Someone who supports a person, idea, organization, or cause.",,,
+为啥,wèishá,adverb: why,你为啥突然改变主意了？,Why did you suddenly change your mind?,Everyday,Very colloquial equivalent of 为什么.,,,
+进攻,jìngōng,"verb: to attack / to advance
+noun: offensive / attack","军队准备明天进攻敌人的据点。
+敌人的进攻被成功阻止了。","The army plans to attack the enemy stronghold tomorrow.
+The enemy offensive was successfully stopped.",Neutral Formal,Common military and sports term.,,,
+支配,zhīpèi,verb: to control / to dominate / to govern,恐惧支配了他的行动。,Fear controlled his actions.,Neutral Formal,"Can refer to control over people, territory, behaviour, or circumstances.",,,
+后续,hòuxù,"noun: follow-up / what comes next
+adjective: subsequent / later","具体情况将在后续说明。
+后续调查仍在进行。","Further details will be explained later.
+The subsequent investigation is still ongoing.",Neutral Formal,"Common in reports, projects, stories, and discussions.",,,
+饶有,ráoyǒu,verb: to be full of / to possess quite a degree of,她饶有兴趣地看着桌上的魔法道具。,She looked at the magical item on the table with great interest.,Literary,Rarely used alone; commonly appears in 饶有兴趣 and 饶有兴致.,,,
+压倒,yādǎo,"verb: to knock down / to crush
+verb: to overwhelm / to surpass","大树被强风压倒了。
+他的实力完全压倒了对手。","The tree was knocked down by the strong wind.
+His ability completely overwhelmed his opponent.",Neutral Formal,Can be literal or figurative.,,,
+弱,ruò,adjective: weak / inferior,这个敌人比想象中弱得多。,This enemy is much weaker than expected.,Everyday,"Can describe physical strength, ability, intensity, or relative weakness.",,,
+全灭,quánmiè,"verb: to be completely wiped out
+noun: total annihilation","调查队几乎全灭。
+这次行动最终以全灭告终。","The investigation team was almost completely wiped out.
+The operation ultimately ended in total annihilation.",Neutral Formal,"Common in games, military contexts, and fiction.",,,
+添,tiān,verb: to add / to increase,"请再添一点水。
+别再给我添麻烦了。","Please add a little more water.
+Don't cause me any more trouble.",Everyday,Common standalone verb meaning to add something or cause an increase.,,,
+释放,shìfàng,verb: to release / to discharge / to unleash,"他们决定释放所有俘虏。
+这个魔法会释放大量能量。","They decided to release all the prisoners.
+This magic releases a large amount of energy.",Neutral Formal,"Used for people, energy, gases, pressure, emotions, and more.",,,
+熊孩子,xióngháizi,noun: badly behaved child / little brat,那个熊孩子又把邻居家的窗户打破了。,That little brat broke the neighbour's window again.,Internet Slang,"Colloquial internet term for a troublesome, badly behaved child.",,,
+邻居家,línjū jiā,noun: neighbour's house / neighbour's family,小时候我经常去邻居家玩。,I often went to the neighbour's house to play when I was young.,Everyday,家 can mean either the household or the home itself.,,,
+饶了,ráole,verb: to spare / to let off,求你饶了我吧！,Please spare me!,Everyday,Past/completed or imperative-context form of 饶. Common in 饶了我吧.,,,
+大跌,dàdiē,verb: to fall sharply / to plunge,消息公布后，股价大跌。,"After the news was announced, the share price plunged.",Neutral Formal,"Usually used with prices, values, ratings, or reputation.",,,
+入侵,rùqīn,"verb: to invade / to intrude
+noun: invasion","敌军开始入侵王国。
+这次入侵造成了严重损失。","The enemy army began invading the kingdom.
+The invasion caused serious losses.",Neutral Formal,"Can refer to military invasion, biological invasion, or unauthorized system access.",,,
+巨大,jùdà,adjective: huge / enormous,爆炸产生了巨大的冲击。,The explosion produced an enormous impact.,Neutral Formal,"Can describe physical size, amount, effect, or difference.",,,
+威胁,wēixié,"verb: to threaten
+noun: threat","他威胁要公开秘密。
+魔物对村庄构成了严重威胁。","He threatened to reveal the secret.
+The monsters posed a serious threat to the village.",Neutral Formal,Can refer to verbal threats or something posing danger.,,,
+自称,zìchēng,verb: to call oneself / to claim to be,他自称是来自远方的冒险者。,He claims to be an adventurer from a distant land.,Neutral Formal,Does not necessarily imply the claim is true.,,,
+签订,qiāndìng,verb: to sign / to conclude,两国正式签订了和平条约。,The two countries formally signed a peace treaty.,Neutral Formal,"Common with contracts, treaties, and agreements.",,,
+条约,tiáoyuē,noun: treaty,双方决定重新讨论条约的内容。,Both sides decided to renegotiate the contents of the treaty.,Official,"Formal agreement, especially between states or political entities.",,,
+厌恶,yànwù,"verb: to detest / to dislike intensely
+noun: disgust / aversion","她十分厌恶这种行为。
+他的表情明显流露出厌恶。","She strongly detests this kind of behaviour.
+His expression clearly showed disgust.",Neutral Formal,Stronger than ordinary 不喜欢.,,,
+王中之王,wáng zhōng zhī wáng,noun: king of kings,人们称他为统治众王的“王中之王”。,"People called him the “King of Kings,” ruler above all other kings.",Literary,Elevated title meaning a king who stands above other kings.,,,
+狂热,kuángrè,"adjective: fanatical / fervent
+noun: fanaticism / fervor","他是那位女神的狂热信徒。
+人群陷入了异常的狂热。","He is a fervent believer in that goddess.
+The crowd fell into an unusual frenzy.",Neutral Formal,Can describe intense enthusiasm or excessive ideological/religious devotion.,,,
+名气,míngqi,noun: fame / reputation,那位冒险者在王国内很有名气。,That adventurer is very famous throughout the kingdom.,Everyday,More conversational than 名声 in many contexts.,,,
+排除,páichú,verb: to exclude / to eliminate / to rule out,医生首先排除了感染的可能性。,The doctor first ruled out the possibility of infection.,Neutral Formal,Can mean removing something from consideration or eliminating an unwanted factor.,,,
+限制,xiànzhì,"verb: to restrict / to limit
+noun: restriction / limitation","这里限制外人进入。
+这个能力存在一定的限制。","Outsiders are restricted from entering here.
+This ability has certain limitations.",Neutral Formal,"Common for rules, abilities, quantities, and conditions.",,,
+导致,dǎozhì,verb: to cause / to lead to / to result in,他的判断失误导致了严重的后果。,His error in judgment led to serious consequences.,Neutral Formal,"Usually introduces a result, often a negative one.",,,
+敌意,díyì,noun: hostility / hostile intent,我从他身上感觉不到任何敌意。,I couldn't sense any hostility from him.,Neutral Formal,"Common with 表现出, 怀有, and 感受到.",,,
+单纯,dānchún,"adjective: simple / innocent / uncomplicated
+adverb: simply / solely","她的性格十分单纯。
+单纯依靠力量解决不了这个问题。","She has a very innocent and straightforward personality.
+Simply relying on strength will not solve this problem.",Everyday,"Can describe an uncomplicated person or situation, or mean “simply/solely.”",,,
+中途,zhōngtú,"noun: midway point
+adverb: midway / halfway","我们在中途休息了一会儿。
+他中途离开了会议。","We took a short break midway through the journey.
+He left the meeting halfway through.",Everyday,"Refers to a point during an activity, journey, or process before it finishes.",,,
+无情,wúqíng,adjective: ruthless / heartless / merciless,敌人发动了无情的攻击。,The enemy launched a merciless attack.,Neutral Formal,"Can describe people, actions, circumstances, or forces that show no mercy.",,,
+压制,yāzhì,verb: to suppress / to restrain / to overpower,骑士团迅速压制了暴动。,The knightly order quickly suppressed the riot.,Neutral Formal,"Can refer to force, emotions, opponents, firepower, or abilities.",,,
+暴力,bàolì,noun: violence / force,不能靠暴力解决所有问题。,You cannot solve every problem through violence.,Neutral Formal,Usually refers to physical force intended to harm or coerce.,,,
+战火波及,zhànhuǒ bōjí,verb phrase: to be affected by war / for war to spread to,附近的村庄也被战火波及。,The nearby villages were also affected by the war.,Literary,战火 figuratively means warfare; 波及 means spreading effects to something else.,,,
+背负,bēifù,"verb: to carry on one's back
+verb: to bear / to shoulder","他背负着沉重的行李。
+她背负着整个家族的期待。","He carried heavy luggage on his back.
+She bears the expectations of her entire family.",Neutral Formal,"Common figuratively with responsibility, expectations, guilt, or burdens.",,,
+交涉,jiāoshè,"verb: to negotiate
+noun: negotiations","双方正在就此事进行交涉。
+他负责与对方交涉。","The two sides are holding negotiations over the matter.
+He is responsible for negotiating with the other side.",Neutral Formal,Often used when parties discuss conditions or resolve a dispute.,,,
+谈判桌,tánpànzhuō,noun: negotiating table,双方终于重新回到了谈判桌前。,Both sides finally returned to the negotiating table.,Neutral Formal,Often figurative for formal negotiations.,,,
+众说纷纭,zhòngshuō fēnyún,fixed expression: opinions vary / conflicting views abound,关于这件事的真相，外界众说纷纭。,Opinions vary widely about the truth of this matter.,Fixed Expression,Used when many people give different or conflicting explanations.,,,
+陷入,xiànrù,verb: to fall into / to become caught in,王国逐渐陷入了混乱。,The kingdom gradually fell into chaos.,Neutral Formal,"Common with 困境, 混乱, 危机, 沉思, and other states.",,,
+登场,dēngchǎng,verb: to appear / to enter the scene / to take the stage,故事的主角终于登场了。,The protagonist finally appeared.,Everyday,"Originally stage-related; very common for characters appearing in stories, games, and entertainment.",,,
+旅途,lǚtú,noun: journey / trip,漫长的旅途终于接近了终点。,The long journey was finally nearing its end.,Neutral Formal,Focuses on the journey or experiences along the way.,,,
+艰辛,jiānxīn,"adjective: arduous / difficult
+noun: hardship","他们经历了一段艰辛的旅程。
+一路上的艰辛只有他们自己知道。","They went through an arduous journey.
+Only they know the hardships they faced along the way.",Neutral Formal,Usually describes serious difficulty or hardship requiring considerable effort.,,,
+迈上,màishàng,verb: to step onto / to embark on,他终于迈上了通往王宫的阶梯。,He finally stepped onto the stairs leading to the royal palace.,Neutral Formal,"Can also be figurative, such as 迈上新的道路.",,,
+迈,mài,verb: to step / to stride,他迈了一大步向前走去。,He took a large step forward.,Everyday,Often used with 步 to describe taking steps.,,,
+怨恨,yuànhèn,"verb: to resent / to hate
+noun: resentment / hatred","她从未怨恨过自己的父母。
+多年的怨恨终于消散了。","She has never resented her parents.
+Years of resentment finally faded away.",Neutral Formal,Usually involves lasting resentment caused by perceived wrongdoing.,,,
+停战,tíngzhàn,"verb: to cease fighting
+noun: ceasefire / truce","双方同意立即停战。
+两国终于达成了停战协议。","Both sides agreed to cease fighting immediately.
+The two countries finally reached a ceasefire agreement.",Official,Used for formally or practically stopping armed conflict.,,,
+互不侵犯条约,hù bù qīnfàn tiáoyuē,noun: non-aggression pact,两国签订了互不侵犯条约。,The two countries signed a non-aggression pact.,Official,A treaty in which each side agrees not to attack the other.,,,
+侵犯,qīnfàn,verb: to infringe / to violate / to invade,任何人都不能侵犯他人的合法权利。,No one may violate another person's lawful rights.,Neutral Formal,"Common with 权利, 隐私, 领土, and sovereignty.",,,
+物资,wùzī,noun: supplies / materials,前线急需大量医疗物资。,The front line urgently needs large quantities of medical supplies.,Neutral Formal,"Usually refers to practical supplies or materials needed by an organization, population, or operation.",,,
+援助,yuánzhù,"verb: to aid / to assist
+noun: aid / assistance","邻国决定援助受灾地区。
+他们向灾民提供了大量援助。","The neighbouring country decided to aid the disaster-stricken area.
+They provided extensive assistance to the disaster victims.",Neutral Formal,"Often used for humanitarian, financial, military, or international assistance.",,,
+粮食物资,liángshi wùzī,noun: food supplies,军队正在向灾区运送粮食物资。,The army is transporting food supplies to the disaster area.,Neutral Formal,Refers to food and staple supplies needed for living.,,,
+复兴,fùxīng,"verb: to revive / to rebuild
+noun: revival / reconstruction","人民开始努力复兴战后的国家。
+国家的复兴需要很长时间。","The people began working to rebuild the country after the war.
+The country's reconstruction will take a long time.",Neutral Formal,"Common for nations, economies, industries, cultures, and regions recovering after decline or destruction.",,,
+支援,zhīyuán,"verb: to support / to reinforce
+noun: support / assistance","骑士团被派去支援前线。
+援军很快提供了支援。","The knightly order was sent to support the front line.
+The reinforcements quickly provided support.",Neutral Formal,"Common in military, disaster relief, work, and organized assistance.",,,
+奔赴,bēnfù,verb: to rush to / to head for,骑士们立即奔赴战场。,The knights immediately headed for the battlefield.,Neutral Formal,Usually implies travelling quickly toward an important or urgent destination.,,,
+艰辛,jiānxīn,"adjective: arduous / difficult
+noun: hardship","他们经历了一段艰辛的旅程。
+一路上的艰辛只有他们自己知道。","They went through an arduous journey.
+Only they know the hardships they faced along the way.",Neutral Formal,Usually describes serious difficulty or hardship requiring considerable effort.,,,
+赞颂,zànsòng,verb: to praise / to extol,诗人们赞颂英雄的伟大功绩。,Poets extolled the hero's great achievements.,Literary,"More elevated than 称赞; often used for heroes, virtues, achievements, or ideals.",,,
+冠以,guànyǐ,verb: to give / to bestow / to label with,人们冠以他“救世英雄”的称号。,People bestowed upon him the title of “Savior Hero.”,Neutral Formal,"Usually followed by a name, title, label, or description.",,,
+本祭,běnjì,noun: main festival / main festival day,本祭将在三天后的广场上举行。,The main festival will be held in the square three days from now.,Rare / Stiff,"Japanese-derived festival terminology; in ordinary Mandarin, 主祭典 or 正式祭典 may be more natural depending on context.",,,
+合计,héjì,"verb: to total / to add up to
+noun: total","这些费用合计一百金币。
+最后的合计是三百枚金币。","These expenses total one hundred gold coins.
+The final total is three hundred gold coins.",Neutral Formal,"Common in accounting, statistics, bills, and numerical summaries.",,,
+周期,zhōuqī,noun: cycle / period,这个祭典以十年为一个周期举行。,This festival is held on a ten-year cycle.,Technical,"Used for recurring time periods, biological processes, engineering, economics, and other repeating patterns.",,,
+挫折,cuòzhé,noun: setback / frustration,一次挫折并不意味着失败。,A single setback does not mean failure.,Neutral Formal,Usually refers to difficulties or failures that obstruct progress.,,,
+直率,zhíshuài,adjective: frank / straightforward,她性格直率，有什么就说什么。,She is straightforward and says exactly what she thinks.,Everyday,Usually describes someone who speaks or behaves openly without much indirectness.,,,
+疑似,yísì,adjective: suspected / seemingly,附近发现了一只疑似魔物的生物。,A creature suspected of being a monster was discovered nearby.,Neutral Formal,"Especially common in news, reports, medicine, and descriptions where something has not yet been confirmed.",,,
+物品,wùpǐn,noun: item / object / goods,请把贵重物品保管好。,Please keep your valuables safe.,Neutral Formal,General term for physical objects or belongings.,,,
+读取,dúqǔ,verb: to read / to retrieve / to load,系统无法读取这个文件。,The system cannot read this file.,Technical,"Common computing term for obtaining data from storage, memory, files, or devices.",,,
+受邀,shòuyāo,verb: to be invited,她受邀参加了王宫举行的晚宴。,She was invited to attend the dinner held at the royal palace.,Neutral Formal,Concise written form meaning 接受邀请.,,,
+解读,jiědú,"verb: to interpret / to analyze
+noun: interpretation / reading","学者正在解读石碑上的文字。
+这是他对神谕的一种解读。","The scholar is interpreting the writing on the stone tablet.
+This is his interpretation of the oracle.",Neutral Formal,"Common for texts, information, events, data, symbols, and meanings.",,,
+日语,Rìyǔ,noun: Japanese / Japanese language,她能够用日语进行简单的交流。,She can communicate in basic Japanese.,Everyday,The Japanese language.,,,
+最先,zuìxiān,adverb: first / earliest,他是最先发现异常的人。,He was the first person to notice the abnormality.,Everyday,Indicates being earlier than everyone or everything else.,,,
+关照,guānzhào,verb: to look after / to take care of,今后还请多多关照。,Please continue to look out for me from now on.,Protocol,Also means to look after someone. 请多关照 is a conventional polite expression when beginning a relationship or asking for continued support.,,,
+传言,chuányán,"noun: rumor / hearsay
+verb: it is rumored / it is said","关于王族的传言很多。
+传言那座森林里住着魔族。","There are many rumors about the royal family.
+It is rumored that demons live in that forest.",Neutral Formal,Information passed from person to person without confirmed evidence.,,,
+都市,dūshì,noun: city / metropolis,这座都市是王国最大的贸易中心。,This city is the kingdom's largest trading center.,Neutral Formal,More written and urban-focused than 城市 in some contexts.,,,
+傍晚,bàngwǎn,noun: evening / dusk,我们在傍晚时分抵达了城市。,We arrived in the city around dusk.,Everyday,The period around sunset before night.,,,
+购买,gòumǎi,verb: to purchase / to buy,我打算购买一些旅行用品。,I plan to purchase some travel supplies.,Neutral Formal,"More formal than 买; common in shops, instructions, business, and writing.",,,
+挑,"tiāo
+tiǎo","verb (tiāo): to choose / to pick
+verb (tiǎo): to lift / to raise","你可以自己挑一个喜欢的。
+她挑了挑眉，看着我。","You can pick one you like.
+She raised her eyebrows and looked at me.",Everyday,Two common readings. tiāo is used for choosing or selecting; tiǎo can describe lifting or raising something with a small movement.,,,
+宣言,xuānyán,noun: declaration / proclamation,他的发言听起来简直像胜利宣言。,His statement sounded almost like a declaration of victory.,Neutral Formal,"A public or definite statement of one's position, intention, or beliefs.",,,
+让步,ràngbù,"verb: to make a concession / to yield
+noun: concession","双方都不愿意让步。
+这是我们能做出的最大让步。","Neither side was willing to yield.
+This is the greatest concession we can make.",Neutral Formal,"Common in negotiations, arguments, and compromises.",,,
+理所当然,lǐsuǒdāngrán,fixed expression: natural / only to be expected / taken for granted,他理所当然地认为大家都会同意。,He naturally assumed that everyone would agree.,Fixed Expression,"Can mean something is logically expected, or that someone takes something for granted.",,,
+发愣,fālèng,verb: to stare blankly / to be dazed,我站在那里发愣了好几秒。,I stood there dazed for several seconds.,Everyday,"Describes temporarily freezing or staring blankly because of surprise, confusion, or distraction.",,,
+电子产品,diànzǐ chǎnpǐn,noun: electronic device / electronic product,手机和数码表都属于电子产品。,Mobile phones and digital watches are electronic devices.,Technical,General term for consumer or other electronic equipment.,,,
+机械,jīxiè,"noun: machinery / machine
+adjective: mechanical","这里没有我们世界的机械。
+他的动作看起来十分机械。","There is no machinery from our world here.
+His movements looked very mechanical.",Technical,"As an adjective, can also figuratively mean rigid or lacking flexibility.",,,
+盯上,dīngshàng,verb: to target / to set one's sights on,这种技术曾经被一些人盯上。,Some people had previously set their sights on this technology.,Everyday,"Usually implies that someone has taken a strong, often unwelcome, interest in a target.",,,
+制品,zhìpǐn,noun: manufactured product / goods,这些都是使用金属制作的制品。,These are all products made from metal.,Neutral Formal,"Common in compounds such as 机械制品, 木制品, and 乳制品.",,,
+处置,chǔzhì,verb: to handle / to deal with / to dispose of,这些危险物品必须妥善处置。,These dangerous items must be handled properly.,Neutral Formal,"Often used for formally dealing with objects, problems, assets, or offenders.",,,
+合情合理,héqíng hélǐ,fixed expression: reasonable / fair and reasonable,这样的处置方式也算合情合理。,This way of handling the matter is quite reasonable.,Fixed Expression,Literally means both emotionally understandable and logically reasonable.,,,
+充电,chōngdiàn,verb: to charge / to recharge,我的手机已经没办法充电了。,I can no longer charge my phone.,Everyday,Usually used for batteries and electronic devices.,,,
+不妙,bùmiào,adjective: bad / not good / troublesome,情况好像有点不妙。,The situation seems a little bad.,Everyday,Common reaction when something appears likely to go wrong.,,,
+数码表,shùmǎbiǎo,noun: digital watch,我把数码表也放进了箱子里。,I put my digital watch in the box as well.,Everyday,A watch that displays time digitally.,,,
+怀表,huáibiǎo,noun: pocket watch,她借给了我一只漂亮的怀表。,She lent me a beautiful pocket watch.,Everyday,A watch designed to be carried in a pocket rather than worn on the wrist.,,,
+徒步,túbù,verb: to travel on foot / to walk,我们决定徒步前往城里。,We decided to travel to the city on foot.,Neutral Formal,"Common in travel and outdoor contexts, such as 徒步旅行.",,,
+服装店,fúzhuāngdiàn,noun: clothing store,我们走进了一家服装店。,We entered a clothing store.,Everyday,A shop selling clothing.,,,
+朴素,pǔsù,adjective: simple / plain / unpretentious,她选择了一件设计朴素的裙子。,She chose a simply designed dress.,Everyday,"Can describe clothing, appearance, lifestyle, language, or personality without unnecessary decoration or extravagance.",,,
+店铺,diànpù,noun: shop / store,街道两旁开着许多店铺。,There were many shops along both sides of the street.,Neutral Formal,Slightly more written or commercial than simply 店.,,,
+手感,shǒugǎn,noun: feel / texture,这种布料摸起来手感很好。,This fabric feels very nice to the touch.,Everyday,Refers to how something feels when touched or handled.,,,
+做工,zuògōng,noun: workmanship,这件衣服的做工相当不错。,The workmanship of this clothing is quite good.,Everyday,Refers to the quality and precision with which an object was made.,,,
+显眼,xiǎnyǎn,adjective: conspicuous / eye-catching,这件红色外套实在太显眼了。,This red coat is far too conspicuous.,Everyday,Describes something that easily attracts attention.,,,
+品位,pǐnwèi,noun: taste / refinement,她在服装方面很有品位。,She has very good taste in clothing.,Neutral Formal,Often refers to aesthetic taste or level of refinement.,,,
+面子,miànzi,noun: face / reputation / dignity,他为了面子不愿意承认自己错了。,He was unwilling to admit he was wrong because he wanted to save face.,Everyday,"Very common cultural concept referring to one's social image, dignity, or prestige.",,,
+保守,bǎoshǒu,"adjective: conservative
+verb: to keep / to guard","她在穿着方面比较保守。
+请替我保守这个秘密。","She is relatively conservative in how she dresses.
+Please keep this secret for me.",Neutral Formal,The verb sense is especially common with 秘密.,,,
+暑假,shǔjià,noun: summer vacation / summer break,我打算暑假去旅行。,I plan to travel during summer vacation.,Everyday,School or university holiday occurring during summer.,,,
+浮,fú,verb: to float / to hover,一个货台竟然浮在半空中。,A merchandise stand was actually floating in midair.,Everyday,Core standalone meaning is remaining suspended on a liquid or in the air.,,,
+融合,rónghé,"verb: to merge / to blend
+noun: fusion / integration","两种文化逐渐融合在一起。
+这种设计是传统与现代的融合。","The two cultures gradually blended together.
+This design is a fusion of tradition and modernity.",Neutral Formal,Used when separate things combine into a more unified whole.,,,
+张望,zhāngwàng,verb: to look around / to peer around,我慌忙地左右张望，却还是找不到她。,"I hurriedly looked around, but still couldn't find her.",Everyday,Usually describes looking around in different directions while searching for something.,,,
+走散,zǒusàn,verb: to become separated / to lose each other,我们在人群里不小心走散了。,We accidentally got separated in the crowd.,Everyday,Usually used when people travelling together become separated.,,,
+苍白,cāngbái,"adjective: pale / pallid
+adjective: weak / unconvincing","她吓得脸色苍白。
+这个解释显得十分苍白。","Her face turned pale with fear.
+This explanation seemed very weak and unconvincing.",Neutral Formal,Can describe a lack of colour or figuratively something lacking strength or substance.,,,
+汇合,huìhé,verb: to meet up / to converge,我们约好在喷泉前汇合。,We agreed to meet up in front of the fountain.,Neutral Formal,"Can describe people meeting or separate routes, rivers, or forces converging.",,,
+流冲,liúchōng,not a standalone word,不过站在这里的话，我感觉还是会被人流冲走。,"If I stayed here, I felt like I would still be swept away by the crowd.",Everyday,"This is an incorrect word split. The novel has 人流冲走: 人流 means crowd flow / stream of people, while 冲走 means to sweep or carry away. 流冲 itself is not the vocabulary item.",,,
+谜之,mí zhī,modifier: mysterious / inexplicable,他脸上露出了谜之微笑。,A mysterious smile appeared on his face.,Internet Slang,Japanese-influenced ACG/internet construction corresponding to Japanese 謎の. Usually placed before a noun.,,,
+缠绕,chánrào,verb: to wrap around / to coil around / to entangle,藤蔓缠绕在树干上。,Vines wrapped around the tree trunk.,Neutral Formal,"Can be literal or figurative, such as memories or problems continuing to trouble someone.",,,
+异样,yìyàng,"adjective: unusual / strange
+noun: something unusual / strange feeling","她向我投来了异样的目光。
+我立刻察觉到了异样。","She gave me a strange look.
+I immediately sensed that something was wrong.",Neutral Formal,Can modify something directly or refer to an unusual sign or feeling.,,,
+面孔,miànkǒng,noun: face,眼前是一张完全陌生的面孔。,The face before me was completely unfamiliar.,Neutral Formal,More descriptive than 脸 and common in narration.,,,
+比起,bǐqǐ,preposition: compared with / rather than,比起华丽的衣服，我更喜欢朴素一点的。,"Compared with flashy clothing, I prefer something simpler.",Everyday,Common comparison pattern: 比起 A，更/还是 B.,,,
+既像,jì xiàng,conjunction: both looks like / seems like,她既像个孩子，又像一位成熟的大人。,She seemed both like a child and like a mature adult.,Discursive,Usually used as part of 既像……又像…… and is not normally complete by itself.,,,
+偏大,piāndà,adjective: slightly large / on the large side,这件衣服对我来说稍微偏大。,This clothing is slightly large for me.,Everyday,偏 + adjective indicates leaning somewhat toward that quality.,,,
+夕阳,xīyáng,noun: setting sun,夕阳把天空染成了金色。,The setting sun painted the sky golden.,Literary,Common descriptive word for the sun around sunset.,,,
+如同,rútóng,preposition: like / just like,她的头发在夕阳下如同黄金般闪耀。,Her hair shone like gold beneath the setting sun.,Literary,More literary than 像.,,,
+闪耀,shǎnyào,verb: to shine / to sparkle / to glitter,宝石在阳光下闪耀着光芒。,The gemstone glittered in the sunlight.,Literary,Usually describes bright or attractive light; can also figuratively describe outstanding people or achievements.,,,
+光芒,guāngmáng,noun: rays of light / radiance,水晶散发出耀眼的光芒。,The crystal gave off a dazzling radiance.,Literary,Can be literal light or figurative brilliance.,,,
+看傻,kànshǎ,verb: to stare in amazement / to be stunned by what one sees,眼前的绝景把我直接看傻了。,The breathtaking view left me staring in amazement.,Everyday,"Colloquial result construction: 看 + 傻, meaning something is so surprising that the viewer becomes dumbfounded.",,,
+般,bān,particle: like / as / -like,她有着宝石般闪耀的眼睛。,She had eyes that glittered like gemstones.,Literary,"Placed after a noun or phrase to form a comparison, similar to 像……一样.",,,
+绽放,zhànfàng,verb: to bloom / to blossom,她的脸上绽放出了灿烂的笑容。,A radiant smile blossomed across her face.,Literary,Originally used for flowers opening; commonly extended to smiles and other vivid imagery.,,,
+心术,xīnshù,noun: intentions / mindset / schemes,我不知道这个人的心术究竟如何。,I don't know what this person's true intentions are.,Neutral Formal,"As a standalone word, usually refers to someone's intentions, mindset, or scheming and often has a negative nuance. In the novel, it appears inside 读心术, where it is part of the compound meaning “mind reading.”",,,
+作弄,zuònòng,verb: to tease / to play a trick on,我不是故意要作弄你的。,I wasn't deliberately trying to tease you.,Everyday,"Usually means deliberately teasing, fooling, or playing tricks on someone.",,,
+被牵着走,bèi qiānzhe zǒu,verb phrase: to be led around / to be controlled,我感觉自己一直在被她牵着走。,I feel like I've been letting her lead me around the whole time.,Everyday,"Often figurative, meaning another person controls the pace or direction of events.",,,
+重鸡尾酒,zhòng jīwěijiǔ,noun: Heavy Cocktail,她把岩烧小蛋糕误叫成了“重鸡尾酒”。,She mistakenly called the baby castella “Heavy Cocktail.”,Rare / Stiff,Not a normal Chinese vocabulary item. It is an intentional joke in this novel where the character misremembers the name Baby Castella as “Heavy Cocktail.”,,,
+岩烧,yánshāo,adjective: stone-baked / stone-grilled,这种料理采用岩烧的方式制作。,This dish is prepared using a stone-baking method.,Technical,"As ordinary Chinese, 岩烧 is a culinary descriptor involving heated stone. In this novel, 岩烧小蛋糕 is the Chinese translation used for Baby Castella.",,,
+纯真,chúnzhēn,adjective: innocent / pure-hearted,她露出了纯真的笑容。,She gave an innocent smile.,Everyday,"Usually positively describes someone as sincere, innocent, and lacking calculation.",,,
+岩烧小蛋糕,,,,,,,,,
+明朗,,,,,,,,,
+失落,,,,,,,,,
+手心,,,,,,,,,
+延伸,,,,,,,,,
+治愈,,,,,,,,,
+多亏,,,,,,,,,
+涌出,,,,,,,,,
+光,,solely/only,,,,,,,
+原原本本,,,,,,,,,
+周到,,,,,,,,,
+事项,,,,,,,,,
+走廊,,,,,,,,,
+至于,,,,,,,,,
+警戒心,,,,,,,,,
+警戒,,,,,,,,,
+隔音,,,,,,,,,
+厚重,,,,,,,,,
+门板,,,,,,,,,
+告知,,,,,,,,,
+消退,,,,,,,,,
+同乡,,,,,,,,,
+深呼吸,,,,,,,,,
+回归,,,,,,,,,
+俗话,,,,,,,,,
+偏见,,,,,,,,,
+陈旧,,,,,,,,,
+译注,,,,,,,,,
