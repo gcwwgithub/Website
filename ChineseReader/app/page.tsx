@@ -56,11 +56,14 @@ type PanelTab = "lookup" | "edit" | "settings";
 type ThemeMode = "paper" | "light" | "dark";
 type HighlightMode = "all" | "none" | "database";
 type DatabaseSource = "sentence" | "cn" | "term";
+type ImportTarget = "cn" | "sentences" | "terms";
 type PageNavigationState = { phase: "idle" | "loading" | "loaded"; direction: "previous" | "next" | null; label: string };
 type SentenceRange = { start: number; end: number; source: string };
 type CsvField = { label: string; value: string };
 type DictionaryHighlight = { start: number; end: number; source: Extract<DatabaseSource, "cn" | "term">; layer: number };
 type DictionaryHighlightRect = DictionaryHighlight & { id: string; left: number; top: number; width: number; height: number; isFirstSegment: boolean };
+type SentenceUnderlineRect = { id: string; left: number; top: number; width: number };
+type SearchMatch = { sectionIndex: number; start: number; end: number };
 const DETAIL_CHARACTER_LIMIT = 8;
 const MAX_DICTIONARY_HIGHLIGHT_LAYERS = 6;
 const TRANSLATION_STORAGE_KEY = "chinese-reader-translations";
@@ -201,9 +204,9 @@ function cleanImportedRows(raw: unknown, databaseSource?: DatabaseSource): Trans
       return clean.split("|").map((entry) => entry.trim()).filter(Boolean);
     };
     const source = String(item.source ?? item.chinese ?? item.word ?? item.term ?? item.name ?? item.place ?? item.text ?? item["Chinese Words"] ?? item["chinese words"] ?? "").trim();
-    const isSentenceFile = Array.isArray(container?.sentences);
+    const isSentenceFile = databaseSource === "sentence" || Array.isArray(container?.sentences);
     const isTermRow = "term" in item || "name" in item || "place" in item || String(item.kind ?? "").toLowerCase() === "term";
-    const isTermFile = Array.isArray(container?.terms) || Array.isArray(container?.names) || Array.isArray(container?.places) || mappedRows.length > 0 || isTermRow;
+    const isTermFile = databaseSource === "term" || Array.isArray(container?.terms) || Array.isArray(container?.names) || Array.isArray(container?.places) || mappedRows.length > 0 || isTermRow;
     const meaning = String(item.meaning ?? item.translation ?? item.english ?? item["English Words"] ?? item["english words"] ?? "").trim();
     if (!source || (isSentenceFile && !meaning)) return [];
     if (!isSentenceFile && !isTermFile && [...source].length > DETAIL_CHARACTER_LIMIT) return [];
@@ -437,7 +440,7 @@ function buildDictionaryHighlights(sentence: string, entries: TranslationEntry[]
     });
 }
 
-function Icon({ name }: { name: "upload" | "database" | "play" | "pause" | "back" | "forward" | "book" | "audio" | "settings" | "copy" }) {
+function Icon({ name }: { name: "upload" | "database" | "play" | "pause" | "back" | "forward" | "book" | "audio" | "settings" | "copy" | "search" | "close" }) {
   const paths = {
     upload: "M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v5h14v-5",
     database: "M4 6c0-2 3.6-3 8-3s8 1 8 3-3.6 3-8 3-8-1-8-3Zm0 0v6c0 2 3.6 3 8 3s8-1 8-3V6m-16 6v6c0 2 3.6 3 8 3s8-1 8-3v-6",
@@ -449,6 +452,8 @@ function Icon({ name }: { name: "upload" | "database" | "play" | "pause" | "back
     audio: "M4 9v6h4l5 4V5L8 9H4Zm12.5-.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12",
     settings: "M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Zm0-12v2m0 13v2m8.5-8.5h-2m-13 0h-2m14.5-6.5-1.4 1.4M6.9 17.1l-1.4 1.4m0-13 1.4 1.4m10.2 10.2 1.4 1.4",
     copy: "M8 8h10v12H8V8Zm-3 8H4V4h10v1",
+    search: "m21 21-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z",
+    close: "M6 6l12 12M18 6 6 18",
   };
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d={paths[name]} /></svg>;
 }
@@ -502,8 +507,16 @@ export default function Home() {
   const [pageNavigation, setPageNavigation] = useState<PageNavigationState>({ phase: "idle", direction: null, label: "" });
   const [sentenceSources, setSentenceSources] = useState<string[]>([]);
   const [dictionaryHighlightRects, setDictionaryHighlightRects] = useState<DictionaryHighlightRect[]>([]);
-  const databaseInput = useRef<HTMLInputElement>(null);
+  const [sentenceUnderlineRects, setSentenceUnderlineRects] = useState<SentenceUnderlineRect[]>([]);
+  const [searchDraft, setSearchDraft] = useState("");
+  const [searchMatches, setSearchMatches] = useState<SearchMatch[]>([]);
+  const [searchIndex, setSearchIndex] = useState(-1);
+  const [searchMessage, setSearchMessage] = useState("");
+  const cnImportInput = useRef<HTMLInputElement>(null);
+  const sentenceImportInput = useRef<HTMLInputElement>(null);
+  const termImportInput = useRef<HTMLInputElement>(null);
   const readerText = useRef<HTMLDivElement>(null);
+  const pendingSearchScroll = useRef<SearchMatch | null>(null);
   const fallbackTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const syncTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const fallbackCursor = useRef(0);
@@ -554,6 +567,8 @@ export default function Home() {
     if (highlightMode !== "database" || lookupMode !== "sentence" || selectionStart < 0 || !lookupText) return [] as DictionaryHighlight[];
     return buildDictionaryHighlights(lookupText, databaseEntries);
   }, [databaseEntries, highlightMode, lookupMode, lookupText, selectionStart]);
+  const activeSearchMatch = searchIndex >= 0 ? searchMatches[searchIndex] : undefined;
+  const activeSearchRange = activeSearchMatch?.sectionIndex === sectionIndex ? activeSearchMatch : null;
   const progress = book.sections.length
     ? Math.round(((sectionIndex + 1) / book.sections.length) * 100)
     : 0;
@@ -588,7 +603,7 @@ export default function Home() {
         // Terms/names JSON is optional.
       }
 
-      const localEntries = loadTranslationDatabase().filter((entry) => entry.kind !== "sentence");
+      const localEntries = loadTranslationDatabase();
       const merged = mergeTranslationEntries([...loadedEntries, ...localEntries]);
       setDatabaseEntries(merged);
       setDatabaseTotal(merged.length);
@@ -622,14 +637,46 @@ export default function Home() {
 
   useLayoutEffect(() => {
     const container = readerText.current;
-    if (!container || !dictionaryHighlights.length || selectionStart < 0) {
+    const shouldUnderlineSentence = highlightMode === "database" && lookupMode === "sentence" && selectionStart >= 0 && Boolean(lookupText);
+    if (!container || (!dictionaryHighlights.length && !shouldUnderlineSentence)) {
       setDictionaryHighlightRects([]);
+      setSentenceUnderlineRects([]);
       return;
     }
 
     let frame = 0;
+    const lineGroups = (rects: DOMRect[]) => {
+      const lines: DOMRect[][] = [];
+      rects.forEach((rect) => {
+        const line = lines.find((items) => Math.abs(items[0].top - rect.top) < 6);
+        if (line) line.push(rect);
+        else lines.push([rect]);
+      });
+      return lines;
+    };
+
     const draw = () => {
       const containerBox = container.getBoundingClientRect();
+      const selectedGlyphRects: DOMRect[] = [];
+      if (shouldUnderlineSentence) {
+        for (let offset = 0; offset < lookupText.length; offset += 1) {
+          const glyph = container.querySelector<HTMLElement>(`[data-character-index="${selectionStart + offset}"] .character-glyph`);
+          if (glyph) selectedGlyphRects.push(glyph.getBoundingClientRect());
+        }
+      }
+
+      const nextUnderlineRects = lineGroups(selectedGlyphRects).map((line, lineIndex) => {
+        const left = Math.min(...line.map((rect) => rect.left));
+        const right = Math.max(...line.map((rect) => rect.right));
+        const bottom = Math.max(...line.map((rect) => rect.bottom));
+        return {
+          id: `sentence-underline-${lineIndex}`,
+          left: left - containerBox.left - 1,
+          top: bottom - containerBox.top + 4,
+          width: right - left + 2,
+        };
+      });
+
       const nextRects = dictionaryHighlights.flatMap((highlight) => {
         const glyphRects: DOMRect[] = [];
         for (let offset = highlight.start; offset < highlight.end; offset += 1) {
@@ -638,14 +685,7 @@ export default function Home() {
         }
         if (!glyphRects.length) return [] as DictionaryHighlightRect[];
 
-        const lines: DOMRect[][] = [];
-        glyphRects.forEach((rect) => {
-          const line = lines.find((items) => Math.abs(items[0].top - rect.top) < 6);
-          if (line) line.push(rect);
-          else lines.push([rect]);
-        });
-
-        return lines.map((line, lineIndex) => {
+        return lineGroups(glyphRects).map((line, lineIndex) => {
           const left = Math.min(...line.map((rect) => rect.left));
           const right = Math.max(...line.map((rect) => rect.right));
           const top = Math.min(...line.map((rect) => rect.top));
@@ -665,6 +705,7 @@ export default function Home() {
         });
       });
       setDictionaryHighlightRects(nextRects);
+      setSentenceUnderlineRects(nextUnderlineRects);
     };
 
     const scheduleDraw = () => {
@@ -681,7 +722,17 @@ export default function Home() {
       observer.disconnect();
       window.removeEventListener("resize", scheduleDraw);
     };
-  }, [dictionaryHighlights, readerFontSize, readerPinyinSize, selectionStart, showPinyin]);
+  }, [dictionaryHighlights, highlightMode, lookupMode, lookupText, readerFontSize, readerPinyinSize, selectionStart, showPinyin]);
+
+  useLayoutEffect(() => {
+    if (!activeSearchRange || !readerText.current) return;
+    const frame = requestAnimationFrame(() => {
+      const target = readerText.current?.querySelector<HTMLElement>(`[data-character-index="${activeSearchRange.start}"]`);
+      target?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+      pendingSearchScroll.current = null;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [activeSearchRange?.end, activeSearchRange?.sectionIndex, activeSearchRange?.start, sectionIndex]);
 
   useEffect(() => {
     const loadCatalog = async () => {
@@ -940,6 +991,74 @@ export default function Home() {
     play(currentText.slice(start), start, "page");
   };
 
+  const jumpToSearchMatch = (match: SearchMatch) => {
+    stop();
+    pendingSearchScroll.current = match;
+    if (match.sectionIndex !== sectionIndex) {
+      if (pageChangeTimer.current) clearTimeout(pageChangeTimer.current);
+      if (pageLoadedTimer.current) clearTimeout(pageLoadedTimer.current);
+      const target = book.sections[match.sectionIndex];
+      setSectionIndex(match.sectionIndex);
+      window.localStorage.setItem(READER_PROGRESS_KEY, JSON.stringify({ bookId: activeBookId, sectionIndex: match.sectionIndex }));
+      setPageNavigation({ phase: "loaded", direction: null, label: `${target?.title || `Page ${match.sectionIndex + 1}`} loaded` });
+      pageLoadedTimer.current = setTimeout(() => setPageNavigation({ phase: "idle", direction: null, label: "" }), 900);
+    }
+  };
+
+  const runWordSearch = () => {
+    const query = searchDraft.trim();
+    if (!query) {
+      setSearchMatches([]);
+      setSearchIndex(-1);
+      setSearchMessage("Enter a word to find.");
+      return;
+    }
+
+    const matches = book.sections.flatMap((section, nextSectionIndex) => {
+      const sectionMatches: SearchMatch[] = [];
+      let searchFrom = 0;
+      while (searchFrom < section.text.length) {
+        const start = section.text.indexOf(query, searchFrom);
+        if (start < 0) break;
+        sectionMatches.push({ sectionIndex: nextSectionIndex, start, end: start + query.length });
+        searchFrom = start + Math.max(1, query.length);
+      }
+      return sectionMatches;
+    });
+
+    setSearchMatches(matches);
+    if (!matches.length) {
+      setSearchIndex(-1);
+      setSearchMessage(`No matches for ${query}.`);
+      return;
+    }
+
+    setSearchIndex(0);
+    setSearchMessage(`1 of ${matches.length.toLocaleString()}`);
+    jumpToSearchMatch(matches[0]);
+  };
+
+  const clearWordSearch = () => {
+    setSearchDraft("");
+    setSearchMatches([]);
+    setSearchIndex(-1);
+    setSearchMessage("");
+    pendingSearchScroll.current = null;
+  };
+
+  const stepWordSearch = (direction: "previous" | "next") => {
+    if (!searchMatches.length) {
+      runWordSearch();
+      return;
+    }
+    const nextIndex = direction === "next"
+      ? (Math.max(0, searchIndex) + 1) % searchMatches.length
+      : (Math.max(0, searchIndex) - 1 + searchMatches.length) % searchMatches.length;
+    setSearchIndex(nextIndex);
+    setSearchMessage(`${nextIndex + 1} of ${searchMatches.length.toLocaleString()}`);
+    jumpToSearchMatch(searchMatches[nextIndex]);
+  };
+
   const selectedSentenceText = () => {
     if (!lookupText || selectionStart < 0) return "";
     if (lookupMode === "sentence") return lookupText;
@@ -1074,6 +1193,9 @@ export default function Home() {
       setEntry(null);
       setMeaningDraft("");
       setLookupState("idle");
+      setSearchMatches([]);
+      setSearchIndex(-1);
+      setSearchMessage("");
       setFileState("idle");
       setFileMessage(parsed.notice || `${catalogBook.format} loaded from the shelf.`);
       window.localStorage.setItem(READER_PROGRESS_KEY, JSON.stringify({ bookId: catalogBook.id, sectionIndex: nextSectionIndex }));
@@ -1105,14 +1227,23 @@ export default function Home() {
           csvFieldValue(nextCsvFields, "English Usage in a sentence"),
         ].filter(Boolean),
         imageUrl: entry?.imageUrl ?? "",
-        kind: [...lookupText].length === 1 ? "word" : "phrase",
+        kind: entry?.kind && entry.kind !== "sentence" ? entry.kind : [...lookupText].length === 1 ? "word" : "phrase",
+        databaseSource: entry?.databaseSource ?? "cn",
         csvFields: nextCsvFields,
       }]);
-      const merged = mergeTranslationEntries([...databaseEntries.filter((item) => item.kind === "sentence"), ...database]);
+      const merged = mergeTranslationEntries([...databaseEntries, ...database]);
       setDatabaseEntries(merged);
       setDatabaseTotal(merged.length);
       setMeaningDraft(primaryMeaning);
-      setEntry({ ...entry, source: lookupText, meaning: primaryMeaning, notes: csvFieldValue(nextCsvFields, "Notes"), csvFields: nextCsvFields });
+      setEntry({
+        ...entry,
+        source: lookupText,
+        meaning: primaryMeaning,
+        notes: csvFieldValue(nextCsvFields, "Notes"),
+        kind: entry?.kind && entry.kind !== "sentence" ? entry.kind : [...lookupText].length === 1 ? "word" : "phrase",
+        databaseSource: entry?.databaseSource ?? "cn",
+        csvFields: nextCsvFields,
+      });
       setLookupState("found");
       setLookupVersion((version) => version + 1);
     } catch {
@@ -1145,32 +1276,38 @@ export default function Home() {
     downloadText("terms.json", `${JSON.stringify({ terms }, null, 2)}\n`, "application/json;charset=utf-8");
   };
 
-  const importDatabase = async (file?: File) => {
+  const importDatabase = async (target: ImportTarget, file?: File) => {
     if (!file) return;
     setImporting(true);
     setDatabaseMessage(`Reading ${file.name}…`);
     try {
       const text = await file.text();
-      const raw = file.name.toLowerCase().endsWith(".csv") ? parseCsv(text) : JSON.parse(text);
-      const entries = cleanImportedRows(raw);
+      const raw = target === "cn" ? parseCsv(text) : JSON.parse(text);
+      const entries = target === "cn"
+        ? cleanImportedRows(raw, "cn").filter((entry) => entry.kind !== "sentence" && entry.kind !== "term")
+        : target === "sentences"
+          ? cleanImportedRows(raw, "sentence").filter((entry) => entry.kind === "sentence")
+          : cleanImportedRows(raw, "term").filter((entry) => entry.kind === "term");
       if (!entries.length) throw new Error("No source and meaning pairs were found.");
       let imported = 0;
       for (let start = 0; start < entries.length; start += 100) {
         const batch = entries.slice(start, start + 100);
         const database = upsertTranslationEntries(batch);
         imported += batch.length;
-        const merged = mergeTranslationEntries([...databaseEntries.filter((item) => item.kind === "sentence"), ...database]);
+        const merged = mergeTranslationEntries([...databaseEntries, ...database]);
         setDatabaseEntries(merged);
         setDatabaseTotal(merged.length);
         setDatabaseMessage(`Imported ${imported} of ${entries.length}…`);
       }
-      setDatabaseMessage(`Merged ${imported.toLocaleString()} translations.`);
+      const label = target === "cn" ? "CN.csv entries" : target === "sentences" ? "sentence translations" : "names JSON entries";
+      setDatabaseMessage(`Merged ${imported.toLocaleString()} ${label}.`);
       setLookupVersion((version) => version + 1);
     } catch (error) {
       setDatabaseMessage(error instanceof Error ? error.message : "The database file could not be imported.");
     } finally {
       setImporting(false);
-      if (databaseInput.current) databaseInput.current.value = "";
+      const input = target === "cn" ? cnImportInput.current : target === "sentences" ? sentenceImportInput.current : termImportInput.current;
+      if (input) input.value = "";
     }
   };
 
@@ -1257,9 +1394,7 @@ export default function Home() {
       <header className="topbar">
         <div className="topbar-left">
           <button className="reader-mark shelf-mark" type="button" onClick={() => setView("shelf")} aria-label="Back to shelf">语</button>
-          <button type="button" onClick={() => databaseInput.current?.click()} disabled={importing}><Icon name="database" /> {importing ? "Importing…" : "Import database"}</button>
           <RouteLink className="topbar-link" href="/help" loadingLabel="Opening help">? Help</RouteLink>
-          <input ref={databaseInput} type="file" accept=".json,.csv,application/json,text/csv" hidden onChange={(event) => void importDatabase(event.target.files?.[0])} />
         </div>
         <div className="book-heading"><strong>{book.title}</strong><small>{currentSection?.title}</small></div>
         <div className="topbar-right">
@@ -1277,7 +1412,7 @@ export default function Home() {
             <div className="page-meta"><span>{book.format}</span><strong>{currentSection?.title}</strong></div>
             <div className="reader-text-stage">
               <div className={`continuous-text ${showPinyin ? "pinyin-mode" : ""}`} ref={readerText} onMouseUp={captureSelection} onTouchEnd={() => window.setTimeout(captureSelection, 30)}>
-                {dictionaryHighlightRects.length ? <span className="dictionary-highlight-overlay" aria-hidden="true">
+                {dictionaryHighlightRects.length || sentenceUnderlineRects.length ? <span className="dictionary-highlight-overlay" aria-hidden="true">
                   {dictionaryHighlightRects
                     .slice()
                     .sort((left, right) => right.layer - left.layer)
@@ -1292,13 +1427,23 @@ export default function Home() {
                         zIndex: MAX_DICTIONARY_HIGHLIGHT_LAYERS - highlight.layer,
                       }}
                     />)}
+                  {sentenceUnderlineRects.map((underline) => <span
+                    key={underline.id}
+                    className="dictionary-sentence-underline"
+                    style={{
+                      left: `${underline.left}px`,
+                      top: `${underline.top}px`,
+                      width: `${underline.width}px`,
+                    }}
+                  />)}
                 </span> : null}
                 {pageCharacters.map((character, index) => {
                   const isSelectedSentence = lookupMode === "sentence" && index >= selectionStart && index < selectionStart + lookupText.length;
+                  const isActiveSearchMatch = Boolean(activeSearchRange && index >= activeSearchRange.start && index < activeSearchRange.end);
                   return <Fragment key={index}>
                     {(pageImages.get(index) ?? []).map((image) => <EpubIllustration key={image.id} src={image.src} alt={image.alt} />)}
                     <span
-                      className={`page-character ${activePageIndex === index ? "spoken-character" : ""} ${isSelectedSentence && highlightMode === "all" ? "selected-sentence" : ""}`}
+                      className={`page-character ${activePageIndex === index ? "spoken-character" : ""} ${isSelectedSentence && highlightMode === "all" ? "selected-sentence" : ""} ${isActiveSearchMatch ? "search-active-character" : ""}`}
                       data-character-index={index}
                       data-pinyin={pagePinyin[index] || undefined}
                       onClick={() => selectSentenceAt(index)}
@@ -1330,6 +1475,15 @@ export default function Home() {
                 <label className="setting-row"><span>Audio speed <strong>{rate.toFixed(1)}×</strong></span><input type="range" min="0.5" max="1.5" step="0.1" value={rate} onChange={(event) => changeRate(Number(event.target.value))} /></label>
                 <label className="setting-row"><span>Word font size <strong>{readerFontSize}px</strong></span><input type="range" min="18" max="38" step="1" value={readerFontSize} onChange={(event) => setReaderFontSize(Number(event.target.value))} /></label>
                 <label className="setting-row"><span>Pinyin font size <strong>{readerPinyinSize}px</strong></span><input type="range" min="7" max="16" step="1" value={readerPinyinSize} onChange={(event) => setReaderPinyinSize(Number(event.target.value))} /></label>
+                <form className="find-panel" onSubmit={(event) => { event.preventDefault(); runWordSearch(); }}>
+                  <label className="setting-row"><span>Find word <strong>{searchMessage || "Ready"}</strong></span><input type="search" value={searchDraft} onChange={(event) => setSearchDraft(event.target.value)} placeholder="Search this book" /></label>
+                  <div className="find-actions">
+                    <button type="submit"><Icon name="search" /> Find</button>
+                    <button type="button" onClick={() => stepWordSearch("previous")} disabled={!searchMatches.length} aria-label="Previous match"><Icon name="back" /></button>
+                    <button type="button" onClick={() => stepWordSearch("next")} disabled={!searchMatches.length} aria-label="Next match"><Icon name="forward" /></button>
+                    <button type="button" onClick={clearWordSearch} disabled={!searchDraft && !searchMatches.length && !searchMessage} aria-label="Clear find"><Icon name="close" /></button>
+                  </div>
+                </form>
                 <div className="setting-row"><span>Reader theme <strong>{themeMode === "paper" ? "Yuliu Paper" : themeMode === "light" ? "Light" : "Dark"}</strong></span><div className="theme-options">
                   {[
                     ["paper", "Yuliu Paper"],
@@ -1353,6 +1507,15 @@ export default function Home() {
                   <label className="setting-row"><span>Names border <strong>{dictionaryTermBorderColor.toUpperCase()}</strong></span><input type="color" value={dictionaryTermBorderColor} onChange={(event) => changeDictionaryBorderColor("term", event.target.value)} /></label>
                 </div>
                 <label className="setting-row"><span>Highlight all color <strong>{highlightColor.toUpperCase()}</strong></span><input type="color" value={highlightColor} onChange={(event) => changeSelectionHighlightColor(event.target.value)} /></label>
+                <div className="export-options">
+                  <span>Import database</span>
+                  <button type="button" onClick={() => cnImportInput.current?.click()} disabled={importing}><Icon name="database" /> CN.csv</button>
+                  <button type="button" onClick={() => sentenceImportInput.current?.click()} disabled={importing}><Icon name="database" /> Sentences JSON</button>
+                  <button type="button" onClick={() => termImportInput.current?.click()} disabled={importing}><Icon name="database" /> Names JSON</button>
+                  <input ref={cnImportInput} type="file" accept=".csv,text/csv" hidden onChange={(event) => void importDatabase("cn", event.target.files?.[0])} />
+                  <input ref={sentenceImportInput} type="file" accept=".json,application/json" hidden onChange={(event) => void importDatabase("sentences", event.target.files?.[0])} />
+                  <input ref={termImportInput} type="file" accept=".json,application/json" hidden onChange={(event) => void importDatabase("terms", event.target.files?.[0])} />
+                </div>
                 <div className="export-options">
                   <span>Export database</span>
                   <button type="button" onClick={exportCsv}><Icon name="database" /> CN.csv</button>
